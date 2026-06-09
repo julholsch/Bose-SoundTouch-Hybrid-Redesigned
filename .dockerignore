@@ -1,6 +1,12 @@
-node_modules
-logs
-config
-.git
-testscripts
-misc
+# .dockerignore
+# Ignore heavy test files, backups, and media
+Misc/
+testscripts/
+Bose-SoundTouch-Hybrid-2026-V3/
+
+# Ignore local node_modules (the Dockerfile installs its own fresh ones!)
+node_modules/
+package-lock.json
+
+# Ignore user config files (these are mapped dynamically via the YAML)
+config/

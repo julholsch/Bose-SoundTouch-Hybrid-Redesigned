@@ -14,25 +14,26 @@
 <body>
 
 <div class="container">
-  <div class="global-nav">
-    <div style="font-weight:700; color:var(--title-color); font-size:1.1em; display:flex; align-items:center; gap:12px; white-space:nowrap; min-width:250px;">
-		<img src="images/hybrid_icon.png" style="height:32px; width:auto;" alt="Logo">
-		Bose SoundTouch Hybrid
-	</div>
-    
-	<div class="nav-center-group">
-        <div class="global-link" onclick="window.location.href='/control.html'" style="cursor:pointer;">Remote Control</div>
-        <div class="global-link active" onclick="window.location.href='/manager.html'" style="cursor:pointer;">Library Manager</div>
-        <div class="global-link" onclick="window.location.href='/admin.html'" style="cursor:pointer;">Speaker Admin</div>
+    <div class="global-nav">
+        <div class="global-nav-img">
+            <img src="images/hybrid_icon.png" alt="Logo">
+            
+        </div>
+        
+        <div class="nav-center-group">
+            <div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
+            <div class="global-link active" onmousedown="window.location.href='manager.html'">Library Manager</div>
+            <div class="global-link" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
+            <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
+        </div>
+        
+        <div class="speaker-selector-container">
+            <span class="speaker-label" id="play-on-label">Play On:</span>
+            <select id="global-speaker" onchange="handleSpeakerChange()">
+                <option value="">Loading...</option>
+            </select>
+        </div>
     </div>
-    
-    <div class="speaker-selector-container">
-        <span class="speaker-label" id="play-on-label">Play On:</span>
-        <select id="global-speaker" onchange="handleSpeakerChange()">
-            <option value="">Loading...</option>
-        </select>
-    </div>
-  </div>
 
   <div class="top-bar">
 	<h2 style="margin:0; font-size:1.4em; color:var(--title-color); display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;">
@@ -77,7 +78,7 @@
     </div>
     <div id="lib-presets" class="grid">Loading...</div>
 	
-<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 8px; border: 1px solid var(--border);">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 8px; border: 1px solid var(--border);">
         <div class="section-title" style="margin: 0; padding: 0; border: none; display: flex; align-items: baseline; gap: 6px; white-space: nowrap;">
             <span>FAVORITES</span>
             <span style="font-size: 0.75em; color: var(--text-secondary);">(UNASSIGNED TO GLOBAL PRESETS)</span>
@@ -100,51 +101,51 @@
     <div id="lib-favorites" class="grid">Loading...</div>
   </div>
 
-  <div id="tab-nowplaying" style="display:none">
-      <div class="np-view">
-          <div class="np-card">
-              <img id="np-img" src="" class="np-art" style="display:none;" onerror="this.style.display='none'">
-              <div id="np-track" class="np-track">Loading...</div>
-              <div id="np-artist" class="np-artist">---</div>
-              <div id="np-album" class="np-album">---</div>
-              <div id="np-status" class="np-status-badge">CONNECTING</div>
-          </div>
-      </div>
-  </div>
-
-  <div id="tab-recents" style="display:none">
-    <div class="section-title">Recently Played from Music Assistant</div>
-    <div id="recents-results" class="grid">Loading...</div>
-  </div>
-
-  <div id="tab-search" style="display:none">
-    <div class="search-header">
-	<div class="source-row" id="dynamic-source-row"></div>
-      <div class="filter-row" id="filter-row">
-        <div class="filter-pill active" onclick="setFilter('playlist')">Playlists</div>
-        <div class="filter-pill" onclick="setFilter('artist')">Artists</div>
-        <div class="filter-pill" onclick="setFilter('album')">Albums</div>
-        <div class="filter-pill" onclick="setFilter('track')">Tracks</div>
-		<div class="filter-pill" id="filter-stations" onclick="setFilter('radio')">Stations</div>
-        <div class="filter-pill" onclick="setFilter('all')">All</div>
-		<select id="provider-filter" class="mini-select" style="margin-left:auto; display:none; max-width:160px; background-color:var(--card);" onchange="doSearch()">
-            <option value="all">All Providers</option>
-        </select>		
-      </div>
-      <div class="search-bar">
-        <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
-        <select id="limit" onchange="doSearch()">
-            <option value="100" selected>100</option>
-            <option value="500">500</option>
-            <option value="1000">1000</option>
-        </select>
-        <button class="primary" onclick="doSearch()">Go</button>
-      </div>
+    <div id="tab-nowplaying" style="display:none">
+        <div class="np-view">
+            <div class="np-card">
+                <img id="np-img" src="" class="np-art" style="display:none;" onerror="this.style.display='none'">
+                <div id="np-track" class="np-track">Loading...</div>
+                <div id="np-artist" class="np-artist">---</div>
+                <div id="np-album" class="np-album">---</div>
+                <div id="np-status" class="np-status-badge">CONNECTING</div>
+            </div>
+        </div>
     </div>
-    <div id="search-results" class="grid"></div>
-  </div>
+
+    <div id="tab-recents" style="display:none">
+        <div class="section-title">Recently Played from Music Assistant</div>
+        <div id="recents-results" class="grid">Loading...</div>
+    </div>
+
+    <div id="tab-search" style="display:none">
+        <div class="search-header">
+            <div class="source-row" id="dynamic-source-row"></div>
+            <div class="filter-row" id="filter-row">
+                <div class="filter-pill active" onclick="setFilter('playlist')">Playlists</div>
+                <div class="filter-pill" onclick="setFilter('artist')">Artists</div>
+                <div class="filter-pill" onclick="setFilter('album')">Albums</div>
+                <div class="filter-pill" onclick="setFilter('track')">Tracks</div>
+                <div class="filter-pill" id="filter-stations" onclick="setFilter('radio')">Stations</div>
+                <div class="filter-pill" onclick="setFilter('all')">All</div>
+                <select id="provider-filter" class="mini-select" style="margin-left:auto; display:none; max-width:160px; background-color:var(--card);" onchange="doSearch()">
+                    <option value="all">All Providers</option>
+                </select>		
+            </div>
+            <div class="search-bar">
+                <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
+                <select id="limit" onchange="doSearch()">
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <button class="primary" onclick="doSearch()">Go</button>
+            </div>
+        </div>
+        <div id="search-results" class="grid"></div>
+    </div>
   
-<div id="tab-custom" style="display:none">
+    <div id="tab-custom" style="display:none">
       <div class="card" style="margin-bottom: 20px; border-left: 3px solid #2ecc71;">
           <h3 style="margin-top:0;">&#127760; Stream Custom URL</h3>
           <div class="sub-head" style="margin-bottom:15px;">Inject a radio stream or file directly to a speaker.</div>
@@ -237,6 +238,7 @@
   let state = { source: 'spotify', filter: 'playlist', tab: 'library', favFilter: 'all' }; 
   let selectedUuid = null;
   let npInterval = null;
+  let currentSearchOrder = ['global', 'radio', 'nas', 'spotify']; // <-- ADD THIS DEFAULT
   
   // --- THEME MANAGEMENT ---
   // Applies the theme immediately to prevent flash of unstyled content
@@ -249,10 +251,24 @@
   // Listens for theme changes in other tabs to sync immediately.
   window.addEventListener('storage', (e) => { if (e.key === 'theme') applyTheme(); });
 
+  // --- FETCH GLOBAL SETTINGS ---
+  async function loadUserPreferences() {
+      try {
+          // Uses existing api() wrapper to safely fetch settings
+          const settings = await api('/api/admin/settings');
+          if (settings && settings.searchMenuOrder && Array.isArray(settings.searchMenuOrder)) {
+              currentSearchOrder = settings.searchMenuOrder;
+          }
+      } catch (e) {
+          console.error("Failed to load global search order from server. Using defaults.", e);
+      }
+  }
+
   // --- INITIALIZATION ---
-  window.onload = function() { 
-      buildSearchMenu();
-	  loadProviders().then(() => loadLibrary()); // <-- NEW: Load providers BEFORE library	  
+  window.onload = async function() { 
+      await loadUserPreferences(); // 1. Wait for server settings FIRST
+      buildSearchMenu();           // 2. Draw the menu using those settings
+      loadProviders().then(() => loadLibrary()); 
       fetchSpeakers(); 
   }
   
@@ -289,27 +305,23 @@ async function loadProviders() {
       'global': `<button class="source-btn" onclick="setSource('global')"><span style="font-size:1.2em;">🌍</span> Global</button>`
   };
 
-  function buildSearchMenu() {
-      // 1. Check local storage for user preference
-      const savedOrder = localStorage.getItem('bose_search_order');
-      const order = savedOrder ? JSON.parse(savedOrder) : ['global','radio', 'nas','spotify' ]; // Your correct default
-
+function buildSearchMenu() {
       const container = document.getElementById('dynamic-source-row');
       let html = '';
 
-      // 2. Build the HTML string based on the array order
-      order.forEach(sourceKey => {
+      // Build the HTML string based on the server-provided array order
+      currentSearchOrder.forEach(sourceKey => {
           if (SOURCE_BUTTON_TEMPLATES[sourceKey]) {
               html += SOURCE_BUTTON_TEMPLATES[sourceKey];
           }
       });
 
-      // 3. Inject it into the page
+      // Inject it into the page
       container.innerHTML = html;
 
-      // 4. Automatically highlight the first item in the list
-      if (order.length > 0) {
-          setSource(order[0]); 
+      // Automatically highlight the first item in the list
+      if (currentSearchOrder.length > 0) {
+          setSource(currentSearchOrder[0]); 
       }
   }
 
@@ -368,8 +380,15 @@ async function loadProviders() {
               
               const finalLabel = `${d.name}${icon}`;
               
-              // --- THE FILTERS ---
-              const playDisabledAttr = (isOffline || isMissingFromMass) ? `disabled ${colorClass}` : '';
+			// --- THE FILTERS ---
+              const isStereoRight = (d.stereoRole === 'RIGHT');
+              let playDisabledAttr = '';
+              if (isOffline || isMissingFromMass) {
+                  playDisabledAttr = `disabled ${colorClass}`;
+              } else if (isStereoRight) {
+                  playDisabledAttr = `disabled style="color: var(--text-secondary); font-style: italic;"`; 
+              }
+
               const playValue = p ? p.id : ''; 
               const editStyleAttr = colorClass ? `${colorClass}` : '';
               
@@ -378,7 +397,7 @@ async function loadProviders() {
                   htmlIp: `<option value="${d.ip}" ${editStyleAttr}>${finalLabel}</option>`, 
                   isPlaying: isPlaying,
                   id: playValue,
-                  isPlayable: (!isOffline && !isMissingFromMass)
+                  isPlayable: (!isOffline && !isMissingFromMass && !isStereoRight)
               };
           });
 

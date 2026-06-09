@@ -1,0 +1,11 @@
+Auflistung der Ordnerpfade für Volume Home
+Volumeseriennummer : 6283-6A8C
+C:.
++---.github
+¦   +---workflows
++---examples
++---public
+¦   +---docs
+¦   +---images
++---routes
++---templates

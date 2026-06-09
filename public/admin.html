@@ -14,9 +14,9 @@
 <body>
 <div class="container">
   <div class="global-nav">
-	<div style="font-weight:700; color:var(--title-color); font-size:1.1em; display:flex; align-items:center; gap:12px; white-space:nowrap; min-width:250px;">
-		<img src="images/hybrid_icon.png" style="height:32px; width:auto;" alt="Logo">
-		Bose SoundTouch Hybrid
+	<div class="global-nav-img">
+		<img src="images/hybrid_icon.png" alt="Logo">
+		
 	</div>
     
 	<div class="nav-center-group">
@@ -26,14 +26,14 @@
         <div class="global-link" onmousedown="window.location.href='/tools.html'">System Tools</div>
     </div>
 
-    <div style="min-width:250px; display:flex; justify-content:flex-end;">
+    <div>
         <button class="btn-all-off" onclick="triggerGlobalAllOff()">
             <span style="color: var(--danger); font-size: 1.1em;"><i class="icon-power"></i></span> All Off
         </button>
     </div>
   </div>
 
-  <div id="admin-grid" class="admin-grid">Loading Speakers...</div>
+  <div id="admin-grid" class="speaker-grid">Loading Speakers...</div>
 </div>
 
 <script>
@@ -57,8 +57,9 @@
     
     document.getElementById('admin-grid').innerHTML = devices.map(d => {
       if (!d.online) return `<div class="card" style="border-style:dashed;"><h3>${d.name}</h3><div style="color:#e74c3c; font-weight:bold; font-size:0.8em; margin-top:10px;">OFFLINE / UNREACHABLE</div></div>`;
-      
-      const hasClock = d.type.includes("20") || d.type.includes("30") || d.type.includes("Portable");
+      	
+      const typeStr = d.type || "";
+      const hasClock = typeStr.includes("20") || typeStr.includes("30") || typeStr.includes("Portable");
       
       return `
         <div class="card">
@@ -284,19 +285,18 @@
   }
 
   async function rebootSpk(ip) {
-      if(!confirm("Are you sure you want to completely reboot this speaker via Telnet? This will take a moment.")) return;
-      await fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) });
-      alert("Telnet Reboot Command sent!");
+    if(!confirm("Are you sure you want to completely reboot this speaker via Telnet? This will take a moment.\n\n⚠️ Note: Once rebooted, the system will forcefully restart the DLNA and AirPlay providers to restore the socket. Active audio streams on other speakers may momentarily stop.")) return;
+    
+    await fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) });
+    alert("✅ Telnet Reboot Command sent!\n\nThe network providers will aggressively reload in 90 seconds.");
   }
-async function triggerAllOff() {
-      try {
-          await fetch('/api/power_off_all', { method: 'POST' });
-          // Instantly refresh the admin grid to show all buttons turning OFF
-          loadAdmin(); 
-      } catch (e) {
-          console.error("Failed to power off speakers", e);
-      }
-  }
+
+
+
+
+
+
+  
 
 async function toggleSource(ip, btn) {
       // 1. OPTIMISTIC UI: Switching source ALWAYS wakes the speaker up natively.

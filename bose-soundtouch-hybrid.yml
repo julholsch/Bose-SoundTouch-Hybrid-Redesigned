@@ -1,41 +1,67 @@
 # ==============================================================================
-# BOSE SOUNDTOUCH HYBRID 2026 V3
+# BOSE SOUNDTOUCH HYBRID 2026 V3.5.1
 # ==============================================================================
+# --- VERSION TAGGING ---
+# Use the word 'latest' on the image line below to always pull the newest 
+# release, or use a specific tag (e.g., :v3.4) to lock to a specific version.
+# NOTE: My provided YML will always be coded with the specific new release.
+#
 # --- HOW TO UPDATE THIS APP ---
-# Due to how some NAS systems (like my QNAP server) aggressively cache images,
-# simply clicking "Recreate" while using the 'latest' tag fails to pull the 
-# newest code. If you have this problem try a method below to bypass this issue:
+# METHOD A: NAS / GUI USERS (Clean Slate Update)
+# To prevent ghost bugs, you should perform a "Clean Reset".
+# Your Docker interface needs to perform the following 5 steps:
+#   1. Stop the current container.
+#   2. Delete/Remove the old container instance.
+#   3. Optionally prune the now unused image. (I always do this)
+#   4. Download/Pull the latest image from the registry.
+#   5. Re-create/Start the container using your existing settings.
 #
-# METHOD A: IF NEEDED FOR NAS/GUI USERS (Version Tag Method)
-# 1. Check the GitHub Releases page for the newest version number (e.g., :v4).
-# 2. Change the word 'latest' on the image line below to that exact tag (e.g., :v4).
-# 3. Click 'Recreate' or 'Update' in your Docker interface.
-# 4. I'll also include a new YML for each release that will be correctly tagged.
+# Docke specific UI's all have simple options/buttons for this:
+# - QNAP Container Station: Click "Recreate" 
+# - Portainer: ??
+# - Synology: ??
 #
-# METHOD B: COMMAND LINE / LINUX USERS
-# Set the tag as 'latest'. Navigate to the folder containing this file and run:
-# 1. docker compose pull
-# 2. docker compose up -d
-# 3. docker image prune -f
-# ==============================================================================
+# METHOD B: COMMAND LINE / LINUX USERS (Clean Slate Update)
+# Navigate to the folder containing this file and run the following in order:
+#
+# 1. docker compose down
+# 2. docker compose pull
+# 3. docker compose up -d
+# 4. docker image prune -f
+# ================================================================================
 
 services:
   bose-hybrid:
-    # Default is normally 'latest' for fresh installs. However, to force
-    # an update on your NAS change it to the aspecific version (e.g., :v4)
-    # Current version tag below is correct for theis release: v3
-    image: ghcr.io/tjgigs/bose-soundtouch-hybrid-2026:v3
+    # 1. Wir nutzen nicht das fertige Image, sondern bauen lokal
+    build: . 
+    # image: ghcr.io/tjgigs/bose-soundtouch-hybrid-2026:v3 (auskommentiert)
     
     container_name: bose-soundtouch-hybrid
-    network_mode: "host"
-    
-    volumes:
-      # [!] USER ACTION REQUIRED: 
-      # Change ONLY the path to the LEFT of '/bose-soundtouch-hybrid' 
-      # to match your specific NAS storage structure.
-      - /share/Container/bose-soundtouch-hybrid:/app/config
-      # - /share/Container/bose-soundtouch-hybrid/logs:/app/logs
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - NODE_ENV=production
+      - TRUST_PROXY=${TRUST_PROXY:-false} 
       
+      # ==========================================================
+      # TIMEZONE SETTING (REQUIRED FOR ACCURATE LOGS)
+      # Find your exact timezone format here: https://nodatime.org/TimeZones
+      # Example: America/New_York, Europe/London, Australia/Sydney
+      # ==========================================================
+      - TZ=America/Los_Angeles  # <-- Change this to your local timezone
+    # Unter Windows funktioniert network_mode: "host" oft nicht so gut wie auf Linux/NAS.
+    # Falls du die Seite im Browser nicht erreichst, müsstest du stattdessen Ports nutzen:
+    ports:
+      - "3000:3000" 
+
+    volumes:
+          # 1. LIVE-EDITING (Dein Front-End)
+          # Wir mappen nur den public-Ordner, damit dein CSS/HTML sofort aktualisiert wird
+          - ./public:/app/public
+
+          # 2. NUTZERDATEN (Der "spezielle Ordner")
+          # Wir erstellen lokal einen Ordner 'config-data', damit dein Projektordner sauber bleibt
+          - C:\docker\data\bose-soundtouch-hybrid:/app/config
+
+          # System-relevante Mounts (beibehalten)
+          - /var/run/docker.sock:/var/run/docker.sock
+
     restart: unless-stopped

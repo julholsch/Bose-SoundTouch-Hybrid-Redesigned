@@ -1,0 +1,13 @@
+services:
+  music-assistant-server:
+    image: ghcr.io/music-assistant/server:latest
+    container_name: music-assistant-server
+    restart: unless-stopped
+    network_mode: host                       # <--- Host Mode (Fixes the IP Address)
+    volumes:
+      - /share/Multimedia/mass_data:/data    # <--- Keeps your Data safe
+      - /share/Multimedia/Music:/music
+    environment:
+      - TZ=America/Los_Angeles
+      - LOG_LEVEL=INFO     
+ 

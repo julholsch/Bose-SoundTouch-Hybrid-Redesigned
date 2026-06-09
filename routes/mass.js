@@ -157,7 +157,7 @@ async function clearQueue(target) {
 
 // Resolves a target (IP or ID) into a full Player Object (ID, IP, Name).
 // checks local cache first; if missing, queries Music Assistant API.
-async function resolvePlayer(target, maxRetries = 10) {
+async function resolvePlayer(target, maxRetries = 8) {
     if (PLAYER_ID_CACHE[target]) {
         const id = PLAYER_ID_CACHE[target];
         return { id: id, ip: target, name: PLAYER_NAME_CACHE[id] || "Unknown Speaker" };
@@ -200,6 +200,9 @@ async function resolvePlayer(target, maxRetries = 10) {
                         } else {
                             console.error(`[MASS] 🚨 MA permanently lost DLNA connection to ${target}. Marking MA Unhealthy!`);
                             isMassHealthy = false; // Trigger the red UI banner!
+							// 🌟 NEW: Extract the real IP from the MA device info
+							const pingIp = match.device_info?.ip_address || target;
+							playHealthWarning(pingIp);
                             break; // Abort
                         }
                     }
@@ -227,6 +230,10 @@ async function resolvePlayer(target, maxRetries = 10) {
                         console.error(`\n[MASS] 🚨 CRITICAL: MASS completely dropped ${target} from its registry!`);
                         console.error(`[MASS] 🚨 Cause: The DLNA socket died. Marking MASS Unhealthy and triggering UI Banner.\n`);
                         isMassHealthy = false; // Trigger the red UI banner!
+						// 🌟 Extract the real IP from the MA device info
+						const pingIp = match.device_info?.ip_address || target;
+						playHealthWarning(pingIp);
+						
                     }
                 }
             } catch (e) {
@@ -480,6 +487,7 @@ async function sendWithRetry(playerId, playerIp, command, args, options = {}) {
                 console.error(`[MASS] 🚫 Cause: Invalid Media (Empty/Dead Stream) OR a Dropped DLNA Socket.`);
                 console.error(`[MASS] 🚨 Marking MASS Unhealthy and triggering UI Banner.\n`);
                 isMassHealthy = false; // ✅ THIS TRIGGERS THE UI BANNER!
+				playHealthWarning(playerIp); 
                 return false; 
             }
             
@@ -535,6 +543,7 @@ async function sendWithRetry(playerId, playerIp, command, args, options = {}) {
     if (lastStatus === 500) {
         console.error(`\n🚨 MASS DLNA SOCKET DEATH DETECTED! Unrecoverable 500 Error on ${command}`);
         isMassHealthy = false; 
+		playHealthWarning(playerIp);
     }
     return false;
 }
@@ -547,7 +556,98 @@ async function executeCommand(target, command, options = {}) {
     return await sendWithRetry(id, ip, command, { queue_id: id }, options);
 }
 
+
+// Replace your existing sendAdminCommand in mass.js
+async function sendAdminCommand(command, args = {}) {
+    const token = await getToken();
+    if (!token) throw new Error("MASS Auth token unavailable");
+    
+    const res = await client.post(`${BASE_URL}`, { 
+        command: command, args: args, message_id: Date.now() 
+    }, { headers: { 'Authorization': `Bearer ${token}` } });
+
+    // 🚨 THE FIX: Catch MA JSON-RPC errors hiding inside HTTP 200 OK responses
+    if (res.data && res.data.error) {
+        throw new Error(res.data.error.message || JSON.stringify(res.data.error));
+    }
+    return res.data;
+}
+
+// =======================================================================
+// SECTION: HEALTH WARNING (AUDIO BEEP)
+// =======================================================================
+async function playHealthWarning(speakerIp) {
+    if (!speakerIp) return;
+    
+    // We use standard http:// (no 's') and LOCAL_INTERNET_RADIO.
+    // This tricks the Bose API into playing a raw .mp3 file from the web.
+    const xmlPayload = `
+        <ContentItem source="LOCAL_INTERNET_RADIO" location="http://www.soundjay.com/buttons/sounds/beep-01a.mp3" isPresetable="false">
+            <itemName>System Alert</itemName>
+        </ContentItem>
+    `;
+
+    try {
+        console.log(`[Alert] ⚠️ Sending beep warning to ${speakerIp}...`);
+        await axios.post(`http://${speakerIp}:${BOSE_PORT}/select`, xmlPayload, {
+            headers: { 'Content-Type': 'application/xml' },
+            timeout: 3000
+        });
+    } catch (err) {
+        console.error(`[Alert] ❌ Failed to play warning on ${speakerIp}`);
+    }
+}
+// =======================================================================
+// SECTION: NETWORK RECOVERY & KEEP-ALIVE (DLNA & AIRPLAY)
+// =======================================================================
+async function forceRescan(aggressive = false, targetProvider = 'dlna') {
+    try {
+        if (aggressive) {
+            console.log(`[MASS] 🚨 Aggressive Recovery: Reloading the ${targetProvider.toUpperCase()} provider...`);
+            await sendAdminCommand('config/providers/reload', { instance_id: targetProvider });
+			// ==============================================================
+            // 🧹 NEW: FLUSH THE RAM CACHES
+            // Because the provider reloaded, MASS generated new Player IDs.
+            // We must wipe our memory so we are forced to fetch the new ones!
+            // ==============================================================
+            for (const key in PLAYER_ID_CACHE) delete PLAYER_ID_CACHE[key];
+            for (const key in PLAYER_IP_CACHE) delete PLAYER_IP_CACHE[key];
+            for (const key in PLAYER_NAME_CACHE) delete PLAYER_NAME_CACHE[key];			
+            // Give the provider 1.5 seconds to boot up
+            await new Promise(r => setTimeout(r, 1500));
+            return true;
+        }
+
+        console.log(`[MASS] 🔄 Sending Soft Rescan (players/all) ping to Music Assistant...`);
+        await sendAdminCommand('players/all', {});
+        return true;
+        
+    } catch (err) {
+        // catches JSON errors from wrapper
+        console.error(`[MASS] ❌ Failed to send rescan command: ${err.response?.data || err.message}`);
+        return false;
+    }
+}
 // =======================================================================
 // SECTION 7: EXPORTS
 // =======================================================================
-module.exports = {play,playMedia,stop,next,previous,pause,clearQueue,getRawMetadata,getMetadata,getToken,BASE_URL,setPresetMemory,getPresetMemory,isRecovering,getHealth,resetHealth};
+module.exports = {
+    play,
+    playMedia,
+    stop,
+    next,
+    previous,
+    pause,
+    clearQueue,
+    getRawMetadata,
+    getMetadata,
+    getToken,
+    BASE_URL,
+    setPresetMemory,
+    getPresetMemory,
+    isRecovering,
+    getHealth,
+    resetHealth,
+    playHealthWarning, 
+    forceRescan      
+};
