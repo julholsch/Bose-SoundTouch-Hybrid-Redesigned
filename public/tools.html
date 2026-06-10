@@ -30,28 +30,36 @@
         </div>
     </header>
     <main class="tools">
-		<div class="badge-wrapper">
-			<div class="app-version-wrapper">
-				<div class="badge-pill">
-					<img src="images/hybrid_icon.png" alt="App">
-					<span id="badge-app-text">App ?</span> 
+		
+		<div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
+			<div class="card-grid">
+				<div class="inner-panel" >
+					<h3 class="inner-panel-heading">📖 Guides and Help</h3>
+					<div class="theme-and-guides">
+						<button class="btn-help" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
+						<button class="btn-help" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
+					</div>
 				</div>
-				<div class="badge-pill">
-					<img src="images/ma_icon.png" alt="MASS">
-					<span id="badge-mass-text">MASS ?</span> 
+				<div class="inner-panel" >
+					<h3 class="inner-panel-heading">ℹ️ System Inforamtion</h3>
+					<div class="badge-wrapper">
+						<div class="app-version-wrapper">
+							<div class="badge-pill">
+								<img src="images/hybrid_icon.png" alt="App">
+								<span id="badge-app-text">App ?</span> 
+							</div>
+							<div class="badge-pill">
+								<img src="images/ma_icon.png" alt="MASS">
+								<span id="badge-mass-text">MASS ?</span> 
+							</div>
+						</div>
+						<div id="tz-display" class="badge-pill">
+							🕒 TZ: Loading...
+						</div>
+					</div>
 				</div>
-			</div>
-			<div id="tz-display" class="badge-pill">
-				🕒 TZ: Loading...
-			</div>
-		</div>
 
-        <div class="theme-and-guides tool-cards card" style="--card-border-accent-clr: var(--accent);">
-            <h3 class="card-heading">📖 Guides and Help</h3>
-            <div class="theme-and-guides">
-                <button class="btn-help" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
-                <button class="btn-help" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
-            </div>
+			</div>
         </div>
 
         <div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
