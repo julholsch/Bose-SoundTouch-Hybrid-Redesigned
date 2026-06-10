@@ -15,25 +15,29 @@
 <body>
 
 <div class="container">
-  <div class="global-nav">
-	<div class="global-nav-img">
-		<img src="images/hybrid_icon.png" alt="Logo">
-		
-	</div>
-    
-	<div class="nav-center-group">
-        <div class="global-link active" onmousedown="window.location.href='control.html'">Remote Control</div>
-        <div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
-        <div class="global-link" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
-        <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
-    </div>
 
-    <div>
-        <button class="btn-all-off" onclick="triggerGlobalAllOff()">
-            <span style="color: var(--danger); font-size: 1.1em;"><i class="icon-power"></i></span> All Off
-        </button>
-    </div>
-  </div>
+    <header id="tools-header">
+        <div id="app-title" class="app-header">
+            <div class="global-nav-img">
+                <img src="images/hybrid_icon.png" alt="Logo">
+                Bose SoundTouch Hybrid
+            </div>
+            <div>
+                <button class="btn-all-off" onclick="triggerGlobalAllOff()">
+                    <span style="color: var(--danger); font-size: 1.1em;"><i class="icon-power"></i></span> All Off
+                </button>
+            </div>
+        </div>
+
+        <div class="app-header nav-header">
+            <div class="nav-center-group">
+                <div class="global-link active" onmousedown="window.location.href='control.html'">Remote Control</div>
+                <div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
+                <div class="global-link" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
+                <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
+            </div>
+        </div>
+    </header>
 
   <div id="app" class="speaker-grid">Loading Speakers...</div>
 </div>

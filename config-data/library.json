@@ -1,14 +1,74 @@
 [
   {
-    "uuid": "b93c3f98",
-    "slot": 4,
+    "uuid": "2d7e6b39",
+    "slot": 1,
+    "speakerIp": "192.168.178.32",
+    "name": "Blep",
+    "subtitle": "Local NAS • By Filesystem (local disk)",
+    "uri": "library://playlist/138",
+    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fplaylist%2F138",
+    "type": "playlist",
+    "provider": "filesystem_local",
+    "settings": {
+      "shuffle": true,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "420e081b",
+    "slot": 0,
     "speakerIp": "",
-    "name": "KJAZZ 88.1",
-    "subtitle": "radio • Tunein",
-    "uri": "tunein--aicmaVtc://radio/s37062",
-    "image": "http://cdn-profiles.tunein.com/s37062/images/logoq.jpg?t=1",
+    "name": "The New PONY Mix - 1 - 17.Feb.26",
+    "subtitle": "Playlist • Local NAS",
+    "uri": "library://playlist/12",
+    "image": "https://mosaic.scdn.co/640/ab67616d00001e02593420fd76c4df7d350b2cbaab67616d00001e02989497a29e158950164d22c9ab67616d00001e02a0b65964212fc1fb1c6dc6daab67616d00001e02a28c860a9a4a24c6481eb133",
+    "type": "playlist",
+    "provider": "library",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "3a20c24a",
+    "slot": 0,
+    "speakerIp": "",
+    "name": "The New PONY+ Mix - 2 - 24.April.26",
+    "subtitle": "Playlist • Local NAS",
+    "uri": "library://playlist/9",
+    "image": "https://mosaic.scdn.co/640/ab67616d00001e02180a901af45dd1c4f0e5b1aaab67616d00001e02593420fd76c4df7d350b2cbaab67616d00001e02767443b437c070aaf0951615ab67616d00001e02e3d06241d8345a4454719033",
+    "type": "playlist",
+    "provider": "library",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "ced875b8",
+    "slot": 2,
+    "speakerIp": "",
+    "name": "The New PONY+ Mix - 2 - 24.April.26",
+    "subtitle": "Playlist • Local NAS",
+    "uri": "library://playlist/9",
+    "image": "https://mosaic.scdn.co/640/ab67616d00001e02180a901af45dd1c4f0e5b1aaab67616d00001e02593420fd76c4df7d350b2cbaab67616d00001e02767443b437c070aaf0951615ab67616d00001e02e3d06241d8345a4454719033",
+    "type": "playlist",
+    "provider": "library",
+    "settings": {
+      "shuffle": true,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "c7a3d0ad",
+    "slot": 6,
+    "speakerIp": "",
+    "name": "PonyvilleFM - The original",
+    "subtitle": "Local NAS",
+    "uri": "library://radio/1",
+    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
     "type": "radio",
-    "provider": "tunein",
+    "provider": "builtin",
     "settings": {
       "shuffle": false,
       "repeat": "off"

@@ -59,7 +59,7 @@ services:
 
           # 2. NUTZERDATEN (Der "spezielle Ordner")
           # Wir erstellen lokal einen Ordner 'config-data', damit dein Projektordner sauber bleibt
-          - C:\docker\data\bose-soundtouch-hybrid:/app/config
+          - C:\docker\data\bose-soundtouch-hybrid\config-data:/app/config
 
           # System-relevante Mounts (beibehalten)
           - /var/run/docker.sock:/var/run/docker.sock

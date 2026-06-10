@@ -1,0 +1,16 @@
+{
+    "autoResumePreset": true,
+    "autoRestartMass": true,
+    "autoSyncVolume": false,
+    "mobileAutoSortSpeakers": true,
+    "scheduledSpeakerAudit": true,
+    "scheduledRestart": true,
+    "includeReboot": true,
+    "searchMenuOrder": [
+        "global",
+        "radio",
+        "nas",
+        "spotify"
+    ],
+    "bypassCloudEmulation": false
+}

@@ -14,59 +14,61 @@
 <body>
 
 <div class="container">
-    <div class="global-nav">
-        <div class="global-nav-img">
-            <img src="images/hybrid_icon.png" alt="Logo">
-            
+
+    <header id="tools-header">
+        <div id="app-title" class="app-header">
+            <div class="global-nav-img">
+                <img src="images/hybrid_icon.png" alt="Logo">
+                Bose SoundTouch Hybrid
+            </div>
+            <div class="nav-center-group">
+                <div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
+                <div class="global-link active" onmousedown="window.location.href='manager.html'">Library Manager</div>
+                <div class="global-link" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
+                <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
+            </div>
         </div>
-        
-        <div class="nav-center-group">
-            <div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
-            <div class="global-link active" onmousedown="window.location.href='manager.html'">Library Manager</div>
-            <div class="global-link" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
-            <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
-        </div>
-        
+    </header>
+
+    <h2 style="margin-bottom: 20px; font-size:1.4em; color:var(--title-color); display:flex; align-items:center; gap:12px; justify-content:center;">
+        SoundTouch Library 
+        <span style="font-size:0.6em; color:#888; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">via</span> 
+        <img src="images/ma_logo.png" style="height:28px; width:auto;" alt="MA">
+    </h2>
+
+    <div class="top-bar">
         <div class="speaker-selector-container">
             <span class="speaker-label" id="play-on-label">Play On:</span>
             <select id="global-speaker" onchange="handleSpeakerChange()">
                 <option value="">Loading...</option>
             </select>
         </div>
-    </div>
-
-  <div class="top-bar">
-	<h2 style="margin:0; font-size:1.4em; color:var(--title-color); display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;">
-        SoundTouch Library 
-        <span style="font-size:0.6em; color:#888; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">via</span> 
-        <img src="images/ma_logo.png" style="height:28px; width:auto;" alt="MA">
-    </h2>
     
-    <div class="nav-tabs manager-main-tabs">
-      <button class="nav-btn active" data-tab="library" onclick="switchTab('library')">
-          My Library
-          <img src="images/bose_icon.png" style="height:14px; width:auto; opacity:0.8;">
-      </button>
-      
-      <button class="nav-btn" data-tab="nowplaying" onclick="switchTab('nowplaying')">
-          Now Playing
-          <span style="font-size:1.2em;">🎵</span>
-      </button>
+        <div class="nav-tabs manager-main-tabs">
+            <button class="nav-btn active" data-tab="library" onclick="switchTab('library')">
+                My Library
+                <img src="images/bose_icon.png">
+            </button>
+            
+            <button class="nav-btn" data-tab="nowplaying" onclick="switchTab('nowplaying')">
+                Now Playing
+                <span style="font-size:1.2em;">🎵</span>
+            </button>
 
-      <button class="nav-btn" data-tab="recents" onclick="switchTab('recents')">
-          Recents
-          <img src="images/hybrid_icon.png" style="height:14px; width:auto; opacity:0.8;">
-      </button>
-      
-      <button class="nav-btn" data-tab="search" onclick="switchTab('search')">
-          Search 
-          <img src="images/ma_icon.png" style="height:14px; width:auto; opacity:0.8;">
-      </button>
-	  
-	  <button class="nav-btn" data-tab="custom" onclick="switchTab('custom')">
-          Custom &#127760;
-      </button>
-    </div>
+            <button class="nav-btn" data-tab="recents" onclick="switchTab('recents')">
+                Recents
+                <img src="images/hybrid_icon.png">
+            </button>
+            
+            <button class="nav-btn" data-tab="search" onclick="switchTab('search')">
+                Search 
+                <img src="images/ma_icon.png">
+            </button>
+            
+            <button class="nav-btn" data-tab="custom" onclick="switchTab('custom')">
+                Custom &#127760;
+            </button>
+        </div>
   </div>
 
   <div id="tab-library">
