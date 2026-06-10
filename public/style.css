@@ -177,42 +177,37 @@ button,
 
 #tools-header {
   position: sticky;
-  top: -90px;
+  top: 10px;
+  padding: 0px 0 2px 0;
   z-index: 999;
 
   &::after {
     content: "";
     position: absolute;
-    top: 0;
+    top: -10px;
     left: 0;
     z-index: -1;
 
     width: 100%;
 
-    height: 110%;
+    height: calc(100% + 10px);
 
     backdrop-filter: blur(15px);
 
     /* Create the gradient fade */
     -webkit-mask-image: linear-gradient(
             to bottom, 
-            rgba(0, 0, 0, 1) 91%,
+            rgba(0, 0, 0, 1) 80%,
             rgba(0, 0, 0, 0) 100%
         );
     mask-image: linear-gradient(
             to bottom, 
-            rgba(0, 0, 0, 1) 91%,
+            rgba(0, 0, 0, 1) 80%,
             rgba(0, 0, 0, 0) 100%
         );
   }
 }
 
-.nav-header {
-  position: sticky;
-  top: 0;
-
-  justify-content: center;
-}
 
 .global-nav > div:first-child {
   color: var(--title-color) !important;
@@ -220,8 +215,9 @@ button,
 
 .global-nav-img {
   display: flex;
-
+  flex-direction: row;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 12px;
 
   font-size: 1.1em;
@@ -1653,7 +1649,6 @@ Uses Variables for Theme Support #admin-grid textarea {
     padding: 15px !important;
   }
 
-  .global-nav,
   .app-header {
     flex-direction: column;
     gap: 15px;
@@ -1662,6 +1657,16 @@ Uses Variables for Theme Support #admin-grid textarea {
     padding: 15px;
 
     text-align: center;
+    overflow: hidden;
+  }
+
+  .global-nav-img {
+    flex-direction: row;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+    white-space: wrap;
+    flex-wrap: wrap;
   }
 
   .nav-tabs,
@@ -1679,45 +1684,6 @@ Uses Variables for Theme Support #admin-grid textarea {
     font-size: 1.2em !important;
 
     text-align: center;
-  }
-
-  .app-header > div:first-child {
-    display: flex !important;
-
-    flex-direction: column !important;
-    gap: 15px;
-
-    width: 100%;
-  }
-
-  .app-header > div:last-child {
-    display: flex !important;
-
-    flex-direction: row !important;
-    justify-content: space-between;
-    gap: 10px;
-
-    width: 100%;
-  }
-
-  .app-header button.btn-help {
-    width: 48%;
-
-    padding: 10px;
-
-    margin-top: 5px;
-  }
-
-  .app-title,
-  .global-nav > div:first-child {
-    justify-content: center;
-
-    width: 100%;
-
-    margin-right: 0 !important;
-    font-size: 1.2em;
-
-    white-space: nowrap !important;
   }
 
   .nav-center-group,
@@ -2696,14 +2662,15 @@ input:disabled + label {
 
 .badge-wrapper {
   display: flex;
-
+  width: 170px;
   flex-direction: column;
   gap: 10px;
+
 }
 
 .app-version-wrapper {
   display: flex;
-
+  width: 100%;
   flex-direction: row;
   gap: 10px;
 }
@@ -2714,6 +2681,7 @@ input:disabled + label {
   justify-content: center;
   align-items: center;
   gap: 5px;
+  flex-grow: 1;
 
   padding: 3px 8px;
 

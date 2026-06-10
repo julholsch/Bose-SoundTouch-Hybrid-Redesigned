@@ -22,14 +22,6 @@
                 <img src="images/hybrid_icon.png" alt="Logo">
                 Bose SoundTouch Hybrid
             </div>
-            <div>
-                <button class="btn-all-off" onclick="triggerGlobalAllOff()">
-                    <span style="color: var(--danger); font-size: 1.1em;"><i class="icon-power"></i></span> All Off
-                </button>
-            </div>
-        </div>
-
-        <div class="app-header nav-header">
             <div class="nav-center-group">
                 <div class="global-link active" onmousedown="window.location.href='control.html'">Remote Control</div>
                 <div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
@@ -38,6 +30,11 @@
             </div>
         </div>
     </header>
+    <div>
+        <button class="btn-all-off" onclick="triggerGlobalAllOff()">
+            <span style="color: var(--danger); font-size: 1.1em;"><i class="icon-power"></i></span> All Off
+        </button>
+    </div>
 
   <div id="app" class="speaker-grid">Loading Speakers...</div>
 </div>
