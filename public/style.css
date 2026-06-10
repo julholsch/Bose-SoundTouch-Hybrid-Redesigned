@@ -178,8 +178,9 @@ button,
 #tools-header {
   position: sticky;
   top: 10px;
-  padding: 0px 0 2px 0;
   z-index: 999;
+
+  padding: 0px 0 2px 0;
 
   &::after {
     content: "";
@@ -208,16 +209,16 @@ button,
   }
 }
 
-
 .global-nav > div:first-child {
   color: var(--title-color) !important;
 }
 
 .global-nav-img {
   display: flex;
+
   flex-direction: row;
-  align-items: center;
   flex-wrap: nowrap;
+  align-items: center;
   gap: 12px;
 
   font-size: 1.1em;
@@ -329,15 +330,6 @@ button,
 
   flex-direction: row;
   gap: 10px;
-
-  div {
-    display: flex;
-
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    gap: 10px;
-  }
 }
 
 .inner-panel {
@@ -345,9 +337,10 @@ button,
 
   flex-direction: column;
   justify-content: space-between;
+  gap: 10px;
 
   padding: 15px;
-  gap: 10px;
+
   border: 1px solid var(--panel-border);
 
   border-radius: 6px;
@@ -357,6 +350,7 @@ button,
 
 .inner-panel-heading {
   display: flex;
+
   align-items: center;
 
   font-weight: bold;
@@ -486,6 +480,8 @@ button:active,
 
   border-radius: 6px;
   font-size: 0.85em;
+
+  font-weight: bold;
 
   color: var(--btn-text);
   background: var(--btn-bg);
@@ -1399,6 +1395,12 @@ h3 {
   width: 100%;
 }
 
+.card-heading-wrapper .log-chevron {
+  font-size: 1.2em;
+
+  color: var(--text-secondary);
+}
+
 .card-heading {
   margin: 0 0 5px 0;
 }
@@ -1423,6 +1425,11 @@ h3 {
   margin-bottom: 5px;
 
   text-align: left;
+}
+
+.card-header.toggable {
+  cursor: pointer;
+  user-select: none;
 }
 
 .sub-heading {
@@ -1531,11 +1538,32 @@ Uses Variables for Theme Support #admin-grid textarea {
   grid-template-columns: 2fr 1fr;
   gap: 15px;
 
-  margin-bottom: 15px;
+  margin: 15px 0;
+}
+
+.stream-grid label {
+  display: block;
+
+  margin-bottom: 5px;
+  font-size: 0.75em;
+
+  color: var(--text);
+
+  opacity: 0.8;
 }
 
 .stream-grid input {
+  box-sizing: border-box;
   width: 100%;
+
+  padding: 8px;
+
+  border: 1px solid #777;
+
+  border-radius: 4px;
+
+  color: var(--text);
+  background: var(--bg-color);
 }
 
 .stream-controls {
@@ -1651,6 +1679,8 @@ Uses Variables for Theme Support #admin-grid textarea {
   }
 
   .app-header {
+    overflow: hidden;
+
     flex-direction: column;
     gap: 15px;
 
@@ -1658,16 +1688,17 @@ Uses Variables for Theme Support #admin-grid textarea {
     padding: 15px;
 
     text-align: center;
-    overflow: hidden;
   }
 
   .global-nav-img {
     flex-direction: row;
-    gap: 15px;
-    justify-content: center;
-    width: 100%;
-    white-space: wrap;
     flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+
+    width: 100%;
+
+    white-space: wrap;
   }
 
   .nav-tabs,
@@ -2470,7 +2501,10 @@ input:disabled + label {
 .warning-box {
   padding: 8px 10px;
 
+  border: 1px solid var(--danger);
+
   border-left: 3px solid var(--danger);
+  border-radius: 12px;
   margin: 10px 0;
   font-size: 0.85em;
 
@@ -2663,17 +2697,19 @@ input:disabled + label {
 
 .badge-wrapper {
   display: flex;
+
+  flex-direction: row;
   justify-content: center;
   align-items: center;
-  flex-direction: row;
   gap: 10px;
 }
 
 .app-version-wrapper {
   display: flex;
+
   flex-direction: row;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 10px;
 }
 
@@ -2684,11 +2720,11 @@ input:disabled + label {
   align-items: center;
   gap: 5px;
 
-  padding: 3px 8px;
+  padding: 6px 12px;
 
   border: 1px solid var(--border);
 
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.85em;
 
   font-weight: bold;

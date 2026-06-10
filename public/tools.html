@@ -1,470 +1,478 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>System Tools</title>
-  <link rel="icon" type="image/png" href="images/hybrid_icon.png">
-  <link rel="stylesheet" href="style.css?v=26">
-  <link rel="manifest" href="manifest.json">
-  <script src="global_ui.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<title>System Tools</title>
+
+	<link rel="icon" type="image/png" href="images/hybrid_icon.png">
+	<!-- <link rel="stylesheet" href="style.css?v=26"> -->
+	<link rel="stylesheet" href="new-css/tools.css">
+	<link rel="manifest" href="manifest.json">
+
+	<script src="global_ui.js"></script>
 </head>
 <body>
 
-<div class="app-container">
+	<div class="app-container">
 
-    <header id="tools-header">
-        <div id="app-title" class="app-header">
-            <div class="global-nav-img">
-                <img src="images/hybrid_icon.png" alt="Logo">
-                Bose SoundTouch Hybrid
-            </div>
-			<div class="nav-center-group">
-				<div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
-				<div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
-				<div class="global-link" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
-				<div class="global-link active" onmousedown="window.location.href='tools.html'">System Tools</div>
-			</div>
-        </div>
-    </header>
-    <main class="tools">
-		
-		<div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
-			<div class="card-grid">
-				<div class="inner-panel" >
-					<h3 class="inner-panel-heading">📖 Guides and Help</h3>
-					<div class="theme-and-guides">
-						<button class="btn-help" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
-						<button class="btn-help" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
-					</div>
+		<header class="app-header">
+			<div class="header-inner-panel">
+				<div class="app-logo">
+					<img src="images/hybrid_icon.png" alt="Logo">
+					Bose SoundTouch Hybrid
 				</div>
-				<div class="inner-panel" >
-					<h3 class="inner-panel-heading">ℹ️ System Inforamtion</h3>
-					<div class="badge-wrapper">
-						<div class="app-version-wrapper">
-							<div class="badge-pill">
-								<img src="images/hybrid_icon.png" alt="App">
-								<span id="badge-app-text">App ?</span> 
-							</div>
-							<div class="badge-pill">
-								<img src="images/ma_icon.png" alt="MASS">
-								<span id="badge-mass-text">MASS ?</span> 
-							</div>
-						</div>
-						<div id="tz-display" class="badge-pill">
-							🕒 TZ: Loading...
+				<div class="global-nav-menu">
+					<div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
+					<div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
+					<div class="global-link" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
+					<div class="global-link active" onmousedown="window.location.href='tools.html'">System Tools</div>
+				</div>
+			</div>
+		</header>
+		<main class="tools">
+			
+			<div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
+				<div class="card-grid">
+					<div class="inner-panel" >
+						<h3 class="inner-panel-heading">📖 Guides and Help</h3>
+						<div class="theme-and-guides">
+							<button class="btn-help" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
+							<button class="btn-help" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
 						</div>
 					</div>
+					<div class="inner-panel" >
+						<h3 class="inner-panel-heading">ℹ️ System Inforamtion</h3>
+						<div class="badge-wrapper">
+							<div class="app-version-wrapper">
+								<div class="badge-pill">
+									<img src="images/hybrid_icon.png" alt="App">
+									<span id="badge-app-text">App ?</span> 
+								</div>
+								<div class="badge-pill">
+									<img src="images/ma_icon.png" alt="MASS">
+									<span id="badge-mass-text">MASS ?</span> 
+								</div>
+							</div>
+							<div id="tz-display" class="badge-pill">
+								🕒 TZ: Loading...
+							</div>
+							<div class="">
+								<button class="btn-help" onclick="toggleTheme()">🌓 Theme</button>
+							</div>
+						</div>
+					</div>
+
 				</div>
-
 			</div>
-        </div>
 
-        <div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
-			<div class="two-column-header">
+			<div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
+				<div class="two-column-header">
+					<div class="card-header">
+						<h3 class="card-heading">⚙️ Application Preferences</h3>
+						<span class="card-sub-heading">Configure UI layouts and background automation rules.</span>
+					</div>
+					
+				</div>
+			
+				<div class="card-grid">
+				
+					<div class="inner-panel" >
+						<div>
+							<div class="inner-panel-heading">Search Menu Layout</div>
+							<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
+							<div id="sortable-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+						</div>
+						<button class="primary" onclick="saveSearchOrder()" style="width: 100%; margin-top: 15px; background: #3498db; color: white; border: none;">💾 Save Layout Order</button>
+					</div>
+
+					<div class="inner-panel" >
+						<div>
+							<div class="inner-panel-heading">Background Automation</div>
+							<div class="inner-panel-sub-heading">Configure automated behaviors and sync rules.</div>
+							<div class="pref-grid">
+								<label class="pref-label"><input type="checkbox" id="pref_autoResume" class="pref-checkbox"> Auto-Resume Presets on Power On</label>
+								<label class="pref-label"><input type="checkbox" id="pref_autoRestart" class="pref-checkbox"> Auto-Reload DLNA & AirPlay on Connection Error</label>
+								<label class="pref-label"><input type="checkbox" id="pref_autoSync" class="pref-checkbox"> Auto-Sync Slave Volume on Grouping</label>
+								<label class="pref-label"><input type="checkbox" id="pref_mobileAutoSortSpeakers" class="pref-checkbox"> Auto-Sort Active Speakers (Mobile Only)</label>
+								<label class="pref-label"><input type="checkbox" id="pref_scheduledSpeakerAudit" class="pref-checkbox"> Enable 4:00 AM Speaker Audit</label>
+
+								<div>
+									<label class="pref-label">
+										<input type="checkbox" id="pref_scheduledRestart" class="pref-checkbox" onchange="handleScheduledRestartToggle()">
+										Enable 5:00 AM System Restart
+									</label>
+									<label class="pref-label pref-sub-label">
+										<input type="checkbox" id="pref_includeReboot" class="pref-checkbox" disabled> Include All Speaker Reboots
+									</label>						
+								</div>
+								<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta: (works so far... Needs no speaker config/inject/handskake!)</label>
+							</div>
+							<button class="btn" style="background: var(--accent); color: #000; font-weight: bold; width: 100%; margin-top: 15px; border: none;" onclick="savePreferences()">💾 Save Automation Rules</button>
+						</div>
+					</div>
+				</div>
+			</div> 
+
+			<div id="system-services" class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
 				<div class="card-header">
-					<h3 class="card-heading">⚙️ Application Preferences</h3>
-					<span class="sub-heading">Configure UI layouts and background automation rules.</span>
+					<h3 class="card-heading">⚙️ System Services</h3>
+					<div class="card-sub-heading">Manage container instances and hardware injections.</div>
 				</div>
-				<div class="">
-					<button class="btn-help" onclick="toggleTheme()">🌓 Theme</button>
+				
+				<div class="card-grid">
+					
+					<div class="inner-panel" >
+						<div>
+							<div class="inner-panel-heading">SoundTouch Hybrid Application</div>
+							<div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
+							
+							<div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+								<div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+									<div class="warning-box" style="flex: 1; min-width: 140px; padding: 10px; margin-bottom: 0;">
+										<label style="font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: bold; margin-bottom: 8px;">
+											<input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+											Force Pre-Flight NVRAM
+										</label>
+										<select id="forceSpeakerSelect" disabled style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #777; background: var(--bg-color); color: var(--text); font-size: 0.85em;">
+											<option value="all">All Speakers</option>
+										</select>
+									</div>
+
+									<div class="warning-box" style="flex: 1; min-width: 140px; padding: 10px; margin-bottom: 0;">
+										<label style="font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: bold; margin-bottom: 8px;">
+											<input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+											Force Speaker Reboot
+										</label>
+										<select id="forceRebootSelect" disabled style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #777; background: var(--bg-color); color: var(--text); font-size: 0.85em;">
+											<option value="all">All Speakers</option>
+										</select>
+									</div>
+								</div>
+
+								<button class="primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; font-weight: bold; padding: 10px; background: #3498db; color: white; cursor: pointer; border-radius: 4px;" onclick="restartHybrid(this)">
+									<img src="images/hybrid_icon.png" style="height: 16px; width: auto;" alt="Icon">
+									Restart SoundTouch Hybrid
+								</button>
+							</div>
+							
+							<div style="padding: 0 12px;">
+								<button class="primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; font-weight: bold; padding: 10px; background: #3498db; color: white; cursor: pointer; border-radius: 4px;" onclick="triggerManualAudit()">
+									🔍 Run Speaker Audit
+								</button>
+							</div>
+						</div>
+					</div>
+							
+					<div class="inner-panel" >
+						<div>
+							<div class="inner-panel-heading">Music Assistant Server</div>
+							<div class="inner-panel-sub-heading">
+								Send a non-destructive network ping, aggressively reload protocols (temporarily stops music), or restart the container.
+							</div>
+						</div>
+						
+						<div style="display: flex; flex-direction: column; gap: 8px;">
+							<button class="btn" onclick="rescanMass(this)" style="background: #f39c12; color: white; border: none; font-weight: bold; width: 100%; padding: 10px;">
+								🔄 Soft Rescan (Keep-Alive)
+							</button>
+							
+							<button class="btn" onclick="aggressiveReloadMass(this)" style="background: #d35400; color: white; border: none; font-weight: bold; width: 100%; padding: 10px;">
+								🚨 Aggressive Reload (DLNA & AirPlay)
+							</button>
+							
+							<button class="primary" onclick="restartMass(this)" style="background:#e74c3c; color:white; display:flex; align-items:center; justify-content:center; gap:8px; width: 100%; border: none; padding: 10px;">
+								<img src="images/ma_icon.png" style="height:16px; width:auto;" alt="MA"> Restart MASS Container
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
-        
-            <div class="card-grid">
-            
-                <div class="inner-panel" >
-                    <div>
-                        <div class="inner-panel-heading">Search Menu Layout</div>
-                        <div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
-                        <div id="sortable-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                    </div>
-                    <button class="primary" onclick="saveSearchOrder()" style="width: 100%; margin-top: 15px; background: #3498db; color: white; border: none;">💾 Save Layout Order</button>
-                </div>
 
-                <div class="inner-panel" >
-                    <div>
-                        <div class="inner-panel-heading">Background Automation</div>
-                        <div class="inner-panel-sub-heading">Configure automated behaviors and sync rules.</div>
-                        <div class="pref-grid">
-                            <label class="pref-label"><input type="checkbox" id="pref_autoResume" class="pref-checkbox"> Auto-Resume Presets on Power On</label>
-                            <label class="pref-label"><input type="checkbox" id="pref_autoRestart" class="pref-checkbox"> Auto-Reload DLNA & AirPlay on Connection Error</label>
-                            <label class="pref-label"><input type="checkbox" id="pref_autoSync" class="pref-checkbox"> Auto-Sync Slave Volume on Grouping</label>
-                            <label class="pref-label"><input type="checkbox" id="pref_mobileAutoSortSpeakers" class="pref-checkbox"> Auto-Sort Active Speakers (Mobile Only)</label>
-                            <label class="pref-label"><input type="checkbox" id="pref_scheduledSpeakerAudit" class="pref-checkbox"> Enable 4:00 AM Speaker Audit</label>
-
-                            <div>
-                                <label class="pref-label">
-                                    <input type="checkbox" id="pref_scheduledRestart" class="pref-checkbox" onchange="handleScheduledRestartToggle()">
-                                    Enable 5:00 AM System Restart
-                                </label>
-                                <label class="pref-label pref-sub-label">
-                                    <input type="checkbox" id="pref_includeReboot" class="pref-checkbox" disabled> Include All Speaker Reboots
-                                </label>						
-                            </div>
-                            <label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta: (works so far... Needs no speaker config/inject/handskake!)</label>
-                        </div>
-                        <button class="btn" style="background: var(--accent); color: #000; font-weight: bold; width: 100%; margin-top: 15px; border: none;" onclick="savePreferences()">💾 Save Automation Rules</button>
-                    </div>
-                </div>
-            </div>
-        </div> 
-
-        <div class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
-			<div class="card-header">
-				<h3 class="card-heading">⚙️ System Services</h3>
-				<div class="sub-heading">Manage container instances and hardware injections.</div>
+			<div class="tool-cards card" style="--card-border-accent-clr: #e74c3c;">
+				<div class="card-header toggable"  onclick="toggleLogWindow()">
+					<div class="card-heading-wrapper">
+						<h3 class="card-heading">🖥️ Live Server Logs</h3>
+						<span id="log-chevron">▼</span>
+					</div>
+					<div class="card-sub-heading">Captures the last 350 console events from the Node.js server.</div>
+				</div>
+				
+				<div id="log-container" style="display: none; margin-top: 15px;">
+					<textarea id="live-log-viewer" class="console-preview" style="height: 300px;" readonly></textarea>
+					
+					<div style="display: flex; gap: 15px; margin-top: 15px; align-items: center; flex-wrap: wrap;">
+						<button class="btn" onclick="fetchLogs()">🔄 Refresh</button>
+						
+						<label style="font-size: 0.9em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+							<input type="checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()" style="width: auto;"> 
+							Auto-Update
+						</label>
+						
+						<label style="font-size: 0.9em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+							<input type="checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()" style="width: auto;"> 
+							Verbose Debug
+						</label>
+						
+						<button class="btn primary" style="background:#3498db; color:white; border:none; margin-left: auto;" onclick="downloadLogs()">💾 Download .txt</button>
+					</div>
+				</div>
 			</div>
-            
-            <div class="card-grid">
-                
-                <div class="inner-panel" >
-                    <div>
-                        <div class="inner-panel-heading">SoundTouch Hybrid Application</div>
-                        <div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
-                        
-                        <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                            <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
-                                <div class="warning-box" style="flex: 1; min-width: 140px; padding: 10px; margin-bottom: 0;">
-                                    <label style="font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: bold; margin-bottom: 8px;">
-                                        <input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
-                                        Force Pre-Flight NVRAM
-                                    </label>
-                                    <select id="forceSpeakerSelect" disabled style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #777; background: var(--bg-color); color: var(--text); font-size: 0.85em;">
-                                        <option value="all">All Speakers</option>
-                                    </select>
-                                </div>
-
-                                <div class="warning-box" style="flex: 1; min-width: 140px; padding: 10px; margin-bottom: 0;">
-                                    <label style="font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: bold; margin-bottom: 8px;">
-                                        <input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
-                                        Force Speaker Reboot
-                                    </label>
-                                    <select id="forceRebootSelect" disabled style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #777; background: var(--bg-color); color: var(--text); font-size: 0.85em;">
-                                        <option value="all">All Speakers</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button class="primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; font-weight: bold; padding: 10px; background: #3498db; color: white; cursor: pointer; border-radius: 4px;" onclick="restartHybrid(this)">
-                                <img src="images/hybrid_icon.png" style="height: 16px; width: auto;" alt="Icon">
-                                Restart SoundTouch Hybrid
-                            </button>
-                        </div>
-                        
-                        <div style="padding: 0 12px;">
-                            <button class="primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; font-weight: bold; padding: 10px; background: #3498db; color: white; cursor: pointer; border-radius: 4px;" onclick="triggerManualAudit()">
-                                🔍 Run Speaker Audit
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                        
-                <div class="inner-panel" >
-                    <div>
-                        <div class="inner-panel-heading">Music Assistant Server</div>
-                        <div class="inner-panel-sub-heading">
-                            Send a non-destructive network ping, aggressively reload protocols (temporarily stops music), or restart the container.
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <button class="btn" onclick="rescanMass(this)" style="background: #f39c12; color: white; border: none; font-weight: bold; width: 100%; padding: 10px;">
-                            🔄 Soft Rescan (Keep-Alive)
-                        </button>
-                        
-                        <button class="btn" onclick="aggressiveReloadMass(this)" style="background: #d35400; color: white; border: none; font-weight: bold; width: 100%; padding: 10px;">
-                            🚨 Aggressive Reload (DLNA & AirPlay)
-                        </button>
-                        
-                        <button class="primary" onclick="restartMass(this)" style="background:#e74c3c; color:white; display:flex; align-items:center; justify-content:center; gap:8px; width: 100%; border: none; padding: 10px;">
-                            <img src="images/ma_icon.png" style="height:16px; width:auto;" alt="MA"> Restart MASS Container
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tool-cards card" style="--card-border-accent-clr: #e74c3c;">
-            <div class="card-header" style="cursor: pointer; user-select: none;" onclick="toggleLogWindow()">
-				<div class="card-heading-wrapper">
-					<h3 class="card-heading">🖥️ Live Server Logs</h3>
-					<span id="log-chevron" style="color: var(--text-secondary); font-size: 1.2em;">▼</span>
+							
+			<div class="tool-cards card" style="--card-border-accent-clr: #f39c12;">
+				<div class="card-header"  onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
+					<div class="card-heading-wrapper">
+						<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
+						<span id="log-chevron">▼</span>
+					</div>
+					<div class="warning-box">
+						Beta: Need Testers I only have 1 ST10 so need testers to provide feedback on what works/broken/behaviors/downstream impacts et.
+					</div>
+					<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
 				</div>
-				<div class="sub-heading">Captures the last 350 console events from the Node.js server.</div>
-            </div>
-            
-            <div id="log-container" style="display: none; margin-top: 15px;">
-                <textarea id="live-log-viewer" class="console-preview" style="height: 300px;" readonly></textarea>
-                
-                <div style="display: flex; gap: 15px; margin-top: 15px; align-items: center; flex-wrap: wrap;">
-                    <button class="btn" onclick="fetchLogs()">🔄 Refresh</button>
-                    
-                    <label style="font-size: 0.9em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                        <input type="checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()" style="width: auto;"> 
-                        Auto-Update
-                    </label>
-                    
-                    <label style="font-size: 0.9em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                        <input type="checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()" style="width: auto;"> 
-                        Verbose Debug
-                    </label>
-                    
-                    <button class="btn primary" style="background:#3498db; color:white; border:none; margin-left: auto;" onclick="downloadLogs()">💾 Download .txt</button>
-                </div>
-            </div>
-        </div>
-                        
-        <div class="tool-cards card" style="--card-border-accent-clr: #f39c12;">
-            <div class="card-header" style="cursor: pointer; user-select: none;" onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
-                <div class="card-heading-wrapper">
-					<h3 class="card-heading">🎧 ST10 Stereo Pairing (Beta: Need Testers I only have 1 ST10 so need testers to provide feedback on what works/broken/behaviors/downstream impacts et)</h3>
-					<span id="log-chevron" style="color: var(--text-secondary); font-size: 1.2em;">▼</span>
+				
+				<div id="stereoPairingCollapse" style="display: none; margin-top: 15px;">
+					<h6 style="font-weight: bold; color: var(--text); margin-bottom: 10px;">Active Combinations</h6>
+					<ul id="activeStereoPairsList" style="list-style: none; padding: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+						<li style="padding: 10px; background: var(--input-bg); color: var(--text-secondary); font-style: italic;">No active pairings found.</li>
+					</ul>
+					<span id="stereoPairCount" style="background: var(--input-bg); padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.9em; border: 1px solid var(--border);">0 Pairs</span>
+
+					<hr style="border-color: var(--border); margin: 20px 0;">
+
+					<h6 style="font-weight: bold; color: var(--text); margin-bottom: 10px;">Create New Pair</h6>
+					<div style="display: flex; align-items: flex-end; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+						<div style="flex-grow: 1; min-width: 150px;">
+							<label for="leftSpeakerSelect" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">LEFT CHANNEL</label>
+							<select id="leftSpeakerSelect" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+								<option value="" disabled selected>Select ST10...</option>
+							</select>
+						</div>
+						<div style="flex-grow: 1; min-width: 150px;">
+							<label for="rightSpeakerSelect" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">RIGHT CHANNEL</label>
+							<select id="rightSpeakerSelect" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+								<option value="" disabled selected>Select ST10...</option>
+							</select>
+						</div>
+						<div style="flex-grow: 1; min-width: 150px;">
+							<label for="pairNameInput" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">PAIR NAME</label>
+							<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+						</div>
+						<div>
+							<button id="saveStereoPairBtn" class="btn primary" style="white-space: nowrap; background:#f39c12; border:none; margin: 0; padding: 8px 15px;">
+								💾 Save Pair
+							</button>
+						</div>
+					</div>
 				</div>
-				<div class="sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
-            </div>
-            
-            <div id="stereoPairingCollapse" style="display: none; margin-top: 15px;">
-				<h6 style="font-weight: bold; color: var(--text); margin-bottom: 10px;">Active Combinations</h6>
-                <ul id="activeStereoPairsList" style="list-style: none; padding: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
-					<li style="padding: 10px; background: var(--input-bg); color: var(--text-secondary); font-style: italic;">No active pairings found.</li>
-                </ul>
-				<span id="stereoPairCount" style="background: var(--input-bg); padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.9em; border: 1px solid var(--border);">0 Pairs</span>
-
-                <hr style="border-color: var(--border); margin: 20px 0;">
-
-                <h6 style="font-weight: bold; color: var(--text); margin-bottom: 10px;">Create New Pair</h6>
-                <div style="display: flex; align-items: flex-end; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                    <div style="flex-grow: 1; min-width: 150px;">
-                        <label for="leftSpeakerSelect" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">LEFT CHANNEL</label>
-                        <select id="leftSpeakerSelect" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
-                            <option value="" disabled selected>Select ST10...</option>
-                        </select>
-                    </div>
-                    <div style="flex-grow: 1; min-width: 150px;">
-                        <label for="rightSpeakerSelect" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">RIGHT CHANNEL</label>
-                        <select id="rightSpeakerSelect" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
-                            <option value="" disabled selected>Select ST10...</option>
-                        </select>
-                    </div>
-                    <div style="flex-grow: 1; min-width: 150px;">
-                        <label for="pairNameInput" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">PAIR NAME</label>
-                        <input type="text" id="pairNameInput" placeholder="e.g. Office Stereo" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
-                    </div>
-                    <div>
-                        <button id="saveStereoPairBtn" class="btn primary" style="white-space: nowrap; background:#f39c12; border:none; margin: 0; padding: 8px 15px;">
-                            💾 Save Pair
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+			</div>
 
 
-        <div class="tool-cards card" style="--card-border-accent-clr: #1abc9c;">
-            <div class="card-header" style="cursor: pointer; user-select: none;" onclick="toggleWifiWindow()">
-				<div class="card-heading-wrapper">
-					<h3 class="card-heading">📶 Wi-Fi Provisioning</h3>
-					<span id="wifi-chevron" style="color: var(--text-secondary); font-size: 1.2em;">▼</span>
+			<div class="tool-cards card" style="--card-border-accent-clr: #1abc9c;">
+				<div class="card-header"  onclick="toggleWifiWindow()">
+					<div class="card-heading-wrapper">
+						<h3 class="card-heading">📶 Wi-Fi Provisioning</h3>
+						<span id="wifi-chevron">▼</span>
+					</div>
+					<div class="card-sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
 				</div>
-				<div class="sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
-            </div>
-            
-            <div id="wifi-container" style="display: none; margin-top: 15px;">
-                    <div class="warning-box">
-                        <strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
-                    </div>
+				
+				<div id="wifi-container" style="display: none; margin-top: 15px;">
+						<div class="warning-box">
+							<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
+						</div>
 
-                <div class="stream-grid" style="margin-top:15px;">
-                    <div>
-                        <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">NETWORK NAME (SSID)</label>
-                        <input type="text" id="wifi-ssid" placeholder="My Home Wi-Fi" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">PASSWORD</label>
-                        <input type="text" id="wifi-pass" placeholder="My Wi-Fi Password" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
-                    </div>
-                </div>
-            
-                <div class="stream-controls" style="margin-top:15px;">
-                    <div style="display:flex; align-items:center; gap:10px; flex-grow: 1;">
-                        <label style="color:var(--text); font-size:0.9em; white-space: nowrap;">Target:</label>
-                        <select id="wifi-target" style="padding:8px; flex-grow:1; min-width:200px;"></select>
-                    </div>
-                    <button class="primary" onclick="pushWifi(this)" style="flex-shrink: 0; min-width:140px; background:#1abc9c; color:white;">📡 PUSH WI-FI</button>
-                </div>
-            </div>
-        </div>
-    </main>
+					<div class="stream-grid">
+						<div>
+							<label>NETWORK NAME (SSID)</label>
+							<input type="text" id="wifi-ssid" placeholder="My Home Wi-Fi">
+						</div>
+						<div>
+							<label>PASSWORD</label>
+							<input type="text" id="wifi-pass" placeholder="My Wi-Fi Password">
+						</div>
+					</div>
+				
+					<div class="stream-controls" style="margin-top:15px;">
+						<div style="display:flex; align-items:center; gap:10px; flex-grow: 1;">
+							<label style="color:var(--text); font-size:0.9em; white-space: nowrap;">Target:</label>
+							<select id="wifi-target" style="padding:8px; flex-grow:1; min-width:200px;"></select>
+						</div>
+						<button class="primary" onclick="pushWifi(this)" style="flex-shrink: 0; min-width:140px; background:#1abc9c; color:white;">📡 PUSH WI-FI</button>
+					</div>
+				</div>
+			</div>
+		</main>
 
-</div>
+	</div>
 
 
-<div id="doc-modal" class="modal">
-    <div class="modal-content" style="width: 400px;">
-        <div class="modal-header">
-            <h2 style="margin:0;">Reference Documents</h2>
-            <button onclick="document.getElementById('doc-modal').style.display='none'" style="border:none; background:none; font-size:1.5em; color:var(--text); opacity:0.6; cursor:pointer;">&times;</button>
-        </div>
-        <div class="step-box">
-            <div class="step-text">
-                <a href="#" onclick="openDoc('docs/SoundTouchHybridDocumentation.pdf'); return false;" style="display:block; margin-bottom:15px; font-size:1.1em;">📄 Bose SoundTouch Hybrid Documentation</a>
-                <a href="https://www.youtube.com/watch?v=R6mbTRBEBYA" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 Demo Video</a>
-                <a href="https://www.youtube.com/watch?v=3BhAkpsZjBI" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 V2 Enhancements Demo Video</a>
-                <a href="https://www.youtube.com/watch?v=ERsoMmyOpEU" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 V3 Enhancements Demo Video</a>
-                <a href="https://github.com/TJGigs/Bose-SoundTouch-Hybrid-2026" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">💻 Official GitHub Repository (Source Code)</a>
-            </div>
-        </div>
-    </div>
-</div>
+	<div id="doc-modal" class="modal">
+		<div class="modal-content" style="width: 400px;">
+			<div class="modal-header">
+				<h2 style="margin:0;">Reference Documents</h2>
+				<button onclick="document.getElementById('doc-modal').style.display='none'" style="border:none; background:none; font-size:1.5em; color:var(--text); opacity:0.6; cursor:pointer;">&times;</button>
+			</div>
+			<div class="step-box">
+				<div class="step-text">
+					<a href="#" onclick="openDoc('docs/SoundTouchHybridDocumentation.pdf'); return false;" style="display:block; margin-bottom:15px; font-size:1.1em;">📄 Bose SoundTouch Hybrid Documentation</a>
+					<a href="https://www.youtube.com/watch?v=R6mbTRBEBYA" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 Demo Video</a>
+					<a href="https://www.youtube.com/watch?v=3BhAkpsZjBI" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 V2 Enhancements Demo Video</a>
+					<a href="https://www.youtube.com/watch?v=ERsoMmyOpEU" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 V3 Enhancements Demo Video</a>
+					<a href="https://github.com/TJGigs/Bose-SoundTouch-Hybrid-2026" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">💻 Official GitHub Repository (Source Code)</a>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<div id="pdf-modal" class="modal">
-<div class="modal-content pdf-mode">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="margin:0;">Document Viewer</h3>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-sm" onclick="openExternalDoc()">Open in Browser ↗</button>
-            <button onclick="closeDoc()" style="border:none; background:none; font-size:2em; color:var(--text); opacity:0.6; cursor:pointer; line-height:1;">&times;</button>
-        </div>
-    </div>
-    <object id="pdf-frame" class="pdf-frame" data="" type="application/pdf">
-        <div style="padding:20px; text-align:center; color:var(--text); opacity:0.6;">
-            Preview not available on this device.<br>
-            <button class="btn" style="margin-top:10px;" onclick="openExternalDoc()">Open PDF</button>
-        </div>
-    </object>
-</div>
-</div>
+	<div id="pdf-modal" class="modal">
+	<div class="modal-content pdf-mode">
+		<div style="display:flex; justify-content:space-between; align-items:center;">
+			<h3 style="margin:0;">Document Viewer</h3>
+			<div style="display:flex; gap:10px;">
+				<button class="btn-sm" onclick="openExternalDoc()">Open in Browser ↗</button>
+				<button onclick="closeDoc()" style="border:none; background:none; font-size:2em; color:var(--text); opacity:0.6; cursor:pointer; line-height:1;">&times;</button>
+			</div>
+		</div>
+		<object id="pdf-frame" class="pdf-frame" data="" type="application/pdf">
+			<div style="padding:20px; text-align:center; color:var(--text); opacity:0.6;">
+				Preview not available on this device.<br>
+				<button class="btn" style="margin-top:10px;" onclick="openExternalDoc()">Open PDF</button>
+			</div>
+		</object>
+	</div>
+	</div>
 
-<div id="h-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 style="margin:0;">Manual Setup Guide</h2>
-            <button onclick="document.getElementById('h-modal').style.display='none'" style="border:none; background:none; font-size:1.5em; color:var(--text); opacity:0.6; cursor:pointer;">&times;</button>
-        </div>
-        <div class="step-box">
-            <span class="step-title">📡 MANUAL WI-FI SETUP</span>
-            <div class="step-text">
-                1. Power on the speaker.<br>
-                2. Press and hold <strong>2</strong> and <strong>- (Volume Down)</strong> for 5 seconds.<br>
-                3. The Wi-Fi indicator will blink amber (Setup Mode).<br>
-                4. Connect your device to Wi-Fi: <em>"Bose SoundTouch X"</em>.<br>
-                5. Visit: <a href="http://192.168.1.1:8090" target="_blank">http://192.168.1.1:8090</a>
-            </div>
-        </div>
-        <div class="step-box">
-            <span class="step-title">🔵 MANUAL BLUETOOTH PAIRING</span>
-            <div class="step-text">
-                1. Select <strong>Bluetooth</strong> source.<br>
-                2. Hold <strong>Bluetooth/AUX</strong> button until light blinks Blue.<br>
-                3. Scan and pair on your phone.<br><br>
-                <strong>Clear List:</strong> Hold <strong>Bluetooth/AUX</strong> for 10s (Double Tone).
-            </div>
-        </div>
-        <div class="step-box">
-            <span class="step-title">🔄 MANUAL FACTORY RESET</span>
-            <div class="step-text">
-                <strong>SoundTouch 10, 20, 30:</strong><br>
-                Turn the speaker on. Press and hold <strong>1</strong> and <strong>- (Volume Down)</strong> for 10 seconds until the indicators blink.<br><br>
-                <strong>SoundTouch Wireless Link:</strong><br>
-                Press and hold the <strong>Control</strong> button on the back for 10 seconds until the Wi-Fi indicator blinks white.
-            </div>
-        </div>
-        <div class="step-box">
-        <span class="step-title">🔌 MANUAL FIRMWARE UPDATE (USB)</span>
-            <div class="step-text">
-                1. Connect the speaker to your computer via via USB/Micro-USB setup cable.<br>
-                2. Open a web browser.<br>
-                3. Visit the hidden update page: <a href="http://203.0.113.1/update.html" target="_blank">http://203.0.113.1/update.html</a><br>
-                4. Select and upload your <em>Update.stu</em> firmware file.
-            </div>
-        </div>
-    </div>
-</div>
+	<div id="h-modal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 style="margin:0;">Manual Setup Guide</h2>
+				<button onclick="document.getElementById('h-modal').style.display='none'" style="border:none; background:none; font-size:1.5em; color:var(--text); opacity:0.6; cursor:pointer;">&times;</button>
+			</div>
+			<div class="step-box">
+				<span class="step-title">📡 MANUAL WI-FI SETUP</span>
+				<div class="step-text">
+					1. Power on the speaker.<br>
+					2. Press and hold <strong>2</strong> and <strong>- (Volume Down)</strong> for 5 seconds.<br>
+					3. The Wi-Fi indicator will blink amber (Setup Mode).<br>
+					4. Connect your device to Wi-Fi: <em>"Bose SoundTouch X"</em>.<br>
+					5. Visit: <a href="http://192.168.1.1:8090" target="_blank">http://192.168.1.1:8090</a>
+				</div>
+			</div>
+			<div class="step-box">
+				<span class="step-title">🔵 MANUAL BLUETOOTH PAIRING</span>
+				<div class="step-text">
+					1. Select <strong>Bluetooth</strong> source.<br>
+					2. Hold <strong>Bluetooth/AUX</strong> button until light blinks Blue.<br>
+					3. Scan and pair on your phone.<br><br>
+					<strong>Clear List:</strong> Hold <strong>Bluetooth/AUX</strong> for 10s (Double Tone).
+				</div>
+			</div>
+			<div class="step-box">
+				<span class="step-title">🔄 MANUAL FACTORY RESET</span>
+				<div class="step-text">
+					<strong>SoundTouch 10, 20, 30:</strong><br>
+					Turn the speaker on. Press and hold <strong>1</strong> and <strong>- (Volume Down)</strong> for 10 seconds until the indicators blink.<br><br>
+					<strong>SoundTouch Wireless Link:</strong><br>
+					Press and hold the <strong>Control</strong> button on the back for 10 seconds until the Wi-Fi indicator blinks white.
+				</div>
+			</div>
+			<div class="step-box">
+			<span class="step-title">🔌 MANUAL FIRMWARE UPDATE (USB)</span>
+				<div class="step-text">
+					1. Connect the speaker to your computer via via USB/Micro-USB setup cable.<br>
+					2. Open a web browser.<br>
+					3. Visit the hidden update page: <a href="http://203.0.113.1/update.html" target="_blank">http://203.0.113.1/update.html</a><br>
+					4. Select and upload your <em>Update.stu</em> firmware file.
+				</div>
+			</div>
+		</div>
+	</div>
 
-<div id="scriptModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6);">
-    <div style="background-color:#1e1e1e; color: #d4d4d4; margin:10% auto; padding:25px; border:1px solid #444; width:80%; max-width:700px; border-radius: 8px; font-family: sans-serif;">
-        <h3 style="color: #fff; margin-top: 0;">Download USB WiFI Setup Script</h3>
-        <p style="color: #ffaa00; font-size: 14px; font-weight: bold; border-left: 4px solid #ffaa00; padding-left: 10px;">
-        🍎 MAC USERS: This script is for Windows only. To setup speaker Wi-Fi via Mac, Use the native Bose method by connecting to the speaker's temporary initial setup amber-light Wi-Fi network and go to http://192.168.1.1 in your browser.
-        </p>
-        <pre id="scriptContent" style="background:#000; color:#0f0; padding:15px; overflow-x:auto; white-space:pre; font-size: 13px; border-radius: 4px; border: 1px solid #333; line-height: 1.4;"></pre>
-        <div style="background-color: #2a3b4c; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 13px;">
-            <strong style="color: #66b3ff;">🛡️ BROWSER DOWNLOAD WARNING:</strong><br>
-            Your browser may warn you that this file is unrecognized or unsafe.<br>
-            To save it, select <strong>Keep</strong>, <strong>Save</strong>, or <strong>Accept</strong>.
-        </div>
-        <div style="text-align: right; margin-top: 20px;">
-            <button id="cancelScriptBtn" style="padding: 10px 20px; margin-right: 15px; cursor: pointer; background: #555; color: white; border: none; border-radius: 4px;">Cancel</button>
-            <button id="downloadScriptBtn" style="padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold;">Download Script</button>
-        </div>
-    </div>
-</div>
+	<div id="scriptModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6);">
+		<div style="background-color:#1e1e1e; color: #d4d4d4; margin:10% auto; padding:25px; border:1px solid #444; width:80%; max-width:700px; border-radius: 8px; font-family: sans-serif;">
+			<h3 style="color: #fff; margin-top: 0;">Download USB WiFI Setup Script</h3>
+			<p style="color: #ffaa00; font-size: 14px; font-weight: bold; border-left: 4px solid #ffaa00; padding-left: 10px;">
+			🍎 MAC USERS: This script is for Windows only. To setup speaker Wi-Fi via Mac, Use the native Bose method by connecting to the speaker's temporary initial setup amber-light Wi-Fi network and go to http://192.168.1.1 in your browser.
+			</p>
+			<pre id="scriptContent" style="background:#000; color:#0f0; padding:15px; overflow-x:auto; white-space:pre; font-size: 13px; border-radius: 4px; border: 1px solid #333; line-height: 1.4;"></pre>
+			<div style="background-color: #2a3b4c; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 13px;">
+				<strong style="color: #66b3ff;">🛡️ BROWSER DOWNLOAD WARNING:</strong><br>
+				Your browser may warn you that this file is unrecognized or unsafe.<br>
+				To save it, select <strong>Keep</strong>, <strong>Save</strong>, or <strong>Accept</strong>.
+			</div>
+			<div style="text-align: right; margin-top: 20px;">
+				<button id="cancelScriptBtn" style="padding: 10px 20px; margin-right: 15px; cursor: pointer; background: #555; color: white; border: none; border-radius: 4px;">Cancel</button>
+				<button id="downloadScriptBtn" style="padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold;">Download Script</button>
+			</div>
+		</div>
+	</div>
 
-<script>
-  const SERVER_URL = window.location.protocol + "//" + window.location.host;
+	<script>
+		const SERVER_URL = window.location.protocol + "//" + window.location.host;
 
 		// Handles programmatic unchecking and UI state rendering safely
 		function handleScheduledRestartToggle() {
-		    const parentCheck = document.getElementById('pref_scheduledRestart');
-		    const childCheck = document.getElementById('pref_includeReboot');
+			const parentCheck = document.getElementById('pref_scheduledRestart');
+			const childCheck = document.getElementById('pref_includeReboot');
 
-		    if (parentCheck && childCheck) {
-		        childCheck.disabled = !parentCheck.checked;
-		        if (!parentCheck.checked) {
-		            childCheck.checked = false;
-		        }
-		    }
+			if (parentCheck && childCheck) {
+				childCheck.disabled = !parentCheck.checked;
+				if (!parentCheck.checked) {
+					childCheck.checked = false;
+				}
+			}
 		}
 
 		// --- GLOBAL SETTINGS LOGIC ---
 		let currentSearchOrder = [];
 		let fullSettingsPayload = {}; // Hold the full JSON so we don't overwrite checkboxes
 		const SOURCE_NAMES = {
-		    'spotify': 'Spotify',
-		    'radio': 'Radio',
-		    'nas': 'Local NAS',
-		    'global': 'Global'
+			'spotify': 'Spotify',
+			'radio': 'Radio',
+			'nas': 'Local NAS',
+			'global': 'Global'
 		};
 
 		// 1. Fetch from Server
 		async function loadConfig() {
-		    try {
-		        const res = await fetch('/api/admin/settings');
-		        if (res.ok) {
-		            fullSettingsPayload = await res.json();
+			try {
+				const res = await fetch('/api/admin/settings');
+				if (res.ok) {
+					fullSettingsPayload = await res.json();
 
-		            // Load Menu Order
-		            currentSearchOrder = fullSettingsPayload.searchMenuOrder || ['global', 'radio', 'nas', 'spotify'];
-		            renderSortableList();
+					// Load Menu Order
+					currentSearchOrder = fullSettingsPayload.searchMenuOrder || ['global', 'radio', 'nas', 'spotify'];
+					renderSortableList();
 
-		            // Load Checkboxes
-		            document.getElementById('pref_autoResume').checked = fullSettingsPayload.autoResumePreset === true;
-		            document.getElementById('pref_autoRestart').checked = fullSettingsPayload.autoRestartMass === true;
-		            document.getElementById('pref_autoSync').checked = fullSettingsPayload.autoSyncVolume === true;
-		            document.getElementById('pref_mobileAutoSortSpeakers').checked = fullSettingsPayload.mobileAutoSortSpeakers === true;
-		            document.getElementById('pref_scheduledSpeakerAudit').checked = fullSettingsPayload.scheduledSpeakerAudit === true;
-		            document.getElementById('pref_scheduledRestart').checked = fullSettingsPayload.scheduledRestart === true;
-		            const subReboot = document.getElementById('pref_includeReboot');
-		            subReboot.checked = fullSettingsPayload.includeReboot === true;
-		            subReboot.disabled = !fullSettingsPayload.scheduledRestart;
-		            document.getElementById('pref_bypassCloudEmulation').checked = fullSettingsPayload.bypassCloudEmulation === true;
+					// Load Checkboxes
+					document.getElementById('pref_autoResume').checked = fullSettingsPayload.autoResumePreset === true;
+					document.getElementById('pref_autoRestart').checked = fullSettingsPayload.autoRestartMass === true;
+					document.getElementById('pref_autoSync').checked = fullSettingsPayload.autoSyncVolume === true;
+					document.getElementById('pref_mobileAutoSortSpeakers').checked = fullSettingsPayload.mobileAutoSortSpeakers === true;
+					document.getElementById('pref_scheduledSpeakerAudit').checked = fullSettingsPayload.scheduledSpeakerAudit === true;
+					document.getElementById('pref_scheduledRestart').checked = fullSettingsPayload.scheduledRestart === true;
+					const subReboot = document.getElementById('pref_includeReboot');
+					subReboot.checked = fullSettingsPayload.includeReboot === true;
+					subReboot.disabled = !fullSettingsPayload.scheduledRestart;
+					document.getElementById('pref_bypassCloudEmulation').checked = fullSettingsPayload.bypassCloudEmulation === true;
 
-		        }
-		    } catch (e) {
-		        console.error("Failed to load settings from server", e);
-		    }
+				}
+			} catch (e) {
+				console.error("Failed to load settings from server", e);
+			}
 		}
 
 		// Draw the drag-and-drop list
 		function renderSortableList() {
-		    const container = document.getElementById('sortable-list');
-		    container.style.flexDirection = 'row';
-		    container.style.flexWrap = 'wrap';
+			const container = document.getElementById('sortable-list');
+			container.style.flexDirection = 'row';
+			container.style.flexWrap = 'wrap';
 
-		    container.innerHTML = currentSearchOrder.map((key, index) => `
+			container.innerHTML = currentSearchOrder.map((key, index) => `
 			<div style="display: flex; flex-direction: column; align-items: center; background: rgba(128,128,128,0.1); padding: 12px 2px; border-radius: 6px; border: 1px solid var(--border); flex: 1; min-width: 65px;">
 				<span style="color: var(--text); font-weight: bold; font-size: 0.85em; margin-bottom: 10px; white-space: nowrap;">${SOURCE_NAMES[key]}</span>
 				<div style="display: flex; gap: 4px; width: 100%; padding: 0 5px; box-sizing: border-box;">
@@ -475,446 +483,446 @@
 			`).join('');
 		}
 
-        function moveItem(index, direction) {
-            const newIndex = index + direction;
-            const temp = currentSearchOrder[index];
-            currentSearchOrder[index] = currentSearchOrder[newIndex];
-            currentSearchOrder[newIndex] = temp;
-            renderSortableList(); 
-        }
+		function moveItem(index, direction) {
+			const newIndex = index + direction;
+			const temp = currentSearchOrder[index];
+			currentSearchOrder[index] = currentSearchOrder[newIndex];
+			currentSearchOrder[newIndex] = temp;
+			renderSortableList(); 
+		}
 
 		// 2. Save Menu Order
 		async function saveSearchOrder() {
-		    fullSettingsPayload.searchMenuOrder = currentSearchOrder;
-		    await pushSettingsToServer("✅ Menu order synchronized across all devices!");
+			fullSettingsPayload.searchMenuOrder = currentSearchOrder;
+			await pushSettingsToServer("✅ Menu order synchronized across all devices!");
 		}
 
 		// 3. Save Checkboxes
 		async function savePreferences() {
-		    fullSettingsPayload.autoResumePreset = document.getElementById('pref_autoResume').checked;
-		    fullSettingsPayload.autoRestartMass = document.getElementById('pref_autoRestart').checked;
-		    fullSettingsPayload.autoSyncVolume = document.getElementById('pref_autoSync').checked;
-		    fullSettingsPayload.mobileAutoSortSpeakers = document.getElementById('pref_mobileAutoSortSpeakers').checked;
-		    fullSettingsPayload.scheduledSpeakerAudit = document.getElementById('pref_scheduledSpeakerAudit').checked;
-		    fullSettingsPayload.scheduledRestart = document.getElementById('pref_scheduledRestart').checked;
-		    fullSettingsPayload.includeReboot = document.getElementById('pref_includeReboot').checked;
-		    fullSettingsPayload.bypassCloudEmulation = document.getElementById('pref_bypassCloudEmulation').checked;
-		    await pushSettingsToServer("✅ Preferences saved successfully!");
+			fullSettingsPayload.autoResumePreset = document.getElementById('pref_autoResume').checked;
+			fullSettingsPayload.autoRestartMass = document.getElementById('pref_autoRestart').checked;
+			fullSettingsPayload.autoSyncVolume = document.getElementById('pref_autoSync').checked;
+			fullSettingsPayload.mobileAutoSortSpeakers = document.getElementById('pref_mobileAutoSortSpeakers').checked;
+			fullSettingsPayload.scheduledSpeakerAudit = document.getElementById('pref_scheduledSpeakerAudit').checked;
+			fullSettingsPayload.scheduledRestart = document.getElementById('pref_scheduledRestart').checked;
+			fullSettingsPayload.includeReboot = document.getElementById('pref_includeReboot').checked;
+			fullSettingsPayload.bypassCloudEmulation = document.getElementById('pref_bypassCloudEmulation').checked;
+			await pushSettingsToServer("✅ Preferences saved successfully!");
 		}
 
 		// 4. The Master Save Function
 		async function pushSettingsToServer(successMessage) {
-		    try {
-		        const res = await fetch('/api/admin/settings', {
-		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
-		            body: JSON.stringify(fullSettingsPayload)
-		        });
+			try {
+				const res = await fetch('/api/admin/settings', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(fullSettingsPayload)
+				});
 
-		        if (res.ok)
-		            alert(successMessage);
-		        else
-		            alert("❌ Failed to save to server.");
-		    } catch (e) {
-		        alert("❌ Network Error: " + e.message);
-		    }
+				if (res.ok)
+					alert(successMessage);
+				else
+					alert("❌ Failed to save to server.");
+			} catch (e) {
+				alert("❌ Network Error: " + e.message);
+			}
 		}
 
 		// Fetch the actual backend state on page load
 		async function syncDebugToggle() {
-		    try {
-		        const res = await fetch('/api/admin/debug_state');
-		        const data = await res.json();
-		        const toggle = document.getElementById('verbose-debug-toggle');
-		        if (toggle) {
-		            toggle.checked = data.debug;
-		        }
-		    } catch (e) {
-		        console.error("Could not sync debug state", e);
-		    }
+			try {
+				const res = await fetch('/api/admin/debug_state');
+				const data = await res.json();
+				const toggle = document.getElementById('verbose-debug-toggle');
+				if (toggle) {
+					toggle.checked = data.debug;
+				}
+			} catch (e) {
+				console.error("Could not sync debug state", e);
+			}
 		}
 
 		// Load config and sync backend states when tools page opens
 		window.addEventListener('DOMContentLoaded', () => {
-		    loadConfig();
-		    syncDebugToggle();
-		    //fetchLogs(); only needed if log view defaults to open
+			loadConfig();
+			syncDebugToggle();
+			//fetchLogs(); only needed if log view defaults to open
 		});
 
 		function toggleTheme() {
-		    document.body.classList.toggle('light-mode');
-		    const isLight = document.body.classList.contains('light-mode');
-		    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+			document.body.classList.toggle('light-mode');
+			const isLight = document.body.classList.contains('light-mode');
+			localStorage.setItem('theme', isLight ? 'light' : 'dark');
 		}
 
 		if (localStorage.getItem('theme') === 'light')
-		    document.body.classList.add('light-mode');
+			document.body.classList.add('light-mode');
 
 		let currentDocUrl = "";
 		function openDoc(url) {
-		    currentDocUrl = url;
-		    document.getElementById('doc-modal').style.display = 'none';
-		    if (window.innerWidth <= 768) {
-		        const pdfModal = document.getElementById('pdf-modal');
-		        const pdfFrame = document.getElementById('pdf-frame');
-		        pdfFrame.setAttribute('data', url);
-		        pdfModal.style.display = 'flex';
-		    } else
-		        window.open(url, '_blank');
+			currentDocUrl = url;
+			document.getElementById('doc-modal').style.display = 'none';
+			if (window.innerWidth <= 768) {
+				const pdfModal = document.getElementById('pdf-modal');
+				const pdfFrame = document.getElementById('pdf-frame');
+				pdfFrame.setAttribute('data', url);
+				pdfModal.style.display = 'flex';
+			} else
+				window.open(url, '_blank');
 		}
 		function closeDoc() {
-		    document.getElementById('pdf-modal').style.display = 'none';
-		    document.getElementById('pdf-frame').setAttribute('data', '');
+			document.getElementById('pdf-modal').style.display = 'none';
+			document.getElementById('pdf-frame').setAttribute('data', '');
 		}
 		function openExternalDoc() {
-		    if (currentDocUrl)
-		        window.open(currentDocUrl, '_blank');
+			if (currentDocUrl)
+				window.open(currentDocUrl, '_blank');
 		}
 
 		async function fetchLogs() {
-		    const viewer = document.getElementById('live-log-viewer');
-		    if (!viewer)
-		        return;
-		    viewer.value = "Fetching logs...";
-		    try {
-		        const res = await fetch('/api/logs');
-		        const text = await res.text();
-		        viewer.value = text || "No logs available yet.";
-		        // Auto-scroll to the bottom (newest logs)
-		        viewer.scrollTop = viewer.scrollHeight;
-		    } catch (e) {
-		        viewer.value = "Failed to load logs. Is the server running?";
-		    }
+			const viewer = document.getElementById('live-log-viewer');
+			if (!viewer)
+				return;
+			viewer.value = "Fetching logs...";
+			try {
+				const res = await fetch('/api/logs');
+				const text = await res.text();
+				viewer.value = text || "No logs available yet.";
+				// Auto-scroll to the bottom (newest logs)
+				viewer.scrollTop = viewer.scrollHeight;
+			} catch (e) {
+				viewer.value = "Failed to load logs. Is the server running?";
+			}
 		}
 
 		function downloadLogs() {
-		    const text = document.getElementById('live-log-viewer').value;
-		    if (!text || text.includes("Fetching logs..."))
-		        return alert("No logs to download yet.");
+			const text = document.getElementById('live-log-viewer').value;
+			if (!text || text.includes("Fetching logs..."))
+				return alert("No logs to download yet.");
 
-		    const blob = new Blob([text], {
-		        type: 'text/plain'
-		    });
-		    const a = document.createElement('a');
-		    a.href = URL.createObjectURL(blob);
-		    a.download = `hybrid-server-logs-${new Date().toISOString().slice(0, 10)}.txt`;
-		    document.body.appendChild(a);
-		    a.click();
-		    document.body.removeChild(a);
+			const blob = new Blob([text], {
+				type: 'text/plain'
+			});
+			const a = document.createElement('a');
+			a.href = URL.createObjectURL(blob);
+			a.download = `hybrid-server-logs-${new Date().toISOString().slice(0, 10)}.txt`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
 		}
 		let liveLogTimer = null;
 
 		function toggleLogWindow() {
-		    const container = document.getElementById('log-container');
-		    const chevron = document.getElementById('log-chevron');
+			const container = document.getElementById('log-container');
+			const chevron = document.getElementById('log-chevron');
 
-		    if (container.style.display === 'none') {
-		        // Open the window
-		        container.style.display = 'block';
-		        chevron.innerText = '▲';
-		        fetchLogs(); // Fetch immediately on open
+			if (container.style.display === 'none') {
+				// Open the window
+				container.style.display = 'block';
+				chevron.innerText = '▲';
+				fetchLogs(); // Fetch immediately on open
 
-		        // Start interval if checkbox is checked
-		        if (document.getElementById('auto-refresh-toggle').checked) {
-		            liveLogTimer = setInterval(fetchLogs, 2000);
-		        }
-		    } else {
-		        // Close the window & stop fetching to save resources
-		        container.style.display = 'none';
-		        chevron.innerText = '▼';
-		        clearInterval(liveLogTimer);
-		    }
+				// Start interval if checkbox is checked
+				if (document.getElementById('auto-refresh-toggle').checked) {
+					liveLogTimer = setInterval(fetchLogs, 2000);
+				}
+			} else {
+				// Close the window & stop fetching to save resources
+				container.style.display = 'none';
+				chevron.innerText = '▼';
+				clearInterval(liveLogTimer);
+			}
 		}
 
 		function toggleAutoRefresh() {
-		    const isChecked = document.getElementById('auto-refresh-toggle').checked;
-		    if (isChecked) {
-		        fetchLogs(); // Update immediately
-		        liveLogTimer = setInterval(fetchLogs, 2000);
-		    } else {
-		        clearInterval(liveLogTimer); // Stop updating
-		    }
+			const isChecked = document.getElementById('auto-refresh-toggle').checked;
+			if (isChecked) {
+				fetchLogs(); // Update immediately
+				liveLogTimer = setInterval(fetchLogs, 2000);
+			} else {
+				clearInterval(liveLogTimer); // Stop updating
+			}
 		}
 
 		async function toggleVerboseDebug() {
-		    const isChecked = document.getElementById('verbose-debug-toggle').checked;
-		    try {
-		        await fetch('/api/admin/toggle_debug', {
-		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
-		            body: JSON.stringify({
-		                debug: isChecked
-		            })
-		        });
-		    } catch (e) {
-		        console.error("Failed to toggle debug", e);
-		    }
+			const isChecked = document.getElementById('verbose-debug-toggle').checked;
+			try {
+				await fetch('/api/admin/toggle_debug', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						debug: isChecked
+					})
+				});
+			} catch (e) {
+				console.error("Failed to toggle debug", e);
+			}
 		}
 
 		function toggleWifiWindow() {
-		    const container = document.getElementById('wifi-container');
-		    const chevron = document.getElementById('wifi-chevron');
-		    if (container.style.display === 'none') {
-		        container.style.display = 'block';
-		        chevron.innerText = '▲';
-		    } else {
-		        container.style.display = 'none';
-		        chevron.innerText = '▼';
-		    }
+			const container = document.getElementById('wifi-container');
+			const chevron = document.getElementById('wifi-chevron');
+			if (container.style.display === 'none') {
+				container.style.display = 'block';
+				chevron.innerText = '▲';
+			} else {
+				container.style.display = 'none';
+				chevron.innerText = '▼';
+			}
 		}
 
 		async function loadTools() {
-		    try {
-		        const statusRes = await fetch('/api/status');
-		        const devices = await statusRes.json();
+			try {
+				const statusRes = await fetch('/api/status');
+				const devices = await statusRes.json();
 
-		        const allOptions = devices.filter(d => d.online).map(d => `<option value="${d.ip}">${d.name} (${d.ip})</option>`).join('');
-		        const usbOption = `<option value="203.0.113.1">🔌 USB Cable / Initial Wi-Fi Setup (203.0.113.1)</option>`;
+				const allOptions = devices.filter(d => d.online).map(d => `<option value="${d.ip}">${d.name} (${d.ip})</option>`).join('');
+				const usbOption = `<option value="203.0.113.1">🔌 USB Cable / Initial Wi-Fi Setup (203.0.113.1)</option>`;
 
-		        // Populate Wi-Fi dropdown
-		        const wifiTarget = document.getElementById('wifi-target');
-		        if (wifiTarget)
-		            wifiTarget.innerHTML = usbOption + allOptions;
+				// Populate Wi-Fi dropdown
+				const wifiTarget = document.getElementById('wifi-target');
+				if (wifiTarget)
+					wifiTarget.innerHTML = usbOption + allOptions;
 
-		        // Populate Force Injection dropdown
-		        const forceTarget = document.getElementById('forceSpeakerSelect');
-		        if (forceTarget)
-		            forceTarget.innerHTML = '<option value="all">All Speakers</option>' + allOptions;
+				// Populate Force Injection dropdown
+				const forceTarget = document.getElementById('forceSpeakerSelect');
+				if (forceTarget)
+					forceTarget.innerHTML = '<option value="all">All Speakers</option>' + allOptions;
 
-		        // Populate Force Reboot dropdown
-		        const rebootTarget = document.getElementById('forceRebootSelect');
-		        if (rebootTarget)
-		            rebootTarget.innerHTML = '<option value="all">All Speakers</option>' + allOptions;
+				// Populate Force Reboot dropdown
+				const rebootTarget = document.getElementById('forceRebootSelect');
+				if (rebootTarget)
+					rebootTarget.innerHTML = '<option value="all">All Speakers</option>' + allOptions;
 
-		        // ---> BOOT STEREO UI WITH SHARED DATA
-		        initStereoUI(devices);
+				// ---> BOOT STEREO UI WITH SHARED DATA
+				initStereoUI(devices);
 
-		    } catch (e) {
-		        console.error("Failed to load tools / status", e);
-		        // Still boot the stereo UI with an empty array so dummies inject
-		        initStereoUI([]);
-		    }
+			} catch (e) {
+				console.error("Failed to load tools / status", e);
+				// Still boot the stereo UI with an empty array so dummies inject
+				initStereoUI([]);
+			}
 		}
 
 		// --- EXISTING FUNCTIONS ---
 
 		// LEVEL 1: Soft Rescan (The Ping)
 		async function rescanMass(btn) {
-		    const orig = btn.innerText;
-		    btn.innerText = "Pinging...";
-		    btn.disabled = true;
+			const orig = btn.innerText;
+			btn.innerText = "Pinging...";
+			btn.disabled = true;
 
-		    try {
-		        // A single Soft Ping (players/all) globally refreshes ALL idle sockets
-		        await fetch('/api/admin/rescan_ma', {
-		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
-		            // Sending a fixed string so the backend logs properly identify both protocols
-		            body: JSON.stringify({
-		                aggressive: false,
-		                provider: 'dlna & airplay'
-		            })
-		        });
+			try {
+				// A single Soft Ping (players/all) globally refreshes ALL idle sockets
+				await fetch('/api/admin/rescan_ma', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					// Sending a fixed string so the backend logs properly identify both protocols
+					body: JSON.stringify({
+						aggressive: false,
+						provider: 'dlna & airplay'
+					})
+				});
 
-		        btn.innerText = "✅ Network Pinged";
-		    } catch (e) {
-		        btn.innerText = "❌ Error";
-		    }
+				btn.innerText = "✅ Network Pinged";
+			} catch (e) {
+				btn.innerText = "❌ Error";
+			}
 
-		    setTimeout(() => {
-		        btn.innerText = orig;
-		        btn.disabled = false;
-		    }, 3000);
+			setTimeout(() => {
+				btn.innerText = orig;
+				btn.disabled = false;
+			}, 3000);
 		}
 
 		// LEVEL 2: Aggressive Provider Reload (DLNA + AirPlay)
 		async function aggressiveReloadMass(btn) {
-		    if (!confirm("Forcefully restart the DLNA and AirPlay providers?\n⚠️ Warning: Active audio streams may momentarily stop."))
-		        return;
-		    const orig = btn.innerText;
-		    btn.innerText = "Reloading DLNA...";
-		    btn.disabled = true;
+			if (!confirm("Forcefully restart the DLNA and AirPlay providers?\n⚠️ Warning: Active audio streams may momentarily stop."))
+				return;
+			const orig = btn.innerText;
+			btn.innerText = "Reloading DLNA...";
+			btn.disabled = true;
 
-		    try {
-		        // 1. Reload DLNA
-		        await fetch('/api/admin/rescan_ma', {
-		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
-		            body: JSON.stringify({
-		                aggressive: true,
-		                provider: 'dlna'
-		            })
-		        });
+			try {
+				// 1. Reload DLNA
+				await fetch('/api/admin/rescan_ma', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						aggressive: true,
+						provider: 'dlna'
+					})
+				});
 
-		        btn.innerText = "Reloading AirPlay...";
+				btn.innerText = "Reloading AirPlay...";
 
-		        // 2. Reload AirPlay
-		        await fetch('/api/admin/rescan_ma', {
-		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
-		            body: JSON.stringify({
-		                aggressive: true,
-		                provider: 'airplay'
-		            })
-		        });
+				// 2. Reload AirPlay
+				await fetch('/api/admin/rescan_ma', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						aggressive: true,
+						provider: 'airplay'
+					})
+				});
 
-		        btn.innerText = "✅ Providers Reloaded";
-		    } catch (e) {
-		        btn.innerText = "❌ Error";
-		    }
+				btn.innerText = "✅ Providers Reloaded";
+			} catch (e) {
+				btn.innerText = "❌ Error";
+			}
 
-		    setTimeout(() => {
-		        btn.innerText = orig;
-		        btn.disabled = false;
-		    }, 4000);
+			setTimeout(() => {
+				btn.innerText = orig;
+				btn.disabled = false;
+			}, 4000);
 		}
 
 		async function restartMass(btn) {
-		    if (!confirm("Are you sure you want to restart the Music Assistant container?"))
-		        return;
-		    const orig = btn.innerText;
-		    btn.innerText = "Restarting...";
-		    btn.disabled = true;
-		    try {
-		        const res = await fetch('/api/admin/restart_ma', {
-		            method: 'POST'
-		        });
-		        const data = await res.json();
-		        if (data.success) {
-		            alert("Restart Command Sent!");
-		            btn.innerText = "✅ Command Sent";
-		        } else {
-		            alert("Error: " + (data.error || "Unknown Error"));
-		            btn.innerText = "❌ Failed";
-		        }
-		    } catch (e) {
-		        alert("Network Error: " + e.message);
-		        btn.innerText = "❌ Error";
-		    }
-		    setTimeout(() => {
-		        btn.innerText = orig;
-		        btn.disabled = false;
-		    }, 5000);
+			if (!confirm("Are you sure you want to restart the Music Assistant container?"))
+				return;
+			const orig = btn.innerText;
+			btn.innerText = "Restarting...";
+			btn.disabled = true;
+			try {
+				const res = await fetch('/api/admin/restart_ma', {
+					method: 'POST'
+				});
+				const data = await res.json();
+				if (data.success) {
+					alert("Restart Command Sent!");
+					btn.innerText = "✅ Command Sent";
+				} else {
+					alert("Error: " + (data.error || "Unknown Error"));
+					btn.innerText = "❌ Failed";
+				}
+			} catch (e) {
+				alert("Network Error: " + e.message);
+				btn.innerText = "❌ Error";
+			}
+			setTimeout(() => {
+				btn.innerText = orig;
+				btn.disabled = false;
+			}, 5000);
 		}
 
 		// NORMALIZED restartHybrid function
 		async function restartHybrid(btn) {
-		    const forceInjectCheck = document.getElementById('forceInjectCheck');
-		    const forceInjectSelect = document.getElementById('forceSpeakerSelect');
-		    const forceRebootCheck = document.getElementById('forceRebootCheck');
-		    const forceRebootSelect = document.getElementById('forceRebootSelect');
+			const forceInjectCheck = document.getElementById('forceInjectCheck');
+			const forceInjectSelect = document.getElementById('forceSpeakerSelect');
+			const forceRebootCheck = document.getElementById('forceRebootCheck');
+			const forceRebootSelect = document.getElementById('forceRebootSelect');
 
-		    // Evaluate both checkboxes and their targets
-		    const isInject = forceInjectCheck ? forceInjectCheck.checked : false;
-		    const injectTarget = isInject ? forceInjectSelect.value : null;
-		    const isReboot = forceRebootCheck ? forceRebootCheck.checked : false;
-		    const rebootTarget = isReboot ? forceRebootSelect.value : null;
+			// Evaluate both checkboxes and their targets
+			const isInject = forceInjectCheck ? forceInjectCheck.checked : false;
+			const injectTarget = isInject ? forceInjectSelect.value : null;
+			const isReboot = forceRebootCheck ? forceRebootCheck.checked : false;
+			const rebootTarget = isReboot ? forceRebootSelect.value : null;
 
-		    const isForceMode = isInject || isReboot;
+			const isForceMode = isInject || isReboot;
 
-		    // Dynamic warning text
-		    let confirmMsg = "Are you sure you want to restart the SoundTouch Hybrid application?\n\nThis will momentarily interrupt all audio streams.";
-		    if (isForceMode) {
-		        confirmMsg = `🚨 FORCE SEQUENCE ENABLED 🚨\n\nAre you sure you want to force operations on the targeted speakers?\n\nThis will take longer than a standard restart.`;
-		    }
+			// Dynamic warning text
+			let confirmMsg = "Are you sure you want to restart the SoundTouch Hybrid application?\n\nThis will momentarily interrupt all audio streams.";
+			if (isForceMode) {
+				confirmMsg = `🚨 FORCE SEQUENCE ENABLED 🚨\n\nAre you sure you want to force operations on the targeted speakers?\n\nThis will take longer than a standard restart.`;
+			}
 
-		    if (!confirm(confirmMsg))
-		        return;
+			if (!confirm(confirmMsg))
+				return;
 
-		    const orig = btn.innerText;
-		    btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px;"></span> ${isForceMode ? 'Executing...' : 'Restarting...'}`;
-		    btn.disabled = true;
+			const orig = btn.innerText;
+			btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px;"></span> ${isForceMode ? 'Executing...' : 'Restarting...'}`;
+			btn.disabled = true;
 
-		    // --- NORMALIZED ENDPOINT ---
-		    const endpoint = '/api/admin/restart';
-		    const payload = {
-		        injectTarget: injectTarget,
-		        rebootTarget: rebootTarget
-		    };
+			// --- NORMALIZED ENDPOINT ---
+			const endpoint = '/api/admin/restart';
+			const payload = {
+				injectTarget: injectTarget,
+				rebootTarget: rebootTarget
+			};
 
-		    try {
-		        await fetch(endpoint, {
-		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
-		            body: JSON.stringify(payload)
-		        });
-		        alert(isForceMode ? "Force sequence initiated! Check server console." : "Restart command sent!");
-		        if (!isForceMode)
-		            setTimeout(() => {
-		                window.location.reload();
-		            }, 4000);
-		    } catch (e) {
-		        alert(isForceMode ? "Error executing sequence." : "Server is rebooting.");
-		    }
+			try {
+				await fetch(endpoint, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(payload)
+				});
+				alert(isForceMode ? "Force sequence initiated! Check server console." : "Restart command sent!");
+				if (!isForceMode)
+					setTimeout(() => {
+						window.location.reload();
+					}, 4000);
+			} catch (e) {
+				alert(isForceMode ? "Error executing sequence." : "Server is rebooting.");
+			}
 
-		    if (isForceMode) {
-		        setTimeout(() => {
-		            btn.innerText = orig;
-		            btn.disabled = false;
-		            if (forceInjectCheck) {
-		                forceInjectCheck.checked = false;
-		                forceInjectSelect.disabled = true;
-		            }
-		            if (forceRebootCheck) {
-		                forceRebootCheck.checked = false;
-		                forceRebootSelect.disabled = true;
-		            }
-		        }, 5000);
-		    }
+			if (isForceMode) {
+				setTimeout(() => {
+					btn.innerText = orig;
+					btn.disabled = false;
+					if (forceInjectCheck) {
+						forceInjectCheck.checked = false;
+						forceInjectSelect.disabled = true;
+					}
+					if (forceRebootCheck) {
+						forceRebootCheck.checked = false;
+						forceRebootSelect.disabled = true;
+					}
+				}, 5000);
+			}
 		}
 
 		async function triggerManualAudit() {
-		    if (!confirm("Execute a manual Speaker Preset Audit now? Any speakers missing their presets will be rebooted."))
-		        return;
+			if (!confirm("Execute a manual Speaker Preset Audit now? Any speakers missing their presets will be rebooted."))
+				return;
 
-		    try {
-		        const res = await fetch('/api/admin/force_audit', {
-		            method: 'POST'
-		        });
-		        if (res.ok) {
-		            alert("✅ Speaker Audit initiated in the background. Check server logs for details.");
-		        } else {
-		            alert("❌ Server rejected the audit request.");
-		        }
-		    } catch (e) {
-		        alert("❌ Failed to reach the server: " + e.message);
-		    }
+			try {
+				const res = await fetch('/api/admin/force_audit', {
+					method: 'POST'
+				});
+				if (res.ok) {
+					alert("✅ Speaker Audit initiated in the background. Check server logs for details.");
+				} else {
+					alert("❌ Server rejected the audit request.");
+				}
+			} catch (e) {
+				alert("❌ Failed to reach the server: " + e.message);
+			}
 		}
 
 		async function pushWifi(btn) {
-		    const ip = document.getElementById('wifi-target').value;
-		    const ssid = document.getElementById('wifi-ssid').value;
-		    const pass = document.getElementById('wifi-pass').value;
+			const ip = document.getElementById('wifi-target').value;
+			const ssid = document.getElementById('wifi-ssid').value;
+			const pass = document.getElementById('wifi-pass').value;
 
-		    if (!ssid)
-		        return alert("❌ Please enter a Network Name (SSID).");
-		    if (!pass)
-		        return alert("❌ Please enter the Wi-Fi Password.");
+			if (!ssid)
+				return alert("❌ Please enter a Network Name (SSID).");
+			if (!pass)
+				return alert("❌ Please enter the Wi-Fi Password.");
 
-		    const isUsb = (ip === "203.0.113.1" || ip === "192.168.1.1");
-		    const orig = btn.innerText;
-		    btn.innerText = "Pushing...";
-		    btn.disabled = true;
+			const isUsb = (ip === "203.0.113.1" || ip === "192.168.1.1");
+			const orig = btn.innerText;
+			btn.innerText = "Pushing...";
+			btn.disabled = true;
 
-		    try {
-		        if (isUsb) {
-		            // ==========================================
-		            // PATH A: USB SETUP (Custom Modal Preview)
-		            // ==========================================
+			try {
+				if (isUsb) {
+					// ==========================================
+					// PATH A: USB SETUP (Custom Modal Preview)
+					// ==========================================
 
-		            const batContent = `@echo off
+					const batContent = `@echo off
 					echo ===================++++++=====================
 					echo SoundTouch Hybrid USB Wi-Fi Provisioning Tool
 					echo =========================+++++===============
@@ -936,107 +944,107 @@
 					echo.
 					pause`;
 
-		            // 1. Inject the code into our custom modal and display it
-		            document.getElementById('scriptContent').innerText = batContent;
-		            document.getElementById('scriptModal').style.display = 'block';
+					// 1. Inject the code into our custom modal and display it
+					document.getElementById('scriptContent').innerText = batContent;
+					document.getElementById('scriptModal').style.display = 'block';
 
-		            // 2. Handle the 'Cancel' button click
-		            document.getElementById('cancelScriptBtn').onclick = function () {
-		                document.getElementById('scriptModal').style.display = 'none';
-		                btn.innerText = orig;
-		                btn.disabled = false;
-		            };
+					// 2. Handle the 'Cancel' button click
+					document.getElementById('cancelScriptBtn').onclick = function () {
+						document.getElementById('scriptModal').style.display = 'none';
+						btn.innerText = orig;
+						btn.disabled = false;
+					};
 
-		            // 3. Handle the 'Download' button click
-		            document.getElementById('downloadScriptBtn').onclick = function () {
-		                document.getElementById('scriptModal').style.display = 'none';
+					// 3. Handle the 'Download' button click
+					document.getElementById('downloadScriptBtn').onclick = function () {
+						document.getElementById('scriptModal').style.display = 'none';
 
-		                // Generate and download the file
-		                const blob = new Blob([batContent], {
-		                    type: 'text/plain'
-		                });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-		                a.href = url;
-		                a.download = `Bose_USB_Setup_${ssid}.bat`;
-		                document.body.appendChild(a);
-		                a.click();
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
+						// Generate and download the file
+						const blob = new Blob([batContent], {
+							type: 'text/plain'
+						});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = `Bose_USB_Setup_${ssid}.bat`;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
 
-		                // Show the final physical instructions
-		                alert(
-		                    "📥 Please run 'Bose_USB_Setup_" + ssid + ".bat' from your Downloads folder.\n\n" +
-		                    "When the script finishes, unplug the USB cable and wait for the speaker to finish rebooting.\n\n" +
-		                    "Once the speaker is back online, refresh the Speaker Admin Page to confirm the connection.");
+						// Show the final physical instructions
+						alert(
+							"📥 Please run 'Bose_USB_Setup_" + ssid + ".bat' from your Downloads folder.\n\n" +
+							"When the script finishes, unplug the USB cable and wait for the speaker to finish rebooting.\n\n" +
+							"Once the speaker is back online, refresh the Speaker Admin Page to confirm the connection.");
 
-		                btn.innerText = "✅ Downloaded";
-		                setTimeout(() => {
-		                    btn.innerText = orig;
-		                    btn.disabled = false;
-		                }, 4000);
-		            };
-		            // We return here so the main function stops and waits for the user's click
-		            return;
-		        } else {
-		            // ==========================================
-		            // PATH B: NETWORK SWITCH (Via HOST NAS)
-		            // ==========================================
-		            // 1. universal confirmation message
-		            const confirmMsg = `Are you sure you want to push these Wi-Fi settings to ${ip}?\n\nThe speaker will delete its current network, save the new one, and reboot.\n\n)`;
+						btn.innerText = "✅ Downloaded";
+						setTimeout(() => {
+							btn.innerText = orig;
+							btn.disabled = false;
+						}, 4000);
+					};
+					// We return here so the main function stops and waits for the user's click
+					return;
+				} else {
+					// ==========================================
+					// PATH B: NETWORK SWITCH (Via HOST NAS)
+					// ==========================================
+					// 1. universal confirmation message
+					const confirmMsg = `Are you sure you want to push these Wi-Fi settings to ${ip}?\n\nThe speaker will delete its current network, save the new one, and reboot.\n\n)`;
 
-		            if (!confirm(confirmMsg)) {
-		                btn.innerText = orig;
-		                btn.disabled = false;
-		                return;
-		            }
-		            // 2. Send the command!
-		            const res = await fetch('/api/admin/set_wifi', {
-		                method: 'POST',
-		                headers: {
-		                    'Content-Type': 'application/json'
-		                },
-		                body: JSON.stringify({
-		                    ip,
-		                    ssid,
-		                    password: pass
-		                })
-		            });
+					if (!confirm(confirmMsg)) {
+						btn.innerText = orig;
+						btn.disabled = false;
+						return;
+					}
+					// 2. Send the command!
+					const res = await fetch('/api/admin/set_wifi', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							ip,
+							ssid,
+							password: pass
+						})
+					});
 
-		            const data = await res.json();
+					const data = await res.json();
 
-		            if (data.success) {
-		                alert("✅ Network Switch complete!\n\nThe speaker is rebooting to connect to the new network.\n\n⚠️ IMPORTANT: If it fails to connect, you will have to use the USB Setup Cable approach to rescue it.");
-		                btn.innerText = "✅ Sent";
-		            } else {
-		                alert("❌ Error: " + (data.error || "Failed to push Wi-Fi."));
-		                btn.innerText = "❌ Failed";
-		            }
-		        }
-		    } catch (e) {
-		        alert("❌ Network Error: " + e.message);
-		        btn.innerText = "❌ Error";
-		    }
+					if (data.success) {
+						alert("✅ Network Switch complete!\n\nThe speaker is rebooting to connect to the new network.\n\n⚠️ IMPORTANT: If it fails to connect, you will have to use the USB Setup Cable approach to rescue it.");
+						btn.innerText = "✅ Sent";
+					} else {
+						alert("❌ Error: " + (data.error || "Failed to push Wi-Fi."));
+						btn.innerText = "❌ Failed";
+					}
+				}
+			} catch (e) {
+				alert("❌ Network Error: " + e.message);
+				btn.innerText = "❌ Error";
+			}
 
-		    setTimeout(() => {
-		        btn.innerText = orig;
-		        btn.disabled = false;
-		    }, 4000);
+			setTimeout(() => {
+				btn.innerText = orig;
+				btn.disabled = false;
+			}, 4000);
 		}
 
 		// --- FETCH SYSTEM VERSIONS ---
 		document.addEventListener('DOMContentLoaded', async() => {
-		    try {
-		        const res = await fetch('/api/admin/system_versions');
-		        if (res.ok) {
-		            const versions = await res.json();
-		            document.getElementById('badge-app-text').innerText = `${versions.app}`;
-		            document.getElementById('badge-mass-text').innerText = `v${versions.mass}`;
-		            document.getElementById('tz-display').innerText = `TZ: ${versions.timezone}`;
-		        }
-		    } catch (e) {
-		        console.error("[UI] Failed to load system versions: ", e);
-		    }
+			try {
+				const res = await fetch('/api/admin/system_versions');
+				if (res.ok) {
+					const versions = await res.json();
+					document.getElementById('badge-app-text').innerText = `${versions.app}`;
+					document.getElementById('badge-mass-text').innerText = `v${versions.mass}`;
+					document.getElementById('tz-display').innerText = `TZ: ${versions.timezone}`;
+				}
+			} catch (e) {
+				console.error("[UI] Failed to load system versions: ", e);
+			}
 		});
 
 		// ==========================================
@@ -1046,80 +1054,80 @@
 		let activePairs = []; // Track saved pairs to disable them in dropdowns
 
 		function initStereoUI(devices) {
-		    st10Speakers = devices.filter(s => s.type === 'SoundTouch 10');
+			st10Speakers = devices.filter(s => s.type === 'SoundTouch 10');
 
-		    // --- INJECT DUMMIES FOR TESTING ---
-		    st10Speakers.push({
-		        ip: "10.0.0.91",
-		        name: "Dummy ST10 (Alpha)",
-		        type: "SoundTouch 10"
-		    }, {
-		        ip: "10.0.0.92",
-		        name: "Dummy ST10 (Bravo)",
-		        type: "SoundTouch 10"
-		    }, {
-		        ip: "10.0.0.93",
-		        name: "Dummy ST10 (Charlie)",
-		        type: "SoundTouch 10"
-		    }, {
-		        ip: "10.0.0.94",
-		        name: "Dummy ST10 (Delta)",
-		        type: "SoundTouch 10"
-		    });
+			// --- INJECT DUMMIES FOR TESTING ---
+			st10Speakers.push({
+				ip: "10.0.0.91",
+				name: "Dummy ST10 (Alpha)",
+				type: "SoundTouch 10"
+			}, {
+				ip: "10.0.0.92",
+				name: "Dummy ST10 (Bravo)",
+				type: "SoundTouch 10"
+			}, {
+				ip: "10.0.0.93",
+				name: "Dummy ST10 (Charlie)",
+				type: "SoundTouch 10"
+			}, {
+				ip: "10.0.0.94",
+				name: "Dummy ST10 (Delta)",
+				type: "SoundTouch 10"
+			});
 
-		    fetchStereoPairs();
+			fetchStereoPairs();
 		}
 
 		function populateStereoDropdowns() {
-		    const leftSelect = document.getElementById('leftSpeakerSelect');
-		    const rightSelect = document.getElementById('rightSpeakerSelect');
-		    if (!leftSelect || !rightSelect)
-		        return;
+			const leftSelect = document.getElementById('leftSpeakerSelect');
+			const rightSelect = document.getElementById('rightSpeakerSelect');
+			if (!leftSelect || !rightSelect)
+				return;
 
-		    const leftVal = leftSelect.value;
-		    const rightVal = rightSelect.value;
+			const leftVal = leftSelect.value;
+			const rightVal = rightSelect.value;
 
-		    leftSelect.innerHTML = '<option value="" disabled selected>Select Left ST10...</option>';
-		    rightSelect.innerHTML = '<option value="" disabled selected>Select Right ST10...</option>';
+			leftSelect.innerHTML = '<option value="" disabled selected>Select Left ST10...</option>';
+			rightSelect.innerHTML = '<option value="" disabled selected>Select Right ST10...</option>';
 
-		    // Build a quick lookup of IPs that are already in a saved pair
-		    const pairedIps = new Set();
-		    activePairs.forEach(p => {
-		        pairedIps.add(p.leftIp);
-		        pairedIps.add(p.rightIp);
-		    });
+			// Build a quick lookup of IPs that are already in a saved pair
+			const pairedIps = new Set();
+			activePairs.forEach(p => {
+				pairedIps.add(p.leftIp);
+				pairedIps.add(p.rightIp);
+			});
 
-		    st10Speakers.forEach(spk => {
-		        const isAlreadyPaired = pairedIps.has(spk.ip);
+			st10Speakers.forEach(spk => {
+				const isAlreadyPaired = pairedIps.has(spk.ip);
 
-		        // 🌟 THE FIX: Use originalName if available, fallback to regular name
-		        const displayName = spk.originalName || spk.name;
+				// 🌟 THE FIX: Use originalName if available, fallback to regular name
+				const displayName = spk.originalName || spk.name;
 
-		        // Build Left Option
-		        const optLeft = new Option(displayName, spk.ip);
-		        if (isAlreadyPaired || spk.ip === rightVal) {
-		            optLeft.disabled = true;
-		            optLeft.style.color = 'var(--text-secondary)';
-		            optLeft.style.fontStyle = 'italic';
-		            if (isAlreadyPaired)
-		                optLeft.text += ' (Already Paired)';
-		        }
-		        leftSelect.add(optLeft);
+				// Build Left Option
+				const optLeft = new Option(displayName, spk.ip);
+				if (isAlreadyPaired || spk.ip === rightVal) {
+					optLeft.disabled = true;
+					optLeft.style.color = 'var(--text-secondary)';
+					optLeft.style.fontStyle = 'italic';
+					if (isAlreadyPaired)
+						optLeft.text += ' (Already Paired)';
+				}
+				leftSelect.add(optLeft);
 
-		        // Build Right Option
-		        const optRight = new Option(displayName, spk.ip);
-		        if (isAlreadyPaired || spk.ip === leftVal) {
-		            optRight.disabled = true;
-		            optRight.style.color = 'var(--text-secondary)';
-		            optRight.style.fontStyle = 'italic';
-		            if (isAlreadyPaired)
-		                optRight.text += ' (Already Paired)';
-		        }
-		        rightSelect.add(optRight);
-		    });
+				// Build Right Option
+				const optRight = new Option(displayName, spk.ip);
+				if (isAlreadyPaired || spk.ip === leftVal) {
+					optRight.disabled = true;
+					optRight.style.color = 'var(--text-secondary)';
+					optRight.style.fontStyle = 'italic';
+					if (isAlreadyPaired)
+						optRight.text += ' (Already Paired)';
+				}
+				rightSelect.add(optRight);
+			});
 
-		    leftSelect.value = leftVal || '';
-		    rightSelect.value = rightVal || '';
+			leftSelect.value = leftVal || '';
+			rightSelect.value = rightVal || '';
 		}
 
 		document.getElementById('leftSpeakerSelect')?.addEventListener('change', populateStereoDropdowns);
@@ -1127,33 +1135,33 @@
 
 
 		async function fetchStereoPairs() {
-		    try {
-		        //  Added /admin
-		        const res = await fetch('/api/admin/stereo-pairs');
-		        if (!res.ok) return;
-		        const pairs = await res.json();
-		        renderStereoPairs(pairs);
-		        populateStereoDropdowns(); // Re-disables IPs
-		    } catch (e) {}
+			try {
+				//  Added /admin
+				const res = await fetch('/api/admin/stereo-pairs');
+				if (!res.ok) return;
+				const pairs = await res.json();
+				renderStereoPairs(pairs);
+				populateStereoDropdowns(); // Re-disables IPs
+			} catch (e) {}
 		}
 
 		function renderStereoPairs(pairs) {
-		    const list = document.getElementById('activeStereoPairsList');
-		    activePairs = pairs; // 🌟 FIX: Ensure the global tracking array stays updated
-		    document.getElementById('stereoPairCount').innerText = `${pairs.length} Pairs`;
+			const list = document.getElementById('activeStereoPairsList');
+			activePairs = pairs; // 🌟 FIX: Ensure the global tracking array stays updated
+			document.getElementById('stereoPairCount').innerText = `${pairs.length} Pairs`;
 
-		    if (pairs.length === 0) {
-		        list.innerHTML = '<li style="padding: 10px; background: rgba(0,0,0,0.1); color: var(--text); opacity: 0.7; font-style: italic;">No active pairings found.</li>';
-		        return;
-		    }
+			if (pairs.length === 0) {
+				list.innerHTML = '<li style="padding: 10px; background: rgba(0,0,0,0.1); color: var(--text); opacity: 0.7; font-style: italic;">No active pairings found.</li>';
+				return;
+			}
 
-		    // 🌟 FIX: Helper function to look up the real hardware name by IP
-		    const getRealName = (ip) => {
-		        const spk = st10Speakers.find(s => s.ip === ip);
-		        return spk ? (spk.originalName || spk.name) : ip;
-		    };
+			// 🌟 FIX: Helper function to look up the real hardware name by IP
+			const getRealName = (ip) => {
+				const spk = st10Speakers.find(s => s.ip === ip);
+				return spk ? (spk.originalName || spk.name) : ip;
+			};
 
-		    list.innerHTML = pairs.map(p => `
+			list.innerHTML = pairs.map(p => `
 				<li style="padding: 12px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
 					<div>
 						<strong style="color: var(--text); font-size: 1.1em;">${p.name}</strong><br>
@@ -1167,88 +1175,88 @@
 		}
 
 		document.getElementById('saveStereoPairBtn')?.addEventListener('click', async() => {
-		    const leftSelect = document.getElementById('leftSpeakerSelect');
-		    const rightSelect = document.getElementById('rightSpeakerSelect');
-		    const nameInput = document.getElementById('pairNameInput');
+			const leftSelect = document.getElementById('leftSpeakerSelect');
+			const rightSelect = document.getElementById('rightSpeakerSelect');
+			const nameInput = document.getElementById('pairNameInput');
 
-		    const leftIp = leftSelect.value;
-		    const rightIp = rightSelect.value;
-		    const name = nameInput.value.trim();
+			const leftIp = leftSelect.value;
+			const rightIp = rightSelect.value;
+			const name = nameInput.value.trim();
 
-		    if (!leftIp || !rightIp || !name)
-		        return alert("Select both speakers and provide a name.");
+			if (!leftIp || !rightIp || !name)
+				return alert("Select both speakers and provide a name.");
 
-		    if (!confirm(`Save "${name}" as a stereo pair?\n\nThis will reboot BOTH speakers to apply the left/right audio separation.`)) 
-		        return;
+			if (!confirm(`Save "${name}" as a stereo pair?\n\nThis will reboot BOTH speakers to apply the left/right audio separation.`)) 
+				return;
 
-		    const btn = document.getElementById('saveStereoPairBtn');
-		    const origText = btn.innerHTML;
-		    btn.innerHTML = `⏳ Saving...`;
-		    btn.disabled = true;
+			const btn = document.getElementById('saveStereoPairBtn');
+			const origText = btn.innerHTML;
+			btn.innerHTML = `⏳ Saving...`;
+			btn.disabled = true;
 
-		    try {
-		        // FIXED PATH: Added /admin
-		        const res = await fetch('/api/admin/stereo-pairs', {
-		            method: 'POST',
-		            headers: { 'Content-Type': 'application/json' },
-		            body: JSON.stringify({ leftIp, rightIp, name })
-		        });
+			try {
+				// FIXED PATH: Added /admin
+				const res = await fetch('/api/admin/stereo-pairs', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ leftIp, rightIp, name })
+				});
 
-		        if (res.ok) {
+				if (res.ok) {
 
 				// 🌟 AUTOMATED TARGETED REBOOTS (Ignores 10.0.0.9x Dummies)
-		        if (!leftIp.startsWith('10.0.0.9')) {
-		            fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: leftIp }) });
-		        }
-		        if (!rightIp.startsWith('10.0.0.9')) {
-		            fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: rightIp }) });
-		        }
-		            
-		            alert("✅ Pair saved! Reboot Commands sent to both speakers.\n\nThe network providers will aggressively reload in 90 seconds.");
+				if (!leftIp.startsWith('10.0.0.9')) {
+					fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: leftIp }) });
+				}
+				if (!rightIp.startsWith('10.0.0.9')) {
+					fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: rightIp }) });
+				}
+					
+					alert("✅ Pair saved! Reboot Commands sent to both speakers.\n\nThe network providers will aggressively reload in 90 seconds.");
 
-		            nameInput.value = '';
-		            leftSelect.value = '';
-		            rightSelect.value = '';
-		            fetchStereoPairs();
-		        } else {
-		            alert("❌ Failed to save pairing to the server.");
-		        }
-		    } catch (e) {
-		        alert("❌ Network Error: Could not reach the server.");
-		    }
-		    
-		    btn.innerHTML = origText;
-		    btn.disabled = false;
+					nameInput.value = '';
+					leftSelect.value = '';
+					rightSelect.value = '';
+					fetchStereoPairs();
+				} else {
+					alert("❌ Failed to save pairing to the server.");
+				}
+			} catch (e) {
+				alert("❌ Network Error: Could not reach the server.");
+			}
+			
+			btn.innerHTML = origText;
+			btn.disabled = false;
 		});
 
 		async function deleteStereoPair(id, leftIp, rightIp) {
-		    if (!confirm("Are you sure you want to delete this stereo pair?\n\nThis will reboot BOTH speakers to clear their stereo roles.")) 
-		        return;
+			if (!confirm("Are you sure you want to delete this stereo pair?\n\nThis will reboot BOTH speakers to clear their stereo roles.")) 
+				return;
 
-		    try {
-		        // FIXED PATH: Added /admin
-		        await fetch(`/api/admin/stereo-pairs/${id}`, { method: 'DELETE' });
-		        
+			try {
+				// FIXED PATH: Added /admin
+				await fetch(`/api/admin/stereo-pairs/${id}`, { method: 'DELETE' });
+				
 				// 🌟 AUTOMATED TARGETED REBOOTS (Ignores 10.0.0.9x Dummies)
-		        if (!leftIp.startsWith('10.0.0.9')) {
-		            fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: leftIp }) });
-		        }
-		        if (!rightIp.startsWith('10.0.0.9')) {
-		            fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: rightIp }) });
-		        }
-		        
-		        alert("✅ Pair deleted! Telnet Reboot Commands sent to both speakers.\n\nThey will return to standalone mode shortly.");
-		        fetchStereoPairs();
-		    } catch (e) {
-		        alert("❌ Error deleting pair.");
-		    }
+				if (!leftIp.startsWith('10.0.0.9')) {
+					fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: leftIp }) });
+				}
+				if (!rightIp.startsWith('10.0.0.9')) {
+					fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: rightIp }) });
+				}
+				
+				alert("✅ Pair deleted! Telnet Reboot Commands sent to both speakers.\n\nThey will return to standalone mode shortly.");
+				fetchStereoPairs();
+			} catch (e) {
+				alert("❌ Error deleting pair.");
+			}
 		}
 
 		// ==========================================
 		// FINAL EXECUTION COMMANDS
 		// ==========================================
 		document.addEventListener('DOMContentLoaded', () => {
-		    loadTools();
+			loadTools();
 		});
 	</script>
 </body>
