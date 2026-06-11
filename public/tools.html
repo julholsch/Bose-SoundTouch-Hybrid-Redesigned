@@ -83,7 +83,7 @@
 							<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
 							<div id="sortable-list" class="sortable-list"></div>
 						</div>
-						<button class="btn-primary" onclick="saveSearchOrder()" style="background: #3498db;">💾 Save Layout Order</button>
+						<button class="btn-primary" onclick="saveSearchOrder()" style="background: var(--card-border-accent-clr);">💾 Save Layout Order</button>
 					</div>
 
 					<div class="inner-panel" >
@@ -109,7 +109,7 @@
 								<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta: (works so far... Needs no speaker config/inject/handskake!)</label>
 							</div>
 						</div>
-						<button class="btn-primary" style="background: var(--accent);" onclick="savePreferences()">💾 Save Automation Rules</button>
+						<button class="btn-primary" style="background: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
 					</div>
 				</div>
 			</section> 
@@ -185,7 +185,7 @@
 					</div>
 					<div class="card-sub-heading">Captures the last 350 console events from the Node.js server.</div>
 				</div>			
-				<div id="log-container" class="log-container">
+				<div id="log-container" class="inner-collapse-container">
 					<textarea id="live-log-viewer" class="console-preview" readonly></textarea>
 					
 					<div class="log-controls">
@@ -207,7 +207,7 @@
 			</section>
 							
 			<section id="stereo-pairing" class="tool-cards card" style="--card-border-accent-clr: #f39c12;">
-				<div class="card-header"  onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
+				<div class="card-header" onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
 					<div class="card-heading-wrapper">
 						<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
 						<span id="log-chevron">▼</span>
@@ -217,38 +217,39 @@
 					</div>
 					<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
 				</div>				
-				<div id="stereoPairingCollapse" style="display: none; margin-top: 15px;">
-					<h6 style="font-weight: bold; color: var(--text); margin-bottom: 10px;">Active Combinations</h6>
-					<ul id="activeStereoPairsList" style="list-style: none; padding: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
-						<li style="padding: 10px; background: var(--input-bg); color: var(--text-secondary); font-style: italic;">No active pairings found.</li>
-					</ul>
-					<span id="stereoPairCount" style="background: var(--input-bg); padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.9em; border: 1px solid var(--border);">0 Pairs</span>
+				<div id="stereoPairingCollapse" class="inner-collapse-container">
+					<h4 class="container-heading">Active Combinations</h4>
+					<div class="active-pairs-wrapper">
+						<ul id="activeStereoPairsList">
+							<li class="no-active-pair-li-element">No active pairings found.</li>
+						</ul>
+						<span id="stereoPairCount">0 Pairs</span>
+					</div>
 
-					<hr style="border-color: var(--border); margin: 20px 0;">
+					<hr style="border-color: var(--border); margin: 10px 0;">
 
-					<h6 style="font-weight: bold; color: var(--text); margin-bottom: 10px;">Create New Pair</h6>
-					<div style="display: flex; align-items: flex-end; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-						<div style="flex-grow: 1; min-width: 150px;">
-							<label for="leftSpeakerSelect" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">LEFT CHANNEL</label>
-							<select id="leftSpeakerSelect" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+					<h4 class="container-heading">Create New Pair</h4>
+					<div class="pairing-setup-wrapper">
+						<div class="pairing-setup-column">
+							<label for="leftSpeakerSelect">LEFT CHANNEL</label>
+							<select id="leftSpeakerSelect">
 								<option value="" disabled selected>Select ST10...</option>
 							</select>
 						</div>
-						<div style="flex-grow: 1; min-width: 150px;">
-							<label for="rightSpeakerSelect" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">RIGHT CHANNEL</label>
-							<select id="rightSpeakerSelect" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+						<div class="pairing-setup-column">
+							<label for="rightSpeakerSelect">RIGHT CHANNEL</label>
+							<select id="rightSpeakerSelect">
 								<option value="" disabled selected>Select ST10...</option>
 							</select>
 						</div>
-						<div style="flex-grow: 1; min-width: 150px;">
-							<label for="pairNameInput" style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">PAIR NAME</label>
-							<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+						<div class="pairing-setup-column">
+							<label for="pairNameInput">PAIR NAME</label>
+							<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo">
 						</div>
-						<div>
-							<button id="saveStereoPairBtn" class="btn-primary" style="background:#f39c12;">
-								💾 Save Pair
-							</button>
-						</div>
+						<button id="saveStereoPairBtn" class="btn-primary" style="background: var(--card-border-accent-clr)">
+							💾 Save Pair
+						</button>
+
 					</div>
 				</div>
 			</section>
@@ -262,7 +263,7 @@
 					</div>
 					<div class="card-sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
 				</div>				
-				<div id="wifi-container" style="display: none; margin-top: 15px;">
+				<div id="wifi-container" class="inner-collapse-container">
 					<div class="warning-box">
 						<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
 					</div>
@@ -1130,7 +1131,7 @@
 			document.getElementById('stereoPairCount').innerText = `${pairs.length} Pairs`;
 
 			if (pairs.length === 0) {
-				list.innerHTML = '<li style="padding: 10px; background: rgba(0,0,0,0.1); color: var(--text); opacity: 0.7; font-style: italic;">No active pairings found.</li>';
+				list.innerHTML = '<li class="no-active-pairs-li-element">No active pairings found.</li>';
 				return;
 			}
 
@@ -1141,12 +1142,12 @@
 			};
 
 			list.innerHTML = pairs.map(p => `
-				<li style="padding: 12px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+				<li class="active-pairs-li-element">
 					<div>
-						<strong style="color: var(--text); font-size: 1.1em;">${p.name}</strong><br>
-						<small style="color: var(--text-secondary);">Left: ${getRealName(p.leftIp)} | Right: ${getRealName(p.rightIp)}</small>
+						<strong>${p.name}</strong><br>
+						<small>Left: ${getRealName(p.leftIp)} | Right: ${getRealName(p.rightIp)}</small>
 					</div>
-					<button class="btn-sm" style="background: var(--danger); color: white; border: none; cursor: pointer;" onclick="deleteStereoPair('${p.id}', '${p.leftIp}', '${p.rightIp}')">
+					<button class="btn-sm" onclick="deleteStereoPair('${p.id}', '${p.leftIp}', '${p.rightIp}')">
 						🗑️ Delete
 					</button>
 				</li>

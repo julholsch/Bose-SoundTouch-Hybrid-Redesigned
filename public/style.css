@@ -8,6 +8,13 @@
   box-sizing: border-box;
 }
 
+input[type="text"],
+input[type="number"],
+select {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
 /* --- THE "SNAPPY" ENFORCER --- */
 
 button,
@@ -30,9 +37,10 @@ input[type=range] {
 
 :root {
   /* DARK MODE (Default) */
-  --bg: #0d0d0d;
-  --card: #181818b9;
+  --bg: #161616;
+  --card: #252525b9;
   --text: #e0e0e0;
+  --btn-text-clr: #000000;
   --text-secondary: #b0b0b0;
   --accent: #2ecc71;
 
@@ -65,17 +73,10 @@ input[type=range] {
   --btn-hover-bg: #333;
   --btn-hover-text: #fff;
   --console-text: #0f0;
-
-  /* Matrix Green for Dark Mode */
 }
 
 body.light-mode {
-  /*    --bg: #f5f6fa;     
-     --bg: #ececec;              
-    --card: #ffffff;
-    --panel-bg: #f8f9fa;
-	--border: #dadce0;  
-    --panel-border: #dadce0;	 */
+  /* Light Mode*/
   --bg: #dcdcdc;
 
   /* Darker main background */
@@ -90,6 +91,7 @@ body.light-mode {
   /* Darker, more visible borders */
   --panel-border: #c0c0c0;
   --text: #202124;
+  --btn-text-clr: #ffffff;
   --nav-hover: #e8eaed;
   --input-bg: #f1f3f4;
   --input-text: #202124;
@@ -103,9 +105,6 @@ body.light-mode {
   --btn-hover-bg: #dcdcdc;
   --btn-hover-text: #000;
   --console-text: var(--input-text);
-
-  /* Standard text color */
-  /* --console-text: #1a1a1a; /* custom dark grey/black JUST for the console; */
 }
 
 body {

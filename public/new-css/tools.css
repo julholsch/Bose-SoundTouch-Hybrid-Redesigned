@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   /* DARK MODE (Default) */
   --bg: #161616;
@@ -165,6 +171,8 @@ textarea:focus {
   justify-content: space-between;
   align-items: center;
 
+  box-sizing: unset;
+
   height: 50px;
   padding: 15px 25px;
 
@@ -230,15 +238,15 @@ textarea:focus {
   transition: all 0.2s;
 
   cursor: pointer;
-  
+
   &:hover {
     color: var(--text);
     background: var(--nav-hover);
   }
-  
+
   &.active {
     border-color: rgba(46, 204, 113, 0.2);
-  
+
     color: var(--accent);
     background: rgba(46, 204, 113, 0.1);
   }
@@ -259,6 +267,7 @@ textarea:focus {
 
   flex-direction: column;
   gap: 15px;
+
   padding: 20px;
 
   border: 1px solid var(--border);
@@ -289,7 +298,7 @@ textarea:focus {
   margin-bottom: 5px;
 
   text-align: left;
-  
+
   &.toggable {
     cursor: pointer;
     user-select: none;
@@ -303,10 +312,10 @@ textarea:focus {
   align-items: center;
 
   width: 100%;
-  
+
   .log-chevron {
     font-size: 1.2em;
-  
+
     color: var(--text-secondary);
   }
 }
@@ -345,7 +354,6 @@ textarea:focus {
   align-items: stretch;
   gap: 10px;
 
-
   padding: 15px;
 
   border: 1px solid var(--panel-border);
@@ -361,13 +369,14 @@ textarea:focus {
 
 .inner-panel-heading {
   display: flex;
-  align-self: flex-start;
-  justify-self: flex-start;
+
   align-items: center;
+  align-self: flex-start;
 
   font-weight: bold;
 
   color: var(--text);
+  justify-self: flex-start;
 }
 
 .inner-panel-sub-heading {
@@ -396,11 +405,11 @@ textarea:focus {
   display: flex;
 
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
   gap: 10px;
-  
+
   div {
     flex-grow: 1;
   }
@@ -427,33 +436,13 @@ textarea:focus {
 
   color: var(--text);
   background: var(--panel-bg);
-  
+
   img {
     width: auto;
-  
+
     height: 10px;
-  
+
     opacity: 0.8;
-  }
-}
-
-.btn-secondary {
-  padding: 6px 12px;
-
-  border: 1px solid var(--btn-border);
-
-  border-radius: 6px;
-  font-size: 0.85em;
-
-  font-weight: bold;
-
-  color: var(--btn-text);
-  background: var(--btn-bg);
-  
-  &:hover {
-    border-color: #888;
-  
-    color: var(--text);
   }
 }
 
@@ -523,22 +512,22 @@ textarea:focus {
   background-color: var(--input-bg);
 
   cursor: pointer;
-  
+
   &:checked {
     border-color: var(--accent) !important;
-  
+
     background-color: var(--accent) !important;
-    
+
     &::after {
       content: '✔';
       position: absolute;
       top: 50%;
       left: 50%;
-    
+
       font-size: 13px;
-    
+
       color: #000;
-    
+
       transform: translate(-50%, -50%);
     }
   }
@@ -567,46 +556,55 @@ textarea:focus {
   justify-content: center;
   align-items: stretch;
   gap: 10px;
-  
+
   .warning-box {
     flex-grow: 1;
-  
+
     label {
       display: flex;
-  
+
       align-items: center;
       gap: 6px;
-  
+
       margin-bottom: 8px;
       font-size: 0.85em;
-  
+
       font-weight: bold;
-  
+
       color: var(--text);
-  
+
       cursor: pointer;
     }
-  
+
     select {
       width: 100%;
-  
+
       padding: 6px;
-  
+
       border: 1px solid #777;
-  
+
       border-radius: 4px;
       font-size: 0.85em;
-  
+
       color: var(--text);
       background: var(--bg-color);
     }
   }
 }
 
-.log-container {
+.inner-collapse-container {
   display: none;
+
   flex-direction: column;
   gap: 15px;
+
+  .container-heading {
+    margin-bottom: 10px;
+
+    font-weight: bold;
+
+    color: var(--text);
+  }
 }
 
 .console-preview {
@@ -639,19 +637,20 @@ textarea:focus {
 
 .log-controls {
   display: flex;
+
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   gap: 15px;
-  width: 100%;
 
+  width: 100%;
 
   label {
     display: flex;
+
     flex-direction: row;
-    align-items: center;
     justify-content: center;
-    
+    align-items: center;
     gap: 6px;
 
     font-size: 0.9em;
@@ -673,35 +672,32 @@ textarea:focus {
   gap: 15px;
 
   margin: 15px 0;
-  
+
   label {
     display: block;
-  
+
     margin-bottom: 5px;
     font-size: 0.75em;
-  
+
     color: var(--text);
-  
+
     opacity: 0.8;
   }
-  
+
   input {
     box-sizing: border-box;
     width: 100%;
-  
+
     padding: 8px;
-  
+
     border: 1px solid #777;
-  
+
     border-radius: 4px;
-  
+
     color: var(--text);
     background: var(--bg-color);
   }
 }
-
-
-
 
 .stream-controls {
   display: flex;
@@ -717,6 +713,114 @@ textarea:focus {
   border-radius: 6px;
 
   background: var(--panel-bg);
+}
+
+.active-pairs-wrapper {
+  ul {
+    overflow: hidden;
+
+    padding: 0;
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+    margin-bottom: 20px;
+
+    list-style: none;
+  }
+  
+  .no-active-pair-li-element {
+    padding: 10px;
+
+    font-style: italic;
+
+    color: var(--text-secondary);
+    background: var(--input-bg);
+  }
+
+  .active-pairs-li-element {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: var(--card);
+
+
+    strong {
+      font-size: 1.1em;
+
+      color: var(--text);
+    }
+
+    small {
+      color: var(--text-secondary);
+    }
+
+    button {
+      border: none;
+
+      color: white;
+      background: var(--danger);
+
+      cursor: pointer;
+    }
+  }
+
+  #stereoPairCount {
+    padding: 4px 8px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+
+    background: var(--input-bg);
+  }
+}
+
+.pairing-setup-wrapper {
+  display: flex;
+
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  align-items: flex-end;
+  gap: 10px;
+
+  .pairing-setup-column {
+    flex-grow: 1;
+
+    min-width: 200px;
+
+    label {
+      display: block;
+
+      font-size: 0.75em;
+
+      color: var(--text-secondary);
+    }
+
+    select,
+    input {
+      width: 100%;
+
+      height: 40px;
+      padding: 0 10px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 6px;
+
+      color: var(--input-text);
+      background: var(--input-bg);
+    }
+  }
 }
 
 button {
@@ -767,7 +871,7 @@ button {
   }
 }
 
-button.primary {
+/* button.primary {
   border: none;
 
   font-weight: bold;
@@ -777,6 +881,26 @@ button.primary {
   
   &:hover {
     opacity: 0.9;
+  }
+} */
+
+.btn-secondary {
+  padding: 6px 12px;
+
+  border: 1px solid var(--btn-border);
+
+  border-radius: 6px;
+  font-size: 0.85em;
+
+  font-weight: bold;
+
+  color: var(--btn-text);
+  background: var(--btn-bg);
+
+  &:hover {
+    border-color: #888;
+
+    color: var(--text);
   }
 }
 
@@ -923,114 +1047,114 @@ button:disabled,
   box-shadow: 0 10px 30px rgba(0,0,0,0.7);
 
   transform: translateX(-50%);
-  
+
   .banner-header {
     display: flex;
-  
+
     justify-content: space-between;
     align-items: flex-start;
   }
-  
+
   .banner-title {
     font-size: 1.1em;
-  
+
     font-weight: bold;
-  
+
     color: #e74c3c;
   }
-  
+
   .banner-close {
     padding: 0;
-  
+
     border: none;
-  
+
     margin-top: -4px;
     font-size: 1.5em;
-  
+
     line-height: 1;
-  
+
     color: #aaa;
     background: none;
-  
+
     cursor: pointer;
   }
-  
+
   .banner-body {
     font-size: 0.9em;
-  
+
     line-height: 1.4;
-  
+
     color: #ddd;
   }
-  
+
   ul {
     padding-left: 20px;
-  
+
     margin: 8px 0 12px 0;
-  
+
     color: #bbb;
   }
-  
+
   li {
     margin-bottom: 8px;
   }
-  
+
   strong {
     color: #fff;
   }
-  
+
   .banner-actions {
     display: flex;
-  
+
     justify-content: flex-end;
     gap: 10px;
-  
+
     margin-top: 5px;
   }
-  
+
   .btn-dismiss {
     padding: 8px 15px;
-  
+
     border: 1px solid #555;
-  
+
     border-radius: 4px;
     font-size: 0.9em;
-  
+
     color: #ccc;
     background: transparent;
-  
+
     cursor: pointer;
   }
-  
+
   .btn-restart {
     padding: 8px 15px;
-  
+
     border: none;
-  
+
     border-radius: 4px;
     font-size: 0.9em;
-  
+
     font-weight: bold;
-  
+
     color: #fff;
     background: #e74c3c;
-  
+
     cursor: pointer;
   }
-  
+
   .btn-reconnect {
     padding: 8px 15px;
-  
+
     border: none;
-  
+
     border-radius: 4px;
     font-size: 0.9em;
-  
+
     font-weight: bold;
-  
+
     color: #fff;
     background: var(--radio);
-  
+
     cursor: pointer;
   }
 }
@@ -1101,13 +1225,13 @@ button:disabled,
 
     color: var(--btn-text);
     background: var(--btn-bg);
-    
-      &.active {
-        border-color: var(--accent) !important;
-    
-        color: black !important;
-        background: var(--accent) !important;
-      }
+
+    &.active {
+      border-color: var(--accent) !important;
+
+      color: black !important;
+      background: var(--accent) !important;
+    }
   }
 
   .stream-grid {
@@ -1118,10 +1242,10 @@ button:disabled,
   .stream-controls {
     flex-direction: column;
     align-items: stretch;
-    
+
     button {
       width: 100%;
-  
+
       margin-top: 5px;
     }
   }
