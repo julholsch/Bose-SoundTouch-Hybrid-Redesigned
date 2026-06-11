@@ -4,6 +4,17 @@
   box-sizing: border-box;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+
+  margin: 0;
+}
+
 :root {
   /* DARK MODE (Default) */
   --bg: #161616;
@@ -36,7 +47,7 @@
   --pill-bg: #333;
   --panel-bg: #111;
   --panel-border: #222;
-  --btn-bg: #222;
+  --btn-bg: #3a3a3a;
   --btn-border: #333;
   --btn-text: #ccc;
   --btn-hover-bg: #333;
@@ -97,6 +108,9 @@ body {
   margin: 0 auto;
 }
 
+a {
+}
+
 button,
 .global-link,
 .filter-pill {
@@ -129,6 +143,23 @@ textarea:focus {
   border-color: var(--accent);
 
   outline: none;
+}
+
+/* 7. DISABLED INPUTS (Global Safety) */
+
+input:disabled,
+select:disabled {
+  border-color: var(--border);
+
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+input:disabled + label {
+  color: var(--text-secondary);
+
+  opacity: 0.5;
 }
 
 .app-header {
@@ -1014,54 +1045,6 @@ button:active .nav-btn:active,
   background: rgba(46, 204, 113, 0.2) !important;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 3000;
-
-  display: none;
-
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-
-  height: 100%;
-
-  background: rgba(0,0,0,0.85);
-
-  backdrop-filter: blur(4px);
-}
-
-.modal-header {
-  display: flex;
-
-  justify-content: space-between;
-
-  margin-bottom: 20px;
-}
-
-.modal-content {
-  width: 90%;
-
-  max-width: 600px;
-  padding: 25px;
-
-  border: 1px solid var(--border);
-
-  border-radius: 12px;
-
-  background: var(--card);
-
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-}
-
-.modal-content h2,
-.modal-content h3 {
-  color: var(--title-color) !important;
-}
-
 button:disabled,
 .btn:disabled {
   cursor: default !important;
@@ -1072,9 +1055,185 @@ button:disabled,
   cursor: wait !important;
 }
 
-/* =========================================
-   11. PDF VIEWER MODAL (Responsive)
-   ========================================= */
+/* 
+=========================================
+5. Modal
+========================================= 
+*/
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3000;
+
+  display: none;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100dvw;
+
+  height: 100dvh;
+
+  background: rgba(0,0,0,0.85);
+
+  backdrop-filter: blur(4px);
+}
+
+.modal-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background-color: transparent;
+
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px;
+  padding: 10px;
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: 0;
+    z-index: -1;
+    backdrop-filter: blur(15px);
+    width: 100%;
+    height: calc(100% + 5px);
+      /* Create the gradient fade */
+    -webkit-mask-image: linear-gradient(
+                to bottom, 
+                rgba(0, 0, 0, 1) 10%,
+                rgba(0, 0, 0, .75) 80%,
+                rgba(0, 0, 0, 0) 100%
+            );
+    mask-image: linear-gradient(
+                to bottom, 
+                rgba(0, 0, 0, 1) 10%,
+                rgba(0, 0, 0, .75) 80%,
+                rgba(0, 0, 0, 0) 100%
+            );
+    
+  }
+}
+
+.modal-card {
+  display: flex;
+  overflow-y: auto;
+
+  flex-direction: column;
+
+  width: 90%;
+
+  max-width: 600px;
+  max-height: 90dvh;
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  background: var(--card);
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+
+  h2,
+  h3 {
+    color: var(--title-color);
+  }
+}
+
+.modal-content {
+  display: flex;
+
+  flex-direction: column;
+  
+  padding: 25px;
+}
+
+.modal-close-btn {
+  border: none;
+  outline: 0 solid transparent;
+  background-color: var(--btn-bg);
+  font-size: 1.5em;
+
+  color: var(--text);
+
+  opacity: 0.6;
+
+  cursor: pointer;
+  transition: scale .2s ease-in-out;
+  &:hover {
+    transition: all .2s ease-in-out;
+    outline: 2px solid var(--accent);
+  }
+}
+
+/*
+5.1 doc-modal
+*/
+
+.step-title {
+  display: block;
+
+  margin-bottom: 5px;
+  font-size: 0.9em;
+
+  font-weight: bold;
+  letter-spacing: 0.5px;
+
+  text-transform: uppercase;
+
+  color: var(--accent);
+}
+
+.step-box {
+  display: flex;
+
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+  gap: 2px;
+}
+
+.step-text {
+  font-size: 0.95em;
+
+  line-height: 1.6;
+
+  color: var(--text-secondary);
+
+  strong {
+    font-weight: bold;
+
+    color: var(--text);
+  }
+
+  a {
+    text-decoration: none;
+
+    color: var(--accent);
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.step-link {
+  display: block;
+
+  margin-bottom: 15px;
+  font-size: 1.1em;
+}
+
+/*
+5.2 h-modal
+*/
+/*
+5.3 pdf-modal
+*/
 
 .modal-content.pdf-mode {
   display: flex;
@@ -1106,6 +1265,9 @@ button:disabled,
   background: #fff;
 }
 
+/*
+5.4 script-modal
+*/
 /* --- MASS ERROR BANNER --- */
 
 #mass-error-banner {
@@ -1246,9 +1408,11 @@ button:disabled,
   }
 }
 
-/* =========================================
-   6. MOBILE RESPONSIVENESS
-   ========================================= */
+/* 
+=========================================
+6. MOBILE RESPONSIVENESS
+========================================= 
+*/
 
 @media (max-width: 768px) {
   .modal-content.pdf-mode {

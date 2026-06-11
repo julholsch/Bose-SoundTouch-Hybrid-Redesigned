@@ -58,9 +58,8 @@
 							<div id="tz-display" class="badge-pill">
 								🕒 TZ: Loading...
 							</div>
-							<div class="">
-								<button class="btn-secondary" onclick="toggleTheme()">🌓 Theme</button>
-							</div>
+							<button class="btn-secondary" onclick="toggleTheme()">🌓 Theme</button>
+
 						</div>
 					</div>
 
@@ -282,7 +281,7 @@
 							<label>Target:</label>
 							<select id="wifi-target"></select>
 						</div>
-						<button class="btn-primary" onclick="pushWifi(this)" style="background:#1abc9c;">📡 PUSH WI-FI</button>
+						<button class="btn-primary" onclick="pushWifi(this)" style="background: var(--card-border-accent-clr)">📡 PUSH WI-FI</button>
 					</div>
 				</div>
 			</section>
@@ -291,89 +290,93 @@
 
 
 	<div id="doc-modal" class="modal">
-		<div class="modal-content" style="width: 400px;">
+		<div class="modal-card">
 			<div class="modal-header">
-				<h2 style="margin:0;">Reference Documents</h2>
-				<button onclick="document.getElementById('doc-modal').style.display='none'" style="border:none; background:none; font-size:1.5em; color:var(--text); opacity:0.6; cursor:pointer;">&times;</button>
+				<h2>Reference Documents</h2>
+				<button onclick="document.getElementById('doc-modal').style.display='none'" class="modal-close-btn">&times;</button>
 			</div>
-			<div class="step-box">
-				<div class="step-text">
-					<a href="#" onclick="openDoc('docs/SoundTouchHybridDocumentation.pdf'); return false;" style="display:block; margin-bottom:15px; font-size:1.1em;">📄 Bose SoundTouch Hybrid Documentation</a>
-					<a href="https://www.youtube.com/watch?v=R6mbTRBEBYA" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 Demo Video</a>
-					<a href="https://www.youtube.com/watch?v=3BhAkpsZjBI" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 V2 Enhancements Demo Video</a>
-					<a href="https://www.youtube.com/watch?v=ERsoMmyOpEU" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">📺 Bose SoundTouch Hybrid 2026 V3 Enhancements Demo Video</a>
-					<a href="https://github.com/TJGigs/Bose-SoundTouch-Hybrid-2026" target="_blank" style="display:block; margin-bottom:15px; font-size:1.1em;">💻 Official GitHub Repository (Source Code)</a>
+			<div class="modal-content">
+				<div class="step-box">
+					<div class="step-text">
+						<a href="#" onclick="openDoc('docs/SoundTouchHybridDocumentation.pdf'); return false;" class="step-link">📄 Bose SoundTouch Hybrid Documentation</a>
+						<a href="https://www.youtube.com/watch?v=R6mbTRBEBYA" target="_blank" class="step-link">📺 Bose SoundTouch Hybrid 2026 Demo Video</a>
+						<a href="https://www.youtube.com/watch?v=3BhAkpsZjBI" target="_blank" class="step-link">📺 Bose SoundTouch Hybrid 2026 V2 Enhancements Demo Video</a>
+						<a href="https://www.youtube.com/watch?v=ERsoMmyOpEU" target="_blank" class="step-link">📺 Bose SoundTouch Hybrid 2026 V3 Enhancements Demo Video</a>
+						<a href="https://github.com/TJGigs/Bose-SoundTouch-Hybrid-2026" target="_blank" class="step-link">💻 Official GitHub Repository (Source Code)</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="h-modal" class="modal">
+		<div class="modal-card">
+			<div class="modal-header">
+				<h2>Manual Setup Guide</h2>
+				<button onclick="document.getElementById('h-modal').style.display='none'" class="modal-close-btn">&times;</button>
+			</div>
+			<div class="modal-content">
+				<div class="step-box">
+					<span class="step-title">📡 MANUAL WI-FI SETUP</span>
+					<div class="step-text">
+						1. Power on the speaker.<br>
+						2. Press and hold <strong>2</strong> and <strong>- (Volume Down)</strong> for 5 seconds.<br>
+						3. The Wi-Fi indicator will blink amber (Setup Mode).<br>
+						4. Connect your device to Wi-Fi: <em>"Bose SoundTouch X"</em>.<br>
+						5. Visit: <a href="http://192.168.1.1:8090" target="_blank">http://192.168.1.1:8090</a>
+					</div>
+				</div>
+				<div class="step-box">
+					<span class="step-title">🔵 MANUAL BLUETOOTH PAIRING</span>
+					<div class="step-text">
+						1. Select <strong>Bluetooth</strong> source.<br>
+						2. Hold <strong>Bluetooth/AUX</strong> button until light blinks Blue.<br>
+						3. Scan and pair on your phone.<br>
+						<strong>Clear List:</strong> Hold <strong>Bluetooth/AUX</strong> for 10s (Double Tone).
+					</div>
+				</div>
+				<div class="step-box">
+					<span class="step-title">🔄 MANUAL FACTORY RESET</span>
+					<div class="step-text">
+						<strong>SoundTouch 10, 20, 30:</strong><br>
+						Turn the speaker on. Press and hold <strong>1</strong> and <strong>- (Volume Down)</strong> for 10 seconds until the indicators blink.<br>
+						<strong>SoundTouch Wireless Link:</strong><br>
+						Press and hold the <strong>Control</strong> button on the back for 10 seconds until the Wi-Fi indicator blinks white.
+					</div>
+				</div>
+				<div class="step-box">
+				<span class="step-title">🔌 MANUAL FIRMWARE UPDATE (USB)</span>
+					<div class="step-text">
+						1. Connect the speaker to your computer via via USB/Micro-USB setup cable.<br>
+						2. Open a web browser.<br>
+						3. Visit the hidden update page: <a href="http://203.0.113.1/update.html" target="_blank">http://203.0.113.1/update.html</a><br>
+						4. Select and upload your <em>Update.stu</em> firmware file.
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div id="pdf-modal" class="modal">
-	<div class="modal-content pdf-mode">
-		<div style="display:flex; justify-content:space-between; align-items:center;">
-			<h3 style="margin:0;">Document Viewer</h3>
-			<div style="display:flex; gap:10px;">
-				<button class="btn-sm" onclick="openExternalDoc()">Open in Browser ↗</button>
-				<button onclick="closeDoc()" style="border:none; background:none; font-size:2em; color:var(--text); opacity:0.6; cursor:pointer; line-height:1;">&times;</button>
-			</div>
-		</div>
-		<object id="pdf-frame" class="pdf-frame" data="" type="application/pdf">
-			<div style="padding:20px; text-align:center; color:var(--text); opacity:0.6;">
-				Preview not available on this device.<br>
-				<button class="btn" style="margin-top:10px;" onclick="openExternalDoc()">Open PDF</button>
-			</div>
-		</object>
-	</div>
-	</div>
-
-	<div id="h-modal" class="modal">
-		<div class="modal-content">
+		<div class="modal-card pdf-mode">
 			<div class="modal-header">
-				<h2 style="margin:0;">Manual Setup Guide</h2>
-				<button onclick="document.getElementById('h-modal').style.display='none'" style="border:none; background:none; font-size:1.5em; color:var(--text); opacity:0.6; cursor:pointer;">&times;</button>
-			</div>
-			<div class="step-box">
-				<span class="step-title">📡 MANUAL WI-FI SETUP</span>
-				<div class="step-text">
-					1. Power on the speaker.<br>
-					2. Press and hold <strong>2</strong> and <strong>- (Volume Down)</strong> for 5 seconds.<br>
-					3. The Wi-Fi indicator will blink amber (Setup Mode).<br>
-					4. Connect your device to Wi-Fi: <em>"Bose SoundTouch X"</em>.<br>
-					5. Visit: <a href="http://192.168.1.1:8090" target="_blank">http://192.168.1.1:8090</a>
+				<h2>Document Viewer</h2>
+				<div style="display:flex; gap:10px;">
+					<button class="btn-sm" onclick="openExternalDoc()">Open in Browser ↗</button>
+					<button onclick="closeDoc()" class="modal-close-btn">&times;</button>
 				</div>
 			</div>
-			<div class="step-box">
-				<span class="step-title">🔵 MANUAL BLUETOOTH PAIRING</span>
-				<div class="step-text">
-					1. Select <strong>Bluetooth</strong> source.<br>
-					2. Hold <strong>Bluetooth/AUX</strong> button until light blinks Blue.<br>
-					3. Scan and pair on your phone.<br><br>
-					<strong>Clear List:</strong> Hold <strong>Bluetooth/AUX</strong> for 10s (Double Tone).
+			<object id="pdf-frame" class="pdf-frame" data="" type="application/pdf">
+				<div style="padding:20px; text-align:center; color:var(--text); opacity:0.6;">
+					Preview not available on this device.<br>
+					<button class="btn" style="margin-top:10px;" onclick="openExternalDoc()">Open PDF</button>
 				</div>
-			</div>
-			<div class="step-box">
-				<span class="step-title">🔄 MANUAL FACTORY RESET</span>
-				<div class="step-text">
-					<strong>SoundTouch 10, 20, 30:</strong><br>
-					Turn the speaker on. Press and hold <strong>1</strong> and <strong>- (Volume Down)</strong> for 10 seconds until the indicators blink.<br><br>
-					<strong>SoundTouch Wireless Link:</strong><br>
-					Press and hold the <strong>Control</strong> button on the back for 10 seconds until the Wi-Fi indicator blinks white.
-				</div>
-			</div>
-			<div class="step-box">
-			<span class="step-title">🔌 MANUAL FIRMWARE UPDATE (USB)</span>
-				<div class="step-text">
-					1. Connect the speaker to your computer via via USB/Micro-USB setup cable.<br>
-					2. Open a web browser.<br>
-					3. Visit the hidden update page: <a href="http://203.0.113.1/update.html" target="_blank">http://203.0.113.1/update.html</a><br>
-					4. Select and upload your <em>Update.stu</em> firmware file.
-				</div>
-			</div>
+			</object>
 		</div>
 	</div>
 
-	<div id="scriptModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6);">
-		<div style="background-color:#1e1e1e; color: #d4d4d4; margin:10% auto; padding:25px; border:1px solid #444; width:80%; max-width:700px; border-radius: 8px; font-family: sans-serif;">
+	<div id="scriptModal" class="modal" >
+		<div class="modal-card">
 			<h3 style="color: #fff; margin-top: 0;">Download USB WiFI Setup Script</h3>
 			<p style="color: #ffaa00; font-size: 14px; font-weight: bold; border-left: 4px solid #ffaa00; padding-left: 10px;">
 			🍎 MAC USERS: This script is for Windows only. To setup speaker Wi-Fi via Mac, Use the native Bose method by connecting to the speaker's temporary initial setup amber-light Wi-Fi network and go to http://192.168.1.1 in your browser.
