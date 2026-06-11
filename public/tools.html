@@ -18,7 +18,6 @@
 <body>
 
 	<div class="app-container">
-
 		<header class="app-header">
 			<div class="header-inner-panel">
 				<div class="app-logo">
@@ -34,14 +33,13 @@
 			</div>
 		</header>
 		<main class="tools">
-			
-			<div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
+			<section id="system-and-guides" class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
 				<div class="card-grid">
 					<div class="inner-panel" >
 						<h3 class="inner-panel-heading">📖 Guides and Help</h3>
 						<div class="theme-and-guides">
-							<button class="btn-help" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
-							<button class="btn-help" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
+							<button class="btn-secondary" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
+							<button class="btn-secondary" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
 						</div>
 					</div>
 					<div class="inner-panel" >
@@ -61,21 +59,20 @@
 								🕒 TZ: Loading...
 							</div>
 							<div class="">
-								<button class="btn-help" onclick="toggleTheme()">🌓 Theme</button>
+								<button class="btn-secondary" onclick="toggleTheme()">🌓 Theme</button>
 							</div>
 						</div>
 					</div>
 
 				</div>
-			</div>
+			</section>
 
-			<div class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
+			<section id="app-preferences" class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
 				<div class="two-column-header">
 					<div class="card-header">
 						<h3 class="card-heading">⚙️ Application Preferences</h3>
 						<span class="card-sub-heading">Configure UI layouts and background automation rules.</span>
 					</div>
-					
 				</div>
 			
 				<div class="card-grid">
@@ -84,9 +81,9 @@
 						<div>
 							<div class="inner-panel-heading">Search Menu Layout</div>
 							<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
-							<div id="sortable-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+							<div id="sortable-list" class="sortable-list"></div>
 						</div>
-						<button class="primary" onclick="saveSearchOrder()" style="width: 100%; margin-top: 15px; background: #3498db; color: white; border: none;">💾 Save Layout Order</button>
+						<button class="btn-primary" onclick="saveSearchOrder()" style="background: #3498db;">💾 Save Layout Order</button>
 					</div>
 
 					<div class="inner-panel" >
@@ -111,62 +108,52 @@
 								</div>
 								<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta: (works so far... Needs no speaker config/inject/handskake!)</label>
 							</div>
-							<button class="btn" style="background: var(--accent); color: #000; font-weight: bold; width: 100%; margin-top: 15px; border: none;" onclick="savePreferences()">💾 Save Automation Rules</button>
 						</div>
+						<button class="btn-primary" style="background: var(--accent);" onclick="savePreferences()">💾 Save Automation Rules</button>
 					</div>
 				</div>
-			</div> 
+			</section> 
 
-			<div id="system-services" class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
+			<section id="system-services" class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
 				<div class="card-header">
 					<h3 class="card-heading">⚙️ System Services</h3>
 					<div class="card-sub-heading">Manage container instances and hardware injections.</div>
 				</div>
 				
 				<div class="card-grid">
-					
 					<div class="inner-panel" >
-						<div>
-							<div class="inner-panel-heading">SoundTouch Hybrid Application</div>
-							<div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
-							
-							<div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-								<div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
-									<div class="warning-box" style="flex: 1; min-width: 140px; padding: 10px; margin-bottom: 0;">
-										<label style="font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: bold; margin-bottom: 8px;">
-											<input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
-											Force Pre-Flight NVRAM
-										</label>
-										<select id="forceSpeakerSelect" disabled style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #777; background: var(--bg-color); color: var(--text); font-size: 0.85em;">
-											<option value="all">All Speakers</option>
-										</select>
-									</div>
+						<div class="inner-panel-heading">SoundTouch Hybrid Application</div>
+						<div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
 
-									<div class="warning-box" style="flex: 1; min-width: 140px; padding: 10px; margin-bottom: 0;">
-										<label style="font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: bold; margin-bottom: 8px;">
-											<input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
-											Force Speaker Reboot
-										</label>
-										<select id="forceRebootSelect" disabled style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #777; background: var(--bg-color); color: var(--text); font-size: 0.85em;">
-											<option value="all">All Speakers</option>
-										</select>
-									</div>
+							<div class="warning-box-wrapper">
+								<div class="warning-box">
+									<label>
+										<input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+										Force Pre-Flight NVRAM
+									</label>
+									<select id="forceSpeakerSelect" disabled>
+										<option value="all">All Speakers</option>
+									</select>
 								</div>
 
-								<button class="primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; font-weight: bold; padding: 10px; background: #3498db; color: white; cursor: pointer; border-radius: 4px;" onclick="restartHybrid(this)">
-									<img src="images/hybrid_icon.png" style="height: 16px; width: auto;" alt="Icon">
-									Restart SoundTouch Hybrid
-								</button>
+								<div class="warning-box">
+									<label>
+										<input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+										Force Speaker Reboot
+									</label>
+									<select id="forceRebootSelect" disabled>
+										<option value="all">All Speakers</option>
+									</select>
+								</div>
 							</div>
-							
-							<div style="padding: 0 12px;">
-								<button class="primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; font-weight: bold; padding: 10px; background: #3498db; color: white; cursor: pointer; border-radius: 4px;" onclick="triggerManualAudit()">
-									🔍 Run Speaker Audit
-								</button>
-							</div>
-						</div>
-					</div>
-							
+							<button class="btn-primary"  onclick="restartHybrid(this)" style="background: var(--card-border-accent-clr)";>
+								<img src="images/hybrid_icon.png" alt="Icon">
+								Restart SoundTouch Hybrid
+							</button>
+						<button class="btn-primary" style="background: #3498db;" onclick="triggerManualAudit()">
+							🔍 Run Speaker Audit
+						</button>
+					</div>						
 					<div class="inner-panel" >
 						<div>
 							<div class="inner-panel-heading">Music Assistant Server</div>
@@ -174,55 +161,52 @@
 								Send a non-destructive network ping, aggressively reload protocols (temporarily stops music), or restart the container.
 							</div>
 						</div>
+
+						<button class="btn-primary" onclick="rescanMass(this)" style="background: #f39c12;">
+							🔄 Soft Rescan (Keep-Alive)
+						</button>
 						
-						<div style="display: flex; flex-direction: column; gap: 8px;">
-							<button class="btn" onclick="rescanMass(this)" style="background: #f39c12; color: white; border: none; font-weight: bold; width: 100%; padding: 10px;">
-								🔄 Soft Rescan (Keep-Alive)
-							</button>
-							
-							<button class="btn" onclick="aggressiveReloadMass(this)" style="background: #d35400; color: white; border: none; font-weight: bold; width: 100%; padding: 10px;">
-								🚨 Aggressive Reload (DLNA & AirPlay)
-							</button>
-							
-							<button class="primary" onclick="restartMass(this)" style="background:#e74c3c; color:white; display:flex; align-items:center; justify-content:center; gap:8px; width: 100%; border: none; padding: 10px;">
-								<img src="images/ma_icon.png" style="height:16px; width:auto;" alt="MA"> Restart MASS Container
-							</button>
-						</div>
+						<button class="btn-primary" onclick="aggressiveReloadMass(this)" style="background: #d35400;">
+							🚨 Aggressive Reload (DLNA & AirPlay)
+						</button>
+						
+						<button class="btn-primary" onclick="restartMass(this)" style="background:#e74c3c;">
+							<img src="images/ma_icon.png" alt="MA"> Restart MASS Container
+						</button>
 					</div>
 				</div>
-			</div>
+			</section>
 
-			<div class="tool-cards card" style="--card-border-accent-clr: #e74c3c;">
+			<section id="server-log" class="tool-cards card" style="--card-border-accent-clr: #e74c3c;">
 				<div class="card-header toggable"  onclick="toggleLogWindow()">
 					<div class="card-heading-wrapper">
 						<h3 class="card-heading">🖥️ Live Server Logs</h3>
 						<span id="log-chevron">▼</span>
 					</div>
 					<div class="card-sub-heading">Captures the last 350 console events from the Node.js server.</div>
-				</div>
-				
-				<div id="log-container" style="display: none; margin-top: 15px;">
-					<textarea id="live-log-viewer" class="console-preview" style="height: 300px;" readonly></textarea>
+				</div>			
+				<div id="log-container" class="log-container">
+					<textarea id="live-log-viewer" class="console-preview" readonly></textarea>
 					
-					<div style="display: flex; gap: 15px; margin-top: 15px; align-items: center; flex-wrap: wrap;">
-						<button class="btn" onclick="fetchLogs()">🔄 Refresh</button>
+					<div class="log-controls">
+						<button class="btn-secondary" onclick="fetchLogs()">🔄 Refresh</button>
 						
-						<label style="font-size: 0.9em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-							<input type="checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()" style="width: auto;"> 
+						<label>
+							<input type="checkbox" class="pref-checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()"> 
 							Auto-Update
 						</label>
 						
-						<label style="font-size: 0.9em; color: var(--text); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-							<input type="checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()" style="width: auto;"> 
+						<label>
+							<input type="checkbox" class="pref-checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()"> 
 							Verbose Debug
 						</label>
 						
-						<button class="btn primary" style="background:#3498db; color:white; border:none; margin-left: auto;" onclick="downloadLogs()">💾 Download .txt</button>
+						<button class="btn-primary" style="background:#3498db;" onclick="downloadLogs()">💾 Download .txt</button>
 					</div>
 				</div>
-			</div>
+			</section>
 							
-			<div class="tool-cards card" style="--card-border-accent-clr: #f39c12;">
+			<section id="stereo-pairing" class="tool-cards card" style="--card-border-accent-clr: #f39c12;">
 				<div class="card-header"  onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
 					<div class="card-heading-wrapper">
 						<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
@@ -232,8 +216,7 @@
 						Beta: Need Testers I only have 1 ST10 so need testers to provide feedback on what works/broken/behaviors/downstream impacts et.
 					</div>
 					<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
-				</div>
-				
+				</div>				
 				<div id="stereoPairingCollapse" style="display: none; margin-top: 15px;">
 					<h6 style="font-weight: bold; color: var(--text); margin-bottom: 10px;">Active Combinations</h6>
 					<ul id="activeStereoPairsList" style="list-style: none; padding: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
@@ -262,29 +245,27 @@
 							<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
 						</div>
 						<div>
-							<button id="saveStereoPairBtn" class="btn primary" style="white-space: nowrap; background:#f39c12; border:none; margin: 0; padding: 8px 15px;">
+							<button id="saveStereoPairBtn" class="btn-primary" style="background:#f39c12;">
 								💾 Save Pair
 							</button>
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
 
 
-			<div class="tool-cards card" style="--card-border-accent-clr: #1abc9c;">
+			<section id="Wi-Fi-Setting" class="tool-cards card" style="--card-border-accent-clr: #1abc9c;">
 				<div class="card-header"  onclick="toggleWifiWindow()">
 					<div class="card-heading-wrapper">
 						<h3 class="card-heading">📶 Wi-Fi Provisioning</h3>
 						<span id="wifi-chevron">▼</span>
 					</div>
 					<div class="card-sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
-				</div>
-				
+				</div>				
 				<div id="wifi-container" style="display: none; margin-top: 15px;">
-						<div class="warning-box">
-							<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
-						</div>
-
+					<div class="warning-box">
+						<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
+					</div>
 					<div class="stream-grid">
 						<div>
 							<label>NETWORK NAME (SSID)</label>
@@ -294,19 +275,17 @@
 							<label>PASSWORD</label>
 							<input type="text" id="wifi-pass" placeholder="My Wi-Fi Password">
 						</div>
-					</div>
-				
+					</div>				
 					<div class="stream-controls" style="margin-top:15px;">
 						<div style="display:flex; align-items:center; gap:10px; flex-grow: 1;">
 							<label style="color:var(--text); font-size:0.9em; white-space: nowrap;">Target:</label>
 							<select id="wifi-target" style="padding:8px; flex-grow:1; min-width:200px;"></select>
 						</div>
-						<button class="primary" onclick="pushWifi(this)" style="flex-shrink: 0; min-width:140px; background:#1abc9c; color:white;">📡 PUSH WI-FI</button>
+						<button class="btn-primary" onclick="pushWifi(this)" style="flex-shrink: 0; min-width:140px; background:#1abc9c;">📡 PUSH WI-FI</button>
 					</div>
 				</div>
-			</div>
+			</section>
 		</main>
-
 	</div>
 
 
@@ -620,7 +599,7 @@
 
 			if (container.style.display === 'none') {
 				// Open the window
-				container.style.display = 'block';
+				container.style.display = 'flex';
 				chevron.innerText = '▲';
 				fetchLogs(); // Fetch immediately on open
 
