@@ -277,12 +277,12 @@
 							<input type="text" id="wifi-pass" placeholder="My Wi-Fi Password">
 						</div>
 					</div>				
-					<div class="stream-controls" style="margin-top:15px;">
-						<div style="display:flex; align-items:center; gap:10px; flex-grow: 1;">
-							<label style="color:var(--text); font-size:0.9em; white-space: nowrap;">Target:</label>
-							<select id="wifi-target" style="padding:8px; flex-grow:1; min-width:200px;"></select>
+					<div class="stream-controls">
+						<div>
+							<label>Target:</label>
+							<select id="wifi-target"></select>
 						</div>
-						<button class="btn-primary" onclick="pushWifi(this)" style="flex-shrink: 0; min-width:140px; background:#1abc9c;">📡 PUSH WI-FI</button>
+						<button class="btn-primary" onclick="pushWifi(this)" style="background:#1abc9c;">📡 PUSH WI-FI</button>
 					</div>
 				</div>
 			</section>
@@ -453,11 +453,11 @@
 			container.style.flexWrap = 'wrap';
 
 			container.innerHTML = currentSearchOrder.map((key, index) => `
-			<div style="display: flex; flex-direction: column; align-items: center; background: rgba(128,128,128,0.1); padding: 12px 2px; border-radius: 6px; border: 1px solid var(--border); flex: 1; min-width: 65px;">
-				<span style="color: var(--text); font-weight: bold; font-size: 0.85em; margin-bottom: 10px; white-space: nowrap;">${SOURCE_NAMES[key]}</span>
-				<div style="display: flex; gap: 4px; width: 100%; padding: 0 5px; box-sizing: border-box;">
-					<button class="btn-sm" style="flex: 1; padding: 5px 0; font-size: 0.8em;" onclick="moveItem(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.2"' : ''}>◀</button>
-					<button class="btn-sm" style="flex: 1; padding: 5px 0; font-size: 0.8em;" onclick="moveItem(${index}, 1)" ${index === currentSearchOrder.length - 1 ? 'disabled style="opacity:0.2"' : ''}>▶</button>
+			<div class="sortable-list-item">
+				<span">${SOURCE_NAMES[key]}</span>
+				<div>
+					<button class="btn-sm" onclick="moveItem(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.2"' : ''}>◀</button>
+					<button class="btn-sm" onclick="moveItem(${index}, 1)" ${index === currentSearchOrder.length - 1 ? 'disabled style="opacity:0.2"' : ''}>▶</button>
 				</div>
 			</div>
 			`).join('');

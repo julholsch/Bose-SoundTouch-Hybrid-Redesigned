@@ -451,6 +451,45 @@ textarea:focus {
 
   flex-direction: column;
   gap: 8px;
+
+  .sortable-list-item {
+    display: flex;
+
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+
+    min-width: 65px;
+    padding: 12px 2px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+
+    background: rgba(128,128,128,0.1);
+
+    span {
+      margin-bottom: 10px;
+      font-size: 0.85em;
+
+      font-weight: bold;
+
+      white-space: nowrap;
+
+      color: var(--text);
+    }
+
+    div {
+      display: flex;
+
+      gap: 4px;
+
+      box-sizing: border-box;
+      width: 100%;
+
+      padding: 0 5px;
+    }
+  }
 }
 
 .pref-grid {
@@ -713,6 +752,35 @@ textarea:focus {
   border-radius: 6px;
 
   background: var(--panel-bg);
+
+  div {
+    display: flex;
+
+    align-items: center;
+    flex-grow: 1;
+    gap: 10px;
+
+    label {
+      font-size: 0.9em;
+
+      white-space: nowrap;
+
+      color: var(--text);
+    }
+
+    select {
+      flex-grow: 1;
+
+      min-width: 200px;
+      padding: 8px;
+    }
+  }
+
+  button {
+    flex-shrink: 0;
+
+    min-width: 140px;
+  }
 }
 
 .active-pairs-wrapper {
@@ -728,7 +796,7 @@ textarea:focus {
 
     list-style: none;
   }
-  
+
   .no-active-pair-li-element {
     padding: 10px;
 
@@ -749,7 +817,6 @@ textarea:focus {
     border-bottom: 1px solid var(--border);
 
     background: var(--card);
-
 
     strong {
       font-size: 1.1em;
@@ -902,6 +969,26 @@ button {
 
     color: var(--text);
   }
+}
+
+.btn-sm {
+  padding: 4px 8px;
+
+  border: 1px solid var(--btn-border);
+
+  border-radius: 4px;
+  font-size: 0.75em;
+
+  color: var(--btn-text);
+  background: var(--btn-bg);
+
+  cursor: pointer;
+}
+
+.btn-sm:hover {
+  border-color: var(--text);
+
+  color: var(--text);
 }
 
 button:active .nav-btn:active,
