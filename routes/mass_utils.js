@@ -58,163 +58,112 @@ async function getMassHealth() {
     }
 }
 
+
 // --- DYNAMIC PLAYER CONFIGURATION ENFORCER (WITH REGEX IP MATCH) ---
 async function enforcePlayerConfigs(speakers) {
-    const massIp = process.env.MASS_IP;
-    const massPort = process.env.MASS_PORT;
-    const baseUrl = `http://${massIp}:${massPort}`;
-    
-    console.log(`\n---------------------------------------------------------------------------------------`);
-    console.log(`[MASS Utils] ⚙️ Auditing core configurations dynamically (Strict Exact Matching)...`);
-    console.log(`---------------------------------------------------------------------------------------`);
+    const baseUrl = `http://${process.env.MASS_IP}:${process.env.MASS_PORT}`;
+    console.log(`\n[Boot] ⏳ Waiting up to 60s for Music Assistant to discover speakers...`);
 
     try {
-        const authRes = await axios.post(`${baseUrl}/auth/login`, {
+        const { data: { token } } = await axios.post(`${baseUrl}/auth/login`, {
             provider_id: "builtin",
-            credentials: { 
-                username: process.env.MASS_USERNAME, 
-                password: process.env.MASS_PASSWORD 
-            }
+            credentials: { username: process.env.MASS_USERNAME, password: process.env.MASS_PASSWORD }
         });
+        const reqConfig = { headers: { 'Authorization': `Bearer ${token}` }, timeout: 5000 };
 
-        const token = authRes.data.token;
-        if (!token) throw new Error("Authentication succeeded but no token returned.");
-        
-        const reqConfig = { 
-            headers: { 'Authorization': `Bearer ${token}` },
-            timeout: 5000 
-        };
-
+        // --- STAGE 1: Discovery Watchdog ---
         let massPlayers = [];
-        for (let attempts = 1; attempts <= 6; attempts++) {
-            const playersRes = await axios.post(`${baseUrl}/api`, { command: "players/all", args: {} }, reqConfig);
-            massPlayers = playersRes.data || [];
+        let allDiscovered = false;
+        
+        for (let attempt = 1; attempt <= 12; attempt++) {
+            const { data } = await axios.post(`${baseUrl}/api`, { command: "players/all", args: {} }, reqConfig).catch(() => ({ data: [] }));
+            massPlayers = data || [];
             
-            // REVERTED FIX: Strict Boundary Regex for IP discovery
-            const visibleCount = speakers.filter(speaker => {
-                const ipRegex = new RegExp(`\\b${speaker.ip.replace(/\./g, '\\.')}\\b`);
-                return massPlayers.find(p => ipRegex.test(JSON.stringify(p)));
-            }).length;
-            
-            if (visibleCount === speakers.length) {
-                console.log(`[MASS Utils] 🎯 MASS has successfully discovered all ${speakers.length} speakers.`);
-                break; 
-            } else if (attempts < 6) {
-                console.log(`[MASS Utils] ⏳ MASS has only discovered ${visibleCount}/${speakers.length} speakers. Waiting 5s... (Attempt ${attempts}/6)`);
-                await new Promise(r => setTimeout(r, 5000));
-            } else {
-                console.log(`[MASS Utils] ⚠️ Timeout. Proceeding to audit only the ${visibleCount} discovered speakers.`);
+            allDiscovered = speakers.every(speaker => 
+                massPlayers.some(p => new RegExp(`\\b${speaker.ip.replace(/\./g, '\\.')}\\b`).test(JSON.stringify(p)))
+            );
+
+            if (allDiscovered) {
+                console.log(`[Boot] ✅ All configured speakers discovered by MA network scan.`);
+                break;
             }
+            await new Promise(resolve => setTimeout(resolve, 5000));
         }
 
+        if (!allDiscovered) console.log(`[Boot] ⚠️ Discovery timeout. Auditing only available speakers.`);
+
+        // --- STAGE 2: Core Configuration Audit ---
+        console.log(`[MASS Utils] ⚙️ Auditing user-facing UI configurations...`);
+
         for (const speaker of speakers) {
-            // REVERTED FIX: Strict Boundary Regex for speaker targeting
             const ipRegex = new RegExp(`\\b${speaker.ip.replace(/\./g, '\\.')}\\b`);
             const player = massPlayers.find(p => ipRegex.test(JSON.stringify(p)));
             if (!player) continue;
 
             const configRes = await axios.post(`${baseUrl}/api`, { 
-                command: "config/players/get", 
-                args: { player_id: player.player_id } 
+                command: "config/players/get", args: { player_id: player.player_id } 
             }, reqConfig).catch(() => null);
 
-            if (!configRes || !configRes.data || !configRes.data.values) continue;
+            if (!configRes?.data?.values) continue;
             const currentValues = configRes.data.values;
             
-            const dlnaId = Object.keys(currentValues).find(k => k.startsWith('uuid:') && k.includes('||protocol||'))?.split('||')[0] || null;
-            const airplayId = Object.keys(currentValues).find(k => k.startsWith('ap') && k.includes('||protocol||'))?.split('||')[0] || null;
-
-            let currentProtocol = currentValues['preferred_output_protocol']?.value || "";
+            const dlnaId = Object.keys(currentValues).find(k => k.startsWith('uuid:') && k.includes('||protocol||'))?.split('||')[0];
+            const airplayId = Object.keys(currentValues).find(k => k.startsWith('ap') && k.includes('||protocol||'))?.split('||')[0];
             
-            let activeMode = (currentProtocol === airplayId || currentProtocol.startsWith('ap') || currentProtocol.startsWith('spb') || currentProtocol.includes('native')) ? 'airplay' : 'dlna'; 
-            let targetConfigs = {};
-
-			// =====================================================================
-            // STRICT EXACT MATCH: Values mirrored exactly from Gold Standard JSON
-            // =====================================================================
+            const currentPref = currentValues['preferred_output_protocol']?.value || '';
             
-            // 1. Core Settings (Applied to all speakers regardless of protocol)
-            targetConfigs["power_control"]             = "none";
-            targetConfigs["auto_play"]                 = false; 
-            targetConfigs["volume_normalization"]      = false;
-            targetConfigs["output_limiter"]            = true;               // Updated from JSON
-            targetConfigs["tts_pre_announce"]          = false;
-            targetConfigs["smart_fades_mode"]          = "disabled"; 
-            targetConfigs["volume_control"]            = "follow_protocol";  // Updated from JSON
-            targetConfigs["mute_control"]              = "follow_protocol";  // Updated from JSON
+            let activeMode;
+            let activeId;
 
-            if (activeMode === 'airplay') {
-                targetConfigs["preferred_output_protocol"] = airplayId; 
-                
-                // 2. AirPlay Protocol Enforcement
-                targetConfigs[`${airplayId}||protocol||airplay_protocol`] = 0;
-                targetConfigs[`${airplayId}||protocol||encryption`]       = true;
-                targetConfigs[`${airplayId}||protocol||alac_encode`]      = true;
-                targetConfigs[`${airplayId}||protocol||output_channels`]  = "stereo";
-                targetConfigs[`${airplayId}||protocol||sync_adjust`]      = 0;
-                targetConfigs[`${airplayId}||protocol||airplay_latency`]  = 1000;
-            } else {
-                targetConfigs["preferred_output_protocol"] = dlnaId; 
-                
-                // 3. DLNA Protocol Enforcement
-                targetConfigs[`${dlnaId}||protocol||flow_mode`]                        = true;
-                targetConfigs[`${dlnaId}||protocol||http_profile`]                     = "no_content_length";
-                targetConfigs[`${dlnaId}||protocol||enable_icy_metadata`]              = "disabled";
-                targetConfigs[`${dlnaId}||protocol||crossfade_different_sample_rates`] = true;
+            // 1. If it's currently set to AirPlay, leave it alone
+            if (airplayId && currentPref.includes(airplayId)) {
+                activeMode = 'airplay';
+                activeId = airplayId;
+            } 
+            // 2. If it's currently set to DLNA, leave it alone
+            else if (dlnaId && currentPref.includes(dlnaId)) {
+                activeMode = 'dlna';
+                activeId = dlnaId;
+            } 
+            // 3. It's neither (e.g., 'Auto', blank, or bogus). Force it to DLNA.
+            else {
+                activeMode = 'dlna';
+                activeId = dlnaId;
             }
 
+            const targetConfigs = {
+                "power_control": "none",
+                "auto_play": false,
+                "volume_normalization": false,
+                "tts_pre_announce": false,
+                "smart_fades_mode": "disabled",
+                "volume_control": "DLNA",
+                "mute_control": "DLNA",
+                "preferred_output_protocol": activeId,
+                [`${activeId}||protocol||enabled`]: true
+            };
 
-            // --- THE BATCH FIX ---
-            let changesMade = [];
             let batchPayload = {};
-            let errorsEncountered = 0;
-
-            // Gather required updates using strict inequality (!==) to ensure exact type and string match
             for (const [key, targetValue] of Object.entries(targetConfigs)) {
-                // Ensure target value actually exists before comparing (failsafe for missing IDs)
-                if (targetValue !== null && targetValue !== undefined) {
-                    if (!currentValues[key] || currentValues[key].value !== targetValue) {
-                        batchPayload[key] = targetValue;
-                        changesMade.push(`${key} -> ${targetValue}`);
-                    }
+                if (targetValue !== undefined && (!currentValues[key] || currentValues[key].value !== targetValue)) {
+                    batchPayload[key] = targetValue;
                 }
             }
 
             if (Object.keys(batchPayload).length > 0) {
-                try {
-                    await axios.post(`${baseUrl}/api`, {
-                        command: "config/players/save",
-                        args: { 
-                            player_id: player.player_id, 
-                            values: batchPayload 
-                        }
-                    }, reqConfig);
-                    
-                    await new Promise(r => setTimeout(r, 500)); 
-                    
-                } catch (err) {
-                    errorsEncountered++;
-                    const errorReason = err.response?.data?.message || err.response?.data?.detail || err.response?.data || err.message;
-                    console.error(`[MASS Utils] ❌ Failed to save batched configs on ${player.name}`);
-                    console.error(`            ↳ Reason:`, typeof errorReason === 'object' ? JSON.stringify(errorReason) : errorReason);
-                }
-            }
-
-            if (changesMade.length > 0 && errorsEncountered === 0) {
-                console.log(`[MASS Utils] ✅ Applied ${changesMade.length} strict update(s) to ${player.name} (${activeMode.toUpperCase()}):`);
-                changesMade.forEach(change => console.log(`   ↳ ${change}`));
-            } 
-            
-            if (errorsEncountered === 0 && changesMade.length === 0) {
-                console.log(`[MASS Utils] ⚡ ${player.name} (${activeMode.toUpperCase()}) core config verified (Exact Match).`);
-            } else if (errorsEncountered > 0) {
-                console.log(`[MASS Utils] ⚠️ ${player.name} encountered an error saving the batch.`);
+                console.log(`[MASS Utils] ⚠️ UI drift detected on ${player.name}. Pushing user-facing settings (${activeMode.toUpperCase()})...`);
+                await axios.post(`${baseUrl}/api`, {
+                    command: "config/players/save", args: { player_id: player.player_id, values: batchPayload }
+                }, reqConfig);
+            } else {
+                console.log(`[MASS Utils] ⚡ ${player.name} (${activeMode.toUpperCase()}) user-facing config verified.`);
             }
         }
     } catch (e) {
-        console.error(`[MASS Utils] ❌ Failed to authenticate or reach MASS API:`, e.response?.data || e.message);
+        console.error(`[MASS Utils] ❌ Verification failed: ${e.response?.data || e.message}`);
     }
 }
+
 
 
 // --- THE CLEAN SLATE PROTOCOL (SMART POWER OFF ALL) ---

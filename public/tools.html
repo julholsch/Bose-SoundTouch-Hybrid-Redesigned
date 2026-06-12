@@ -105,7 +105,7 @@
 										<input type="checkbox" id="pref_includeReboot" class="pref-checkbox" disabled> Include All Speaker Reboots
 									</label>						
 								</div>
-								<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta: (works so far... Needs no speaker config/inject/handskake!)</label>
+								<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta.</label>
 							</div>
 						</div>
 						<button class="btn-primary" style="background: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
@@ -211,9 +211,9 @@
 						<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
 						<span id="log-chevron">▼</span>
 					</div>
-					<div class="warning-box">
+<!-- 					<div class="warning-box">
 						Beta: Need Testers I only have 1 ST10 so need testers to provide feedback on what works/broken/behaviors/downstream impacts et.
-					</div>
+					</div> -->
 					<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
 				</div>				
 				<div id="stereoPairingCollapse" class="inner-collapse-container">
@@ -225,7 +225,7 @@
 						<span id="stereoPairCount">0 Pairs</span>
 					</div>
 
-					<hr style="border-color: var(--border); margin: 10px 0;">
+					<hr class="separation-line">
 
 					<h4 class="container-heading">Create New Pair</h4>
 					<div class="pairing-setup-wrapper">
@@ -252,7 +252,6 @@
 					</div>
 				</div>
 			</section>
-
 
 			<section id="Wi-Fi-Setting" class="tool-cards card" style="--card-border-accent-clr: #1abc9c;">
 				<div class="card-header"  onclick="toggleWifiWindow()">
@@ -356,41 +355,45 @@
 			</div>
 		</div>
 	</div>
+	
+	<div id="scriptModal" class="modal">
+		<div class="modal-card">
+			<div class="modal-header">
+				<h3>Download USB WiFI Setup Script</h3>
+			</div>
+			<div class="modal-content">
+				<p class="warning-box">
+				🍎 MAC USERS: This script is for Windows only. To setup speaker Wi-Fi via Mac, Use the native Bose method by connecting to the speaker's temporary initial setup amber-light Wi-Fi network and go to http://192.168.1.1 in your browser.
+				</p>
+				<pre id="scriptContent"></pre>
+				<div class="script-info">
+					<strong style="color: #66b3ff;">🛡️ BROWSER DOWNLOAD WARNING:</strong><br>
+					Your browser may warn you that this file is unrecognized or unsafe.<br>
+					To save it, select <strong>Keep</strong>, <strong>Save</strong>, or <strong>Accept</strong>.
+				</div>
+				<div class="scriptModal-btn-wrapper">
+					<button id="cancelScriptBtn" style="background: #555; color: white;" class="btn-primary">Cancel</button>
+					<button id="downloadScriptBtn" style="background: #007bff; color: white;" class="btn-primary">Download Script</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<div id="pdf-modal" class="modal">
 		<div class="modal-card pdf-mode">
 			<div class="modal-header">
 				<h2>Document Viewer</h2>
-				<div style="display:flex; gap:10px;">
+				<div class="pdf-modal-btn-wrapper">
 					<button class="btn-sm" onclick="openExternalDoc()">Open in Browser ↗</button>
 					<button onclick="closeDoc()" class="modal-close-btn">&times;</button>
 				</div>
 			</div>
 			<object id="pdf-frame" class="pdf-frame" data="" type="application/pdf">
-				<div style="padding:20px; text-align:center; color:var(--text); opacity:0.6;">
+				<div>
 					Preview not available on this device.<br>
-					<button class="btn" style="margin-top:10px;" onclick="openExternalDoc()">Open PDF</button>
+					<button class="btn-secondary" onclick="openExternalDoc()">Open PDF</button>
 				</div>
 			</object>
-		</div>
-	</div>
-
-	<div id="scriptModal" class="modal" >
-		<div class="modal-card">
-			<h3 style="color: #fff; margin-top: 0;">Download USB WiFI Setup Script</h3>
-			<p style="color: #ffaa00; font-size: 14px; font-weight: bold; border-left: 4px solid #ffaa00; padding-left: 10px;">
-			🍎 MAC USERS: This script is for Windows only. To setup speaker Wi-Fi via Mac, Use the native Bose method by connecting to the speaker's temporary initial setup amber-light Wi-Fi network and go to http://192.168.1.1 in your browser.
-			</p>
-			<pre id="scriptContent" style="background:#000; color:#0f0; padding:15px; overflow-x:auto; white-space:pre; font-size: 13px; border-radius: 4px; border: 1px solid #333; line-height: 1.4;"></pre>
-			<div style="background-color: #2a3b4c; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 13px;">
-				<strong style="color: #66b3ff;">🛡️ BROWSER DOWNLOAD WARNING:</strong><br>
-				Your browser may warn you that this file is unrecognized or unsafe.<br>
-				To save it, select <strong>Keep</strong>, <strong>Save</strong>, or <strong>Accept</strong>.
-			</div>
-			<div style="text-align: right; margin-top: 20px;">
-				<button id="cancelScriptBtn" style="padding: 10px 20px; margin-right: 15px; cursor: pointer; background: #555; color: white; border: none; border-radius: 4px;">Cancel</button>
-				<button id="downloadScriptBtn" style="padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold;">Download Script</button>
-			</div>
 		</div>
 	</div>
 
@@ -906,30 +909,30 @@
 					// ==========================================
 
 					const batContent = `@echo off
-					echo ===================++++++=====================
-					echo SoundTouch Hybrid USB Wi-Fi Provisioning Tool
-					echo =========================+++++===============
-					echo Target Network: ${ssid}
-					echo.
-					echo Connecting to speaker via USB...
-					echo Provisioning can take a minute or so...
-					
-					REM --- Hunt down PowerShell automatically ---
-					set "PS_CMD="
-					if exist "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" set "PS_CMD=%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
-					if exist "%SystemRoot%\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe" set "PS_CMD=%SystemRoot%\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe"
-					if exist "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" set "PS_CMD=C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
-					if "%PS_CMD%"=="" set "PS_CMD=powershell.exe"
-					
-					REM --- Execute the payload with Error Handling and 12-second delay ---
-					"%PS_CMD%" -NoProfile -ExecutionPolicy Bypass -Command "try { $s=New-Object System.Net.Sockets.TcpClient('${ip}',17000); $st=$s.GetStream(); $w=New-Object System.IO.StreamWriter($st); $w.WriteLine('network wifi profiles clear'); $w.Flush(); Start-Sleep -s 3; $w.WriteLine('network wifi profiles add ${ssid} wpa_or_wpa2 ${pass}'); $w.Flush(); Start-Sleep -s 12; $w.WriteLine('sys reboot'); $w.Flush(); Start-Sleep -s 1; $w.Close(); $s.Close(); Write-Host ''; Write-Host '[SUCCESS] Commands sent successfully!'; Write-Host 'The speaker will now reboot.'; } catch { Write-Host ''; Write-Host '[ERROR] Could not connect to the speaker.'; Write-Host 'Please ensure the USB cable is plugged in and the Wi-Fi light is SOLID AMBER.'; Write-Host 'If the light is blinking, wait for it to stop before running this script.'; }"
-					
-					echo.
-					pause`;
+echo ===================++++++=====================
+echo SoundTouch Hybrid USB Wi-Fi Provisioning Tool
+echo ===================++++++=====================
+echo Target Network: ${ssid}
+echo.
+echo Connecting to speaker via USB...
+echo Provisioning can take a minute or so...
+
+REM --- Hunt down PowerShell automatically ---
+set "PS_CMD="
+if exist "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" set "PS_CMD=%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+if exist "%SystemRoot%\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe" set "PS_CMD=%SystemRoot%\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe"
+if exist "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" set "PS_CMD=C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+if "%PS_CMD%"=="" set "PS_CMD=powershell.exe"
+
+REM --- Execute the payload with Error Handling and 12-second delay ---
+"%PS_CMD%" -NoProfile -ExecutionPolicy Bypass -Command "try { $s=New-Object System.Net.Sockets.TcpClient('${ip}',17000); $st=$s.GetStream(); $w=New-Object System.IO.StreamWriter($st); $w.WriteLine('network wifi profiles clear'); $w.Flush(); Start-Sleep -s 3; $w.WriteLine('network wifi profiles add ${ssid} wpa_or_wpa2 ${pass}'); $w.Flush(); Start-Sleep -s 12; $w.WriteLine('sys reboot'); $w.Flush(); Start-Sleep -s 1; $w.Close(); $s.Close(); Write-Host ''; Write-Host '[SUCCESS] Commands sent successfully!'; Write-Host 'The speaker will now reboot.'; } catch { Write-Host ''; Write-Host '[ERROR] Could not connect to the speaker.'; Write-Host 'Please ensure the USB cable is plugged in and the Wi-Fi light is SOLID AMBER.'; Write-Host 'If the light is blinking, wait for it to stop before running this script.'; }"
+
+echo.
+pause`;
 
 					// 1. Inject the code into our custom modal and display it
 					document.getElementById('scriptContent').innerText = batContent;
-					document.getElementById('scriptModal').style.display = 'block';
+					document.getElementById('scriptModal').style.display = 'flex';
 
 					// 2. Handle the 'Cancel' button click
 					document.getElementById('cancelScriptBtn').onclick = function () {
@@ -1043,18 +1046,6 @@
 			st10Speakers.push({
 				ip: "10.0.0.91",
 				name: "Dummy ST10 (Alpha)",
-				type: "SoundTouch 10"
-			}, {
-				ip: "10.0.0.92",
-				name: "Dummy ST10 (Bravo)",
-				type: "SoundTouch 10"
-			}, {
-				ip: "10.0.0.93",
-				name: "Dummy ST10 (Charlie)",
-				type: "SoundTouch 10"
-			}, {
-				ip: "10.0.0.94",
-				name: "Dummy ST10 (Delta)",
 				type: "SoundTouch 10"
 			});
 

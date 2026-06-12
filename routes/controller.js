@@ -284,14 +284,15 @@ router.post('/volume', async(req, res) => {
 
 router.post('/balance', async(req, res) => {
     const { ip, value } = req.body;
-    
-    // 🌟 1. This prints to your Live Server Logs on the Tools page
-    console.log(`[Control] ⚖️ L/R Balance adjusted for ${ip} to value: ${value}`);
+    const normalizedValue = Math.max(-50, Math.min(50, parseInt(value, 10) || 0));
+    console.log(`[Control] ⚖️ L/R Balance adjusted for ${ip} to value: ${normalizedValue}`);
     
     try {
-        // 🌟 2. This fires the actual XML payload directly to the Bose hardware
-        await sendBoseXml(ip, 'balance', `<balance>${value}</balance>`);
+        // Public SoundTouch libraries and the Bose WAPI examples use the XML envelope:
+        // <balance><targetBalance>...</targetBalance></balance>
+        const xmlPayload = `<balance><targetBalance>${normalizedValue}</targetBalance></balance>`;
         
+        await sendBoseXml(ip, 'balance', xmlPayload);
         res.send({ success: true });
     } catch (e) {
         console.error(`[Control] ❌ Failed to set balance on ${ip}: ${e.message}`);

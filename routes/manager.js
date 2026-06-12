@@ -21,6 +21,50 @@ const MASS_BASE_URL = `http://${MASS_IP}:${MASS_PORT}`;
 
 const LIBRARY_FILE = path.join(__dirname, '../config/library.json');
 
+// =======================================================================
+// --- LEGACY MIGRATION: Auto-Heal Old library.json Files ---
+// =======================================================================
+	if (fs.existsSync(LIBRARY_FILE)) {
+    try {
+        let lib = JSON.parse(fs.readFileSync(LIBRARY_FILE, 'utf8'));
+        let migrationNeeded = false;
+
+        lib.forEach(item => {
+            // ONLY migrate if it's a valid Preset (slot > 0)
+            if (item.slot > 0) {
+                // Check if this preset points to a valid Favorite (slot 0)
+                const hasParent = lib.some(parent => parent.slot === 0 && parent.uri === item.uri);
+                
+                if (!hasParent) {
+                    // It's an orphan! Fix by promoting the data to a Favorite
+                    lib.push({
+                        uuid: crypto.randomUUID().split('-')[0],
+                        slot: 0,
+                        speakerIp: "",
+                        name: item.name,
+                        subtitle: item.subtitle,
+                        uri: item.uri,
+                        image: item.image,
+                        type: item.type,
+                        provider: item.provider || 'unknown',
+                        settings: { ...item.settings }
+                    });
+                    migrationNeeded = true;
+                }
+            }
+        });
+
+        // If we found and fixed orphans, save the repaired database
+        if (migrationNeeded) {
+            console.log("[Manager] 🛠️ Legacy library.json detected! Auto-migrating presets to new Parent/Child model...");
+            fs.writeFileSync(LIBRARY_FILE, JSON.stringify(lib, null, 2));
+        }
+    } catch (e) {
+        console.error("[Manager] ⚠️ Failed to run library migration:", e.message);
+    }
+}
+// =======================================================================
+
 // --- HELPER: API WRAPPER ---
 // Centralizes communication with Music Assistant.
 // Handles authentication (Token fetching) and standardizes error responses.
@@ -594,61 +638,96 @@ router.post('/manager/save', (req, res) => {
     const { uuid, name, uri, image, type, slot, settings, subtitle, speakerIp, provider } = req.body;
     let lib = fs.existsSync(LIBRARY_FILE) ? JSON.parse(fs.readFileSync(LIBRARY_FILE)) : [];
 
-    // Ensure unique slot assignment within the given scope
     const targetSlot = parseInt(slot) || 0;
     const targetIp = speakerIp || "";
 
-    if (targetSlot > 0) {
-        lib.forEach(i => {
-            const existingIp = i.speakerIp || "";
-            if (i.slot === targetSlot && existingIp === targetIp) {
-                i.slot = 0;
-            }
-        });
+    // ==============================================================
+    // RULE 1 & 2: THE FAVORITES POOL SEPARATION & MULTI-ASSIGNMENT
+    // ==============================================================
+    
+    // 1. ALWAYS ensure an immortal "Favorite" (slot 0) exists in the pool for this URI
+    let favItem = lib.find(i => i.slot === 0 && i.uri === uri);
+    if (!favItem) {
+        favItem = {
+            uuid: crypto.randomUUID().split('-')[0],
+            slot: 0,
+            speakerIp: "",
+            name, subtitle: subtitle || type, uri, image, type, provider: provider || 'unknown',
+            settings: { shuffle: settings?.shuffle || false, repeat: settings?.repeat || 'off' }
+        };
+        lib.push(favItem);
+    } else {
+        // Keep the favorite's metadata in sync if the user edits its name/art from a preset
+        favItem.name = name;
+        favItem.image = image;
+        favItem.settings = { shuffle: settings?.shuffle || false, repeat: settings?.repeat || 'off' };
     }
 
-    let itemIndex = -1;
-    if (uuid)
-        itemIndex = lib.findIndex(i => i.uuid === uuid);
+    // 2. Handle the specific Preset Assignment
+    if (targetSlot > 0) {
+        // First, explicitly clear any existing preset sitting in this exact destination slot
+        lib = lib.filter(i => !(i.slot === targetSlot && (i.speakerIp || "") === targetIp && i.uuid !== uuid));
 
-    const newItem = {
-        uuid: uuid || crypto.randomUUID().split('-')[0],
-        slot: targetSlot,
-        speakerIp: targetIp,
-        name,
-        subtitle: subtitle || type,
-        uri,
-        image,
-        type,
-		provider: provider || 'unknown', 
-        settings: {
-            shuffle: settings?.shuffle || false,
-            repeat: settings?.repeat || 'off'
+        // Check if we are actively editing an existing preset
+        let presetItem = null;
+        if (uuid) {
+            const originalItem = lib.find(i => i.uuid === uuid);
+            if (originalItem && originalItem.slot > 0) {
+                presetItem = originalItem;
+            }
         }
-    };
 
-    if (itemIndex >= 0)
-        lib[itemIndex] = newItem;
-    else
-        lib.push(newItem);
+        if (presetItem) {
+            // Update the existing preset's pointers
+            presetItem.slot = targetSlot;
+            presetItem.speakerIp = targetIp;
+            presetItem.name = name;
+            presetItem.settings = { shuffle: settings?.shuffle || false, repeat: settings?.repeat || 'off' };
+        } else {
+            // We are saving a brand new preset assignment 
+            lib.push({
+                uuid: crypto.randomUUID().split('-')[0],
+                slot: targetSlot,
+                speakerIp: targetIp,
+                name, subtitle: subtitle || type, uri, image, type, provider: provider || 'unknown',
+                settings: { shuffle: settings?.shuffle || false, repeat: settings?.repeat || 'off' }
+            });
+        }
+    } else {
+        // RULE 3: SCOPED UNASSIGNMENT
+        // targetSlot === 0 means the user selected "Unassign".
+        // If they were editing a Preset and set it to 0, we delete the preset pointer.
+        if (uuid) {
+            const originalIndex = lib.findIndex(i => i.uuid === uuid);
+            if (originalIndex >= 0 && lib[originalIndex].slot > 0) {
+                lib.splice(originalIndex, 1);
+            }
+        }
+    }
 
     fs.writeFileSync(LIBRARY_FILE, JSON.stringify(lib, null, 2));
-    res.json({
-        success: true
-    });
+    res.json({ success: true });
 });
 
 router.delete('/manager/delete/:uuid', (req, res) => {
-    if (!fs.existsSync(LIBRARY_FILE))
-        return res.json({
-            success: true
-        });
+    if (!fs.existsSync(LIBRARY_FILE)) return res.json({ success: true });
     let lib = JSON.parse(fs.readFileSync(LIBRARY_FILE));
-    lib = lib.filter(i => i.uuid !== req.params.uuid);
-    fs.writeFileSync(LIBRARY_FILE, JSON.stringify(lib, null, 2));
-    res.json({
-        success: true
-    });
+
+    const itemToDelete = lib.find(i => i.uuid === req.params.uuid);
+    if (itemToDelete) {
+        if (itemToDelete.slot === 0) {
+            // RULE 4: CASCADING DELETE
+            // Hard-deleting a Favorite from the pool wipes it from all preset assignments too!
+            lib = lib.filter(i => i.uri !== itemToDelete.uri);
+        } else {
+            // RULE 3: CLEARING
+            // Deleting a Preset just drops the pointer. The Favorite remains safe!
+            lib = lib.filter(i => i.uuid !== req.params.uuid);
+        }
+        fs.writeFileSync(LIBRARY_FILE, JSON.stringify(lib, null, 2));
+    }
+
+    res.json({ success: true });
 });
 
 // --- 5. CUSTOM URL STREAMING & HISTORY ---

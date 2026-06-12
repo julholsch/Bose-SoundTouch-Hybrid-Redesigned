@@ -83,7 +83,6 @@
     <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 8px; border: 1px solid var(--border);">
         <div class="section-title" style="margin: 0; padding: 0; border: none; display: flex; align-items: baseline; gap: 6px; white-space: nowrap;">
             <span>FAVORITES</span>
-            <span style="font-size: 0.75em; color: var(--text-secondary);">(UNASSIGNED TO GLOBAL PRESETS)</span>
         </div>
         
         <div class="fav-controls">
@@ -191,7 +190,7 @@
     <div class="form-group">
       <label>Assign to Slot</label>
       <select id="edit-slot" onchange="toggleSpeakerDropdown(this.value)">
-          <option value="0">None (Favorite Only)</option>
+          <option value="0">None (Favorite Only / Unassign)</option>
           <option value="1">Preset 1</option><option value="2">Preset 2</option><option value="3">Preset 3</option>
           <option value="4">Preset 4</option><option value="5">Preset 5</option><option value="6">Preset 6</option>
       </select>
@@ -234,24 +233,34 @@
 
 <script>
   // --- CONSTANTS & CONFIG ---
-  
+
   // State management for the current view and search filters
-  let globalProviders = [];  
-  let state = { source: 'spotify', filter: 'playlist', tab: 'library', favFilter: 'all' }; 
+  let globalProviders = [];
+  let state = {
+      source: 'spotify',
+      filter: 'playlist',
+      tab: 'library',
+      favFilter: 'all'
+  };
   let selectedUuid = null;
   let npInterval = null;
   let currentSearchOrder = ['global', 'radio', 'nas', 'spotify']; // <-- ADD THIS DEFAULT
-  
+
   // --- THEME MANAGEMENT ---
   // Applies the theme immediately to prevent flash of unstyled content
   function applyTheme() {
       const saved = localStorage.getItem('theme');
-      if (saved === 'light') document.body.classList.add('light-mode');
-      else document.body.classList.remove('light-mode');
-  } 
+      if (saved === 'light')
+          document.body.classList.add('light-mode');
+      else
+          document.body.classList.remove('light-mode');
+  }
   applyTheme();
   // Listens for theme changes in other tabs to sync immediately.
-  window.addEventListener('storage', (e) => { if (e.key === 'theme') applyTheme(); });
+  window.addEventListener('storage', (e) => {
+      if (e.key === 'theme')
+          applyTheme();
+  });
 
   // --- FETCH GLOBAL SETTINGS ---
   async function loadUserPreferences() {
@@ -267,16 +276,17 @@
   }
 
   // --- INITIALIZATION ---
-  window.onload = async function() { 
+  window.onload = async function () {
       await loadUserPreferences(); // 1. Wait for server settings FIRST
-      buildSearchMenu();           // 2. Draw the menu using those settings
-      loadProviders().then(() => loadLibrary()); 
-      fetchSpeakers(); 
+      buildSearchMenu(); // 2. Draw the menu using those settings
+      loadProviders().then(() => loadLibrary());
+      fetchSpeakers();
   }
-  
-async function loadProviders() {
+
+  async function loadProviders() {
       const data = await api('/api/manager/providers');
-      if (Array.isArray(data)) globalProviders = data;
+      if (Array.isArray(data))
+          globalProviders = data;
 
       // Populate Search Dropdown (Show all available MA providers)
       const select = document.getElementById('provider-filter');
@@ -289,17 +299,16 @@ async function loadProviders() {
       }
   }
 
-
   function setFavFilter(f) {
       state.favFilter = f;
       document.querySelectorAll('.fav-pill').forEach(b => b.classList.remove('active'));
       const btn = document.querySelector(`.fav-pill[onclick="setFavFilter('${f}')"]`);
-      if(btn) btn.classList.add('active');
+      if (btn)
+          btn.classList.add('active');
       loadLibrary(); // Re-render favorites
-  }  
-  
-  
-// --- DYNAMIC SEARCH MENU LOGIC ---
+  }
+
+  // --- DYNAMIC SEARCH MENU LOGIC ---
   const SOURCE_BUTTON_TEMPLATES = {
       'spotify': `<button class="source-btn" onclick="setSource('spotify')"><img src="images/spotify_icon.png" alt="Spotify"> Spotify</button>`,
       'radio': `<button class="source-btn" onclick="setSource('radio')"><img src="images/TuneIn_icon.png" alt="Radio"> Radio</button>`,
@@ -307,7 +316,7 @@ async function loadProviders() {
       'global': `<button class="source-btn" onclick="setSource('global')"><span style="font-size:1.2em;">🌍</span> Global</button>`
   };
 
-function buildSearchMenu() {
+  function buildSearchMenu() {
       const container = document.getElementById('dynamic-source-row');
       let html = '';
 
@@ -323,7 +332,7 @@ function buildSearchMenu() {
 
       // Automatically highlight the first item in the list
       if (currentSearchOrder.length > 0) {
-          setSource(currentSearchOrder[0]); 
+          setSource(currentSearchOrder[0]);
       }
   }
 
@@ -333,13 +342,17 @@ function buildSearchMenu() {
   async function api(url, options = {}) {
       try {
           const res = await fetch(url, {
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                  'Content-Type': 'application/json'
+              },
               ...options
           });
           return await res.json();
       } catch (e) {
           console.error("API Error:", e);
-          return { error: e.message };
+          return {
+              error: e.message
+          };
       }
   }
 
@@ -347,56 +360,59 @@ function buildSearchMenu() {
   // Fetches speakers from Mass and Status endpoints.
   // Sorts based on backend confign order (speakers.json).
   // Implements logic to Auto-Select a playing speaker (Priority A/B/C).
-// --- CORE LOGIC: SPEAKER SELECTION ---
- async function fetchSpeakers() {
+  // --- CORE LOGIC: SPEAKER SELECTION ---
+  async function fetchSpeakers() {
       const select = document.getElementById('global-speaker');
       try {
           const [maPlayers, stDevices] = await Promise.all([
-              api('/api/manager/players'),
-              api('/api/status')
-          ]);
+                      api('/api/manager/players'),
+                      api('/api/status')
+                  ]);
 
-          if(!stDevices || !stDevices.length) { select.innerHTML = '<option value="">No Speakers</option>'; return; }
-          
+          if (!stDevices || !stDevices.length) {
+              select.innerHTML = '<option value="">No Speakers</option>';
+              return;
+          }
+
           // 1. OUTER JOIN: Uses stDevices (speakers.json) as the master list.
           const options = stDevices.map(d => {
               const p = maPlayers ? maPlayers.find(mp => mp.ip === d.ip) : null;
-              
+
               const isPlaying = (d.playStatus === 'PLAY_STATE' || d.playStatus === 'BUFFERING_STATE');
               const isOffline = !d.online;
-              const isMissingFromMass = !p; 
-              
+              const isMissingFromMass = !p;
+
               let icon = '';
               let colorClass = '';
-              
+
               // Determine Icons & Classes
               if (isOffline) {
                   icon = ' 🔴';
-                  colorClass = 'class="status-offline"'; 
+                  colorClass = 'class="status-offline"';
               } else if (isMissingFromMass) {
-                  icon = ' 🔇'; 
-                  colorClass = 'class="status-missing"'; 
+                  icon = ' 🔇';
+                  colorClass = 'class="status-missing"';
               } else if (isPlaying) {
                   icon = ' 🎵';
               }
-              
+
               const finalLabel = `${d.name}${icon}`;
-              
-			// --- THE FILTERS ---
+
+              // --- THE FILTERS ---
               const isStereoRight = (d.stereoRole === 'RIGHT');
               let playDisabledAttr = '';
               if (isOffline || isMissingFromMass) {
                   playDisabledAttr = `disabled ${colorClass}`;
               } else if (isStereoRight) {
-                  playDisabledAttr = `disabled style="color: var(--text-secondary); font-style: italic;"`; 
+                  playDisabledAttr = `disabled style="color: var(--text-secondary); font-style: italic;"`;
               }
 
-              const playValue = p ? p.id : ''; 
+              const playValue = p ? p.id : '';
               const editStyleAttr = colorClass ? `${colorClass}` : '';
-              
+
               return {
                   htmlId: `<option value="${playValue}" data-ip="${d.ip}" data-playing="${isPlaying}" ${playDisabledAttr}>${finalLabel}</option>`,
-                  htmlIp: `<option value="${d.ip}" ${editStyleAttr}>${finalLabel}</option>`, 
+                  htmlIp: `<option value="${d.ip}" ${editStyleAttr}>${finalLabel}</option>`,
                   isPlaying: isPlaying,
                   id: playValue,
                   isPlayable: (!isOffline && !isMissingFromMass && !isStereoRight)
@@ -404,31 +420,33 @@ function buildSearchMenu() {
           });
 
           select.innerHTML = options.length ? options.map(o => o.htmlId).join('') : '<option value="">No Configured Speakers Found</option>';
-          
+
           const ipOptionsHtml = options.map(o => o.htmlIp).join('');
-          
+
           const viewFilter = document.getElementById('preset-view-filter');
           if (viewFilter) {
               const currentVal = viewFilter.value;
               viewFilter.innerHTML = `<option value="">Global (Default)</option>${ipOptionsHtml}`;
-              if (currentVal) viewFilter.value = currentVal;
+              if (currentVal)
+                  viewFilter.value = currentVal;
           }
-          
+
           const editFilter = document.getElementById('edit-speaker');
           if (editFilter) {
               const currentEditVal = editFilter.value;
               editFilter.innerHTML = `<option value="">Global (All Speakers)</option>${ipOptionsHtml}`;
-              if (currentEditVal) editFilter.value = currentEditVal;
+              if (currentEditVal)
+                  editFilter.value = currentEditVal;
           }
-          
+
           // 2. AUTO-SELECT LOGIC
           const playableOptions = options.filter(o => o.isPlayable);
           const activeSpeaker = playableOptions.find(o => o.isPlaying);
-          
+
           if (activeSpeaker) {
               select.value = activeSpeaker.id;
               saveSpeakerSelection();
-              switchTab('nowplaying'); 
+              switchTab('nowplaying');
           } else {
               const saved = localStorage.getItem('bose_active_speaker');
               if (saved && Array.from(select.options).some(o => o.value === saved && !o.disabled)) {
@@ -441,65 +459,72 @@ function buildSearchMenu() {
                   }
               }
           }
-          
-          if (state.tab === 'nowplaying') loadNowPlaying();
 
-      } catch(e) { 
-          select.innerHTML = '<option>Error Loading</option>'; 
+          if (state.tab === 'nowplaying')
+              loadNowPlaying();
+
+      } catch (e) {
+          select.innerHTML = '<option>Error Loading</option>';
       }
   }
 
-  function saveSpeakerSelection() { 
-      localStorage.setItem('bose_active_speaker', document.getElementById('global-speaker').value); 
+  function saveSpeakerSelection() {
+      localStorage.setItem('bose_active_speaker', document.getElementById('global-speaker').value);
   }
 
   // Called when user manually changes the dropdown.
   function handleSpeakerChange() {
-      saveSpeakerSelection(); 
+      saveSpeakerSelection();
       // If viewing the Now Playing tab, refresh immediately to show the new speaker's status.
-      if(state.tab === 'nowplaying') loadNowPlaying();
+      if (state.tab === 'nowplaying')
+          loadNowPlaying();
   }
 
   // --- TAB NAVIGATION ---
   // Handles switching between Library, Now Playing, Recents,Search, and custom views.
   function switchTab(t) {
-    state.tab = t;
-    
-	// Hide all tabs
-    ['library', 'nowplaying', 'recents', 'search', 'custom'].forEach(tab => {
-        document.getElementById('tab-' + tab).style.display = 'none';
-    });
-	
-    // Show active tab
-    document.getElementById('tab-' + t).style.display = 'block';
-    
-    // Update button active states
-    document.querySelectorAll('.nav-btn').forEach(b => {
-        if(b.dataset.tab === t) b.classList.add('active');
-        else b.classList.remove('active');
-    });
+      state.tab = t;
 
-    // Update Label UI (Changes color to indicate Now Playing mode)
-    const label = document.getElementById('play-on-label');
-    if (t === 'nowplaying') {
-        label.innerText = "Now Playing On:";
-        label.style.color = "var(--accent)";
-        startNpPolling();
-    } else {
-        label.innerText = "Play On:";
-        label.style.color = "";
-        stopNpPolling();
-    }
+      // Hide all tabs
+      ['library', 'nowplaying', 'recents', 'search', 'custom'].forEach(tab => {
+          document.getElementById('tab-' + tab).style.display = 'none';
+      });
 
-    // Refresh Data for specific tabs
-    if(t === 'library') loadLibrary();
-    if(t === 'recents') loadRecents();
-	if(t === 'custom') loadCustomHistory(); 
+      // Show active tab
+      document.getElementById('tab-' + t).style.display = 'block';
+
+      // Update button active states
+      document.querySelectorAll('.nav-btn').forEach(b => {
+          if (b.dataset.tab === t)
+              b.classList.add('active');
+          else
+              b.classList.remove('active');
+      });
+
+      // Update Label UI (Changes color to indicate Now Playing mode)
+      const label = document.getElementById('play-on-label');
+      if (t === 'nowplaying') {
+          label.innerText = "Now Playing On:";
+          label.style.color = "var(--accent)";
+          startNpPolling();
+      } else {
+          label.innerText = "Play On:";
+          label.style.color = "";
+          stopNpPolling();
+      }
+
+      // Refresh Data for specific tabs
+      if (t === 'library')
+          loadLibrary();
+      if (t === 'recents')
+          loadRecents();
+      if (t === 'custom')
+          loadCustomHistory();
   }
 
-// --- NOW PLAYING POLLING ---
+  // --- NOW PLAYING POLLING ---
   // Starts the poller only when the "Now Playing" tab is active to save resources.
-  
+
   let lastSeenPosition = -1;
   let lastSeenTrack = "";
   let positionAnchorTime = Date.now();
@@ -507,23 +532,28 @@ function buildSearchMenu() {
   let lastKnownDevice = null;
 
   function startNpPolling() {
-      if(npInterval) clearInterval(npInterval);
-      if(localTicker) clearInterval(localTicker);
-      
+      if (npInterval)
+          clearInterval(npInterval);
+      if (localTicker)
+          clearInterval(localTicker);
+
       loadNowPlaying();
-      
+
       // 📡 NETWORK POLLING: Stays at 2.5 seconds
-      npInterval = setInterval(loadNowPlaying, 2500); 
-      
+      npInterval = setInterval(loadNowPlaying, 2500);
+
       // ⏱️ UI TICKER: Updates the screen every 1 second
       localTicker = setInterval(() => {
-          if (lastKnownDevice) updateNpUI(lastKnownDevice);
+          if (lastKnownDevice)
+              updateNpUI(lastKnownDevice);
       }, 1000);
   }
 
   function stopNpPolling() {
-      if(npInterval) clearInterval(npInterval);
-      if(localTicker) clearInterval(localTicker);
+      if (npInterval)
+          clearInterval(npInterval);
+      if (localTicker)
+          clearInterval(localTicker);
       npInterval = null;
       localTicker = null;
   }
@@ -535,39 +565,42 @@ function buildSearchMenu() {
           updateNpUI(null);
           return;
       }
-      
+
       const targetIp = select.selectedOptions[0].getAttribute('data-ip');
-      if (!targetIp) { updateNpUI(null); return; }
+      if (!targetIp) {
+          updateNpUI(null);
+          return;
+      }
 
       const devices = await api('/api/status');
-      if(Array.isArray(devices)) {
+      if (Array.isArray(devices)) {
           const device = devices.find(d => d.ip === targetIp);
-          
+
           if (device) {
               // ⏱️ ANCHOR LOGIC: Reset stopwatch if Bose pushes a new time OR the track changes!
               if (device.position !== lastSeenPosition || device.track !== lastSeenTrack) {
-                  
+
                   // If the Track Name changed, force our local math to start counting from 0
                   if (device.track !== lastSeenTrack) {
-                      device.position = 0; 
+                      device.position = 0;
                   }
 
                   lastSeenPosition = device.position;
-                  lastSeenTrack = device.track; 
+                  lastSeenTrack = device.track;
                   positionAnchorTime = Date.now();
               }
-              
+
               // Apply the true anchor time to the device so the math works
-              device.lastUpdateAt = positionAnchorTime; 
-              lastKnownDevice = device; 
-              
+              device.lastUpdateAt = positionAnchorTime;
+              lastKnownDevice = device;
+
               updateNpUI(device);
           }
       }
   }
-  
-// Updates the Now Playing card with Art, Metadata, and Status Badge.
-function updateNpUI(device) {
+
+  // Updates the Now Playing card with Art, Metadata, and Status Badge.
+  function updateNpUI(device) {
       const els = {
           img: document.getElementById('np-img'),
           track: document.getElementById('np-track'),
@@ -576,7 +609,7 @@ function updateNpUI(device) {
           status: document.getElementById('np-status')
       };
 
-      if (device) { 
+      if (device) {
           // --- ARTWORK ---
           els.img.outerHTML = `
             <div id="np-img" class="np-art ${device.artPlaceholder}" style="position:relative; overflow:hidden;">
@@ -590,7 +623,7 @@ function updateNpUI(device) {
           els.track.innerText = device.track || "Ready";
           els.artist.innerText = device.artist || "";
           els.album.innerText = device.album || "";
-          
+
           // --- STATUS & SMOOTH TIMER ---
           if (device.isStandby) {
               els.status.innerHTML = `<span style="color:var(--text-secondary)">STANDBY</span>`;
@@ -611,10 +644,10 @@ function updateNpUI(device) {
                   // The Math: How many seconds passed since the server sent this status?
                   const msSinceUpdate = Date.now() - (device.lastUpdateAt || Date.now());
                   const secondDrift = isPlaying ? Math.floor(msSinceUpdate / 1000) : 0;
-                  
+
                   // Apply drift to the last known position from the hardware
                   let currentPos = Math.min((device.position || 0) + secondDrift, device.duration);
-                  
+
                   timerHtml = `<span class="np-timer">${formatTime(currentPos)} / ${formatTime(device.duration)}</span>`;
               }
 
@@ -630,71 +663,89 @@ function updateNpUI(device) {
       }
   }
 
+  // --- ACTIONS ---
 
- // --- ACTIONS ---
-
-function playItemGlobal(itemEncoded) {
+  function playItemGlobal(itemEncoded) {
       const item = JSON.parse(decodeURIComponent(itemEncoded));
       const select = document.getElementById('global-speaker');
       const speakerId = select.value;
       const speakerName = select.selectedOptions[0].text;
-      
+
       // NEW: Extract the exact IP address directly from the dropdown option!
       const speakerIp = select.selectedOptions[0].getAttribute('data-ip');
-      
-      if (!speakerId) { alert("Please select a speaker from the top menu first."); return; }
-      
-      const settings = item.settings || { shuffle: false, repeat: 'off' };
-      if (!confirm(`Are you sure you want to play "${item.name}" on ${speakerName}?`)) return;
-      
+
+      if (!speakerId) {
+          alert("Please select a speaker from the top menu first.");
+          return;
+      }
+
+      const settings = item.settings || {
+          shuffle: false,
+          repeat: 'off'
+      };
+      if (!confirm(`Are you sure you want to play "${item.name}" on ${speakerName}?`))
+          return;
+
       api('/api/manager/play_now', {
           method: 'POST',
-          body: JSON.stringify({ uri: item.uri, name: item.name, settings: settings, player_id: speakerId, ip: speakerIp })
+          body: JSON.stringify({
+              uri: item.uri,
+              name: item.name,
+              settings: settings,
+              player_id: speakerId,
+              ip: speakerIp
+          })
       });
   }
 
   // Generates HTML Media Card (Library/Search/Recent/History).
-	function renderCard(item, isLib, allowSave, hideBadge = false) {
-    if (item.type === 'HEADER') return `<div class="search-divider">${item.title}</div>`;
-    
-    const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
-    const uriEnc = encodeURIComponent(JSON.stringify(item));
-    const badge = (item.slot > 0 && !hideBadge) ? `<div class="preset-badge">${item.slot}</div>` : '';
-   
-	// --- ARTWORK LOGIC (Unified Z-Index Sandwich) ---
-    const fallbackClass = (item.type === 'custom_url' || item.type === 'radio') ? 'art-globe' : 'art-blank';
-    let imgHtml = '';
-    
-    if (item.image && item.image !== 'custom_url') {
-        imgHtml = `
+  function renderCard(item, isLib, allowSave, hideBadge = false) {
+      if (item.type === 'HEADER')
+          return `<div class="search-divider">${item.title}</div>`;
+
+      const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
+      const uriEnc = encodeURIComponent(JSON.stringify(item));
+      const badge = (item.slot > 0 && !hideBadge) ? `<div class="preset-badge">${item.slot}</div>` : '';
+
+      // --- ARTWORK LOGIC (Unified Z-Index Sandwich) ---
+      const fallbackClass = (item.type === 'custom_url' || item.type === 'radio') ? 'art-globe' : 'art-blank';
+      let imgHtml = '';
+
+      if (item.image && item.image !== 'custom_url') {
+          imgHtml = `
           <div class="art ${fallbackClass}" style="position:relative; overflow:hidden;">
              <img src="${item.image}" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:10;" onerror="this.style.display='none'">
           </div>`;
-    } else {
-        imgHtml = `<div class="art ${fallbackClass}"></div>`;
-    }
+      } else {
+          imgHtml = `<div class="art ${fallbackClass}"></div>`;
+      }
 
-    let btns = '';
-    
-	// IF HISTORY (-1): Show instant Save and Delete
-    if (item.slot === -1) {
-        btns = `<button class="btn-sm" onclick="saveToLibraryDirect('${item.uuid}')">💾 Save to Library</button>
-                <button class="btn-sm" onclick="deleteItem('${item.uuid}', true)" style="color:#e74c3c">✕</button>`;
-    }
-    // IF NORMAL: Show Play, plus Edit/Save 
-    else {
-        btns = `<button class="btn-sm" onclick="playItemGlobal('${uriEnc}')">▶ Play</button>`;
-        if (isLib) {
-            // Already in library: show Edit and Delete
-            btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">✎ Edit</button>
-                      <button class="btn-sm" onclick="deleteItem('${item.uuid}')" style="color:#e74c3c">✕</button>`;
-        } else if (allowSave) {
-            // Search result or Recent: show Save
-            btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">💾 Save</button>`;
-        }
-    }
+      let btns = '';
 
-    return `
+		// IF HISTORY (-1): Show instant Save and Delete
+      if (item.slot === -1) {
+          btns = `<button class="btn-sm" onclick="saveToLibraryDirect('${item.uuid}')">💾 Save to Library</button>
+                <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}', true)" title="Delete Stream" style="color: var(--danger); font-size: 1.2em; font-weight: bold;">✖</button>`;
+      }
+      // IF NORMAL: Show Play, plus Edit/Save
+      else {
+          btns = `<button class="btn-sm" onclick="playItemGlobal('${uriEnc}')">▶ Play</button>`;
+          if (isLib) {
+              if (item.slot > 0) {
+                  // Preset: Edit button + Uniform Red X
+                  btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">✎ Edit</button>
+            <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}')" title="Clear Preset" style="color: var(--danger); font-size: 1.2em; font-weight: bold;">✖</button>`;
+              } else {
+                  // Favorite: Edit button + Uniform Red X
+                  btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">✎ Edit</button>
+            <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}')" title="Delete Favorite" style="color: var(--danger); font-size: 1.2em; font-weight: bold;">✖</button>`;
+              }
+          } else if (allowSave) {
+              btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">💾 Save</button>`;
+          }
+      }
+
+      return `
       <div class="card">
         ${badge}
         ${imgHtml}
@@ -708,74 +759,94 @@ function playItemGlobal(itemEncoded) {
   }
 
   // --- SEARCH LOGIC ---
-function setSource(s) {
-    state.source = s;
-    document.getElementById('search-results').innerHTML = ''; 
-    document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active-spotify', 'active-radio', 'active-nas','active-global'));   
-	
-    const map = { spotify: 'active-spotify', radio: 'active-radio', nas: 'active-nas', global: 'active-global'};   
-    const activeBtn = document.querySelector(`.source-btn[onclick="setSource('${s}')"]`);
-    if (activeBtn) activeBtn.classList.add(map[s]);
-    
-    const filterRow = document.getElementById('filter-row');
-    const searchInput = document.getElementById('q');
-    const providerSelect = document.getElementById('provider-filter'); 
-    
-    if (s === 'radio') { 
-        setFilter('all'); 
-        filterRow.style.display = 'none'; 
-    } else {
-        filterRow.style.display = 'flex';
-        if (s === 'nas') { setFilter('all'); searchInput.value = ""; }
-		
-        const stationPill = document.getElementById('filter-stations');
-        if (stationPill) {
-            stationPill.style.display = (s === 'global') ? 'block' : 'none';
-        }
+  function setSource(s) {
+      state.source = s;
+      document.getElementById('search-results').innerHTML = '';
+      document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active-spotify', 'active-radio', 'active-nas', 'active-global'));
 
-        // --- Toggle Search Provider Dropdown ---
-        if (providerSelect) {
-            providerSelect.style.display = (s === 'global') ? 'inline-block' : 'none';
-            if (s !== 'global') providerSelect.value = 'all'; 
-        }
-    }
+      const map = {
+          spotify: 'active-spotify',
+          radio: 'active-radio',
+          nas: 'active-nas',
+          global: 'active-global'
+      };
+      const activeBtn = document.querySelector(`.source-btn[onclick="setSource('${s}')"]`);
+      if (activeBtn)
+          activeBtn.classList.add(map[s]);
+
+      const filterRow = document.getElementById('filter-row');
+      const searchInput = document.getElementById('q');
+      const providerSelect = document.getElementById('provider-filter');
+
+      if (s === 'radio') {
+          setFilter('all');
+          filterRow.style.display = 'none';
+      } else {
+          filterRow.style.display = 'flex';
+          if (s === 'nas') {
+              setFilter('all');
+              searchInput.value = "";
+          }
+
+          const stationPill = document.getElementById('filter-stations');
+          if (stationPill) {
+              stationPill.style.display = (s === 'global') ? 'block' : 'none';
+          }
+
+          // --- Toggle Search Provider Dropdown ---
+          if (providerSelect) {
+              providerSelect.style.display = (s === 'global') ? 'inline-block' : 'none';
+              if (s !== 'global')
+                  providerSelect.value = 'all';
+          }
+      }
   }
 
   function setFilter(f) {
-    state.filter = f;
-    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
-    
-    // Select the button that triggered the event, or find it by attribute if programmatic
-    const btn = document.querySelector(`.filter-pill[onclick="setFilter('${f}')"]`);
-    if(btn) btn.classList.add('active');
+      state.filter = f;
+      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+
+      // Select the button that triggered the event, or find it by attribute if programmatic
+      const btn = document.querySelector(`.filter-pill[onclick="setFilter('${f}')"]`);
+      if (btn)
+          btn.classList.add('active');
   }
 
   async function doSearch() {
-    const q = document.getElementById('q').value;
-    const limit = document.getElementById('limit').value; 
-	const providerFilter = document.getElementById('provider-filter') ? document.getElementById('provider-filter').value : 'all'; 
-    const box = document.getElementById('search-results');
-    
-    if (!q.trim()) { box.innerHTML = '<div style="padding:20px; color:#aaa">Please enter a search term.</div>'; return; }
-    
-    box.innerHTML = '<div style="padding:20px; color:#888">Searching MASS...</div>';
-    
-    const data = await api('/api/manager/search', {
-        method: 'POST',
-		body: JSON.stringify({ query: q, source: state.source, type: state.filter, limit: limit, providerFilter: providerFilter }) // <-- NEW: Added to paylo
-    });
-    
-    if (data.error) {
-        box.innerHTML = `<div style="padding:20px; color:red">Server Error: ${data.error}</div>`;
-        return;
-    }
-    
-    if(!Array.isArray(data) || data.length === 0) {
-        box.innerHTML = '<div style="padding:20px; color:#aaa">No results found (Strict Filter is ON).</div>';
-    } else {
-        const allowSave = (state.source !== 'spotify'); 
-        box.innerHTML = data.map(i => renderCard(i, false, allowSave)).join('');
-    }
+      const q = document.getElementById('q').value;
+      const limit = document.getElementById('limit').value;
+      const providerFilter = document.getElementById('provider-filter') ? document.getElementById('provider-filter').value : 'all';
+      const box = document.getElementById('search-results');
+
+      if (!q.trim()) {
+          box.innerHTML = '<div style="padding:20px; color:#aaa">Please enter a search term.</div>';
+          return;
+      }
+
+      box.innerHTML = '<div style="padding:20px; color:#888">Searching MASS...</div>';
+
+      const data = await api('/api/manager/search', {
+          method: 'POST',
+          body: JSON.stringify({
+              query: q,
+              source: state.source,
+              type: state.filter,
+              limit: limit,
+              providerFilter: providerFilter
+          }) // <-- NEW: Added to paylo
+      });
+
+      if (data.error) {
+          box.innerHTML = `<div style="padding:20px; color:red">Server Error: ${data.error}</div>`;
+          return;
+      }
+
+      if (!Array.isArray(data) || data.length === 0) {
+          box.innerHTML = '<div style="padding:20px; color:#aaa">No results found (Strict Filter is ON).</div>';
+      } else {
+          const allowSave = (state.source !== 'spotify');
+          box.innerHTML = data.map(i => renderCard(i, false, allowSave)).join('');
+      }
   }
 
   // --- DATA LOADING (Library / Recents) ---
@@ -783,106 +854,114 @@ function setSource(s) {
   async function loadRecents() {
       const box = document.getElementById('recents-results');
       box.innerHTML = '<div style="padding:20px; color:#888">Loading Recents...</div>';
-      
+
       const data = await api('/api/manager/recents');
       if (Array.isArray(data)) {
-          box.innerHTML = data.map(i => renderCard(i, false, true)).join(''); 
+          box.innerHTML = data.map(i => renderCard(i, false, true)).join('');
       } else {
           box.innerHTML = `Error loading recents`;
       }
   }
 
   async function loadLibrary() {
-    const library = await api('/api/manager/library');
-    if (!Array.isArray(library)) return;
-    
-    // Custom sort priority: Playlist > Artist > Album > Track
-    const typePriority = { 'playlist': 1, 'artist': 2, 'album': 3, 'track': 4 };
-    
-    library.sort((a, b) => {
-        const pA = typePriority[a.type] || 99;
-        const pB = typePriority[b.type] || 99;
-        if (pA !== pB) return pA - pB;
-        return (a.name || "").localeCompare(b.name || "");
-    });
+      const library = await api('/api/manager/library');
+      if (!Array.isArray(library))
+          return;
 
-    const viewScope = document.getElementById('preset-view-filter') ? document.getElementById('preset-view-filter').value : '';
+      // Custom sort priority: Playlist > Artist > Album > Track
+      const typePriority = {
+          'playlist': 1,
+          'artist': 2,
+          'album': 3,
+          'track': 4
+      };
 
-    // Generate Preset Cards (Slots 1-6) based on selected scope
-    const presets = [1,2,3,4,5,6].map(slot => {
-        const item = library.find(i => i.slot === slot && (i.speakerIp || '') === viewScope);
-        if(item) return renderCard(item, true, true);
-        // Updated empty slot styling to use a class instead of inline dim styles
-        return `<div class="card empty-slot">Slot ${slot} Empty (${viewScope === '' ? 'Global' : 'Hybrid'})</div>`;
-    }).join('');
-    
-	// --- FAVORITES FILTERING & DYNAMIC DROPDOWN ---
-    const allFavs = library.filter(i => i.slot === 0 || (i.slot > 0 && i.speakerIp));
-    
-	// 1. "Outer Join" logic: Merge MA Global Providers with local unique Favorites
-    const uniqueProviders = [...new Set(allFavs.map(i => i.provider || 'unknown'))];
-    const favProvSelect = document.getElementById('fav-provider-filter');
-    
-    if (favProvSelect) {
-        const currentFavProv = favProvSelect.value;
-        let provHtml = '<option value="all">All Providers</option>';
-        
-        // Merge the global Music Assistant providers with any unique ones from our library
-        const allDomains = new Set([...globalProviders.map(p => p.domain), ...uniqueProviders]);
-        
-			Array.from(allDomains).sort().forEach(provDomain => {
-            const maProv = globalProviders.find(p => p.domain === provDomain);
-            let friendlyName = maProv ? maProv.name : provDomain.charAt(0).toUpperCase() + provDomain.slice(1);
-            
-            // --- Rename "builtin" to "URL Stream" for the UI ---
-            if (provDomain === 'builtin' || provDomain === 'url') {
-                friendlyName = 'URL Stream';
-            }
-            
-            if (uniqueProviders.includes(provDomain)) {
-                // Provider has active favorites - Make it selectable
-                provHtml += `<option value="${provDomain}">${friendlyName}</option>`;
-            } else {
-                // Provider has NO active favorites - Gray it out and disable it
-                provHtml += `<option value="${provDomain}" disabled style="color: #666; font-style: italic;">${friendlyName}</option>`;
-            }
-        });
-        
-        favProvSelect.innerHTML = provHtml;
-        
-        // Retain selection if valid, otherwise fallback to 'all'
-        if (uniqueProviders.includes(currentFavProv) || currentFavProv === 'all') {
-            favProvSelect.value = currentFavProv;
-        } else {
-            favProvSelect.value = 'all';
-        }
-    }
+      library.sort((a, b) => {
+          const pA = typePriority[a.type] || 99;
+          const pB = typePriority[b.type] || 99;
+          if (pA !== pB)
+              return pA - pB;
+          return (a.name || "").localeCompare(b.name || "");
+      });
 
-    // 2. Apply Filters (Pills + Dropdown)
-    let filteredFavs = allFavs;
-    if (state.favFilter !== 'all') {
-        filteredFavs = filteredFavs.filter(i => i.type === state.favFilter);
-    }
-    if (favProvSelect && favProvSelect.value !== 'all') {
-        filteredFavs = filteredFavs.filter(i => (i.provider || 'unknown') === favProvSelect.value);
-    }
+      const viewScope = document.getElementById('preset-view-filter') ? document.getElementById('preset-view-filter').value : '';
 
-    const favsHtml = filteredFavs.map(i => renderCard(i, true, true, true)).join('');
-    
-    document.getElementById('lib-presets').innerHTML = presets;
-    document.getElementById('lib-favorites').innerHTML = favsHtml || '<div style="padding:20px; color:#555">No items match your filters.</div>';
+      // Generate Preset Cards (Slots 1-6) based on selected scope
+      const presets = [1, 2, 3, 4, 5, 6].map(slot => {
+          const item = library.find(i => i.slot === slot && (i.speakerIp || '') === viewScope);
+          if (item)
+              return renderCard(item, true, true);
+          // Updated empty slot styling to use a class instead of inline dim styles
+          return `<div class="card empty-slot">Slot ${slot} Empty (${viewScope === '' ? 'Global' : 'Hybrid'})</div>`;
+      }).join('');
+
+      // --- FAVORITES FILTERING & DYNAMIC DROPDOWN ---
+      const allFavs = library.filter(i => i.slot === 0);
+
+      // 1. "Outer Join" logic: Merge MA Global Providers with local unique Favorites
+      const uniqueProviders = [...new Set(allFavs.map(i => i.provider || 'unknown'))];
+      const favProvSelect = document.getElementById('fav-provider-filter');
+
+      if (favProvSelect) {
+          const currentFavProv = favProvSelect.value;
+          let provHtml = '<option value="all">All Providers</option>';
+
+          // Merge the global Music Assistant providers with any unique ones from our library
+          const allDomains = new Set([...globalProviders.map(p => p.domain), ...uniqueProviders]);
+
+          Array.from(allDomains).sort().forEach(provDomain => {
+              const maProv = globalProviders.find(p => p.domain === provDomain);
+              let friendlyName = maProv ? maProv.name : provDomain.charAt(0).toUpperCase() + provDomain.slice(1);
+
+              // --- Rename "builtin" to "URL Stream" for the UI ---
+              if (provDomain === 'builtin' || provDomain === 'url') {
+                  friendlyName = 'URL Stream';
+              }
+
+              if (uniqueProviders.includes(provDomain)) {
+                  // Provider has active favorites - Make it selectable
+                  provHtml += `<option value="${provDomain}">${friendlyName}</option>`;
+              } else {
+                  // Provider has NO active favorites - Gray it out and disable it
+                  provHtml += `<option value="${provDomain}" disabled style="color: #666; font-style: italic;">${friendlyName}</option>`;
+              }
+          });
+
+          favProvSelect.innerHTML = provHtml;
+
+          // Retain selection if valid, otherwise fallback to 'all'
+          if (uniqueProviders.includes(currentFavProv) || currentFavProv === 'all') {
+              favProvSelect.value = currentFavProv;
+          } else {
+              favProvSelect.value = 'all';
+          }
+      }
+
+      // 2. Apply Filters (Pills + Dropdown)
+      let filteredFavs = allFavs;
+      if (state.favFilter !== 'all') {
+          filteredFavs = filteredFavs.filter(i => i.type === state.favFilter);
+      }
+      if (favProvSelect && favProvSelect.value !== 'all') {
+          filteredFavs = filteredFavs.filter(i => (i.provider || 'unknown') === favProvSelect.value);
+      }
+
+      const favsHtml = filteredFavs.map(i => renderCard(i, true, true, true)).join('');
+
+      document.getElementById('lib-presets').innerHTML = presets;
+      document.getElementById('lib-favorites').innerHTML = favsHtml || '<div style="padding:20px; color:#555">No items match your filters.</div>';
   }
 
   // --- MODAL & SAVING ---
-  
+
   // Forces a strong visual gray-out of the Target Speaker dropdown
   function toggleSpeakerDropdown(slotValue) {
       const speakerSelect = document.getElementById('edit-speaker');
       const speakerLabel = document.getElementById('label-edit-speaker');
       const isFavorite = (parseInt(slotValue) === 0);
-      
+
       speakerSelect.disabled = isFavorite;
-      
+
       if (isFavorite) {
           speakerSelect.style.opacity = '0.4';
           speakerSelect.style.cursor = 'not-allowed';
@@ -896,13 +975,13 @@ function setSource(s) {
 
   function openModal(item) {
       document.getElementById('modal').style.display = 'flex';
-      
+
       // Populate hidden fields
-      ['uuid', 'uri', 'image', 'type', 'subtitle','provider'].forEach(field => {
+      ['uuid', 'uri', 'image', 'type', 'subtitle', 'provider'].forEach(field => {
           document.getElementById('edit-' + field).value = item[field] || (field === 'uuid' ? '' : item.type);
       });
       document.getElementById('edit-name').value = item.name;
-      
+
       const slotVal = parseInt(item.slot) || 0;
       document.getElementById('edit-slot').value = slotVal;
       document.getElementById('edit-speaker').value = item.speakerIp || '';
@@ -913,88 +992,125 @@ function setSource(s) {
       // Handle Settings (Shuffle/Repeat)
       const uri = (item.uri || "").toLowerCase();
       const type = (item.type || "").toLowerCase();
-      
+
       const shuf = document.getElementById('edit-shuffle');
-      const rep  = document.getElementById('edit-repeat');
-      
-      shuf.disabled = false; rep.disabled = false;
-      
+      const rep = document.getElementById('edit-repeat');
+
+      shuf.disabled = false;
+      rep.disabled = false;
+
       // Disable options for Radio streams as they don't support shuffle/repeat
-	if (type === 'radio' || uri.includes('tunein') || uri.includes('radio')) {
-          shuf.checked = false; shuf.disabled = true; 
-          rep.value = 'off'; rep.disabled = true; 
-      } else { 
-          shuf.checked = item.settings?.shuffle || false; 
-          rep.value = item.settings?.repeat || 'off'; 
+      if (type === 'radio' || uri.includes('tunein') || uri.includes('radio')) {
+          shuf.checked = false;
+          shuf.disabled = true;
+          rep.value = 'off';
+          rep.disabled = true;
+      } else {
+          shuf.checked = item.settings?.shuffle || false;
+          rep.value = item.settings?.repeat || 'off';
       }
   }
 
-  function closeModal() { document.getElementById('modal').style.display = 'none'; }
+  function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+  }
 
   async function saveItem() {
       const data = {
           uuid: document.getElementById('edit-uuid').value,
           name: document.getElementById('edit-name').value,
-          subtitle: document.getElementById('edit-subtitle').value, 
+          subtitle: document.getElementById('edit-subtitle').value,
           uri: document.getElementById('edit-uri').value,
           image: document.getElementById('edit-image').value,
           type: document.getElementById('edit-type').value,
-		  provider: document.getElementById('edit-provider').value, 
+          provider: document.getElementById('edit-provider').value,
           slot: document.getElementById('edit-slot').value,
           speakerIp: document.getElementById('edit-speaker').value,
-          settings: { 
-              shuffle: document.getElementById('edit-shuffle').checked, 
+          settings: {
+              shuffle: document.getElementById('edit-shuffle').checked,
               repeat: document.getElementById('edit-repeat').value
           }
       };
-      
-      await api('/api/manager/save', { method: 'POST', body: JSON.stringify(data) });
+
+      await api('/api/manager/save', {
+          method: 'POST',
+          body: JSON.stringify(data)
+      });
       closeModal();
-      
-      if(state.tab === 'library') loadLibrary(); 
-      else alert("Saved to Library!");
+
+      if (state.tab === 'library')
+          loadLibrary();
+      else
+          alert("Saved to Library!");
   }
 
-  async function deleteItem(uuid) { 
-      if(confirm("Delete this item?")) { 
-          await api(`/api/manager/delete/${uuid}`, { method: 'DELETE' }); 
-          loadLibrary(); 
-      } 
+  // Updated deleteItem to support optional refresh of history, and smart confirmation messages
+  async function deleteItem(uuid, isHistory = false) {
+      // Look up the item to see if it's a Favorite or a Preset
+      let isFavorite = false;
+      try {
+          const library = await api('/api/manager/library');
+          const item = library.find(i => i.uuid === uuid);
+          if (item && item.slot === 0)
+              isFavorite = true;
+      } catch (e) {}
+
+      // Change the warning text based on the item type!
+      const warningText = isFavorite
+           ? "🗑️ permanently DELETE this item from your Favorites?"
+           : "✕ CLEAR this item from the preset slot? (It will stay in your Favorites)";
+
+      if (confirm(`Are you sure you want to ${warningText}`)) {
+          await api(`/api/manager/delete/${uuid}`, {
+              method: 'DELETE'
+          });
+          if (isHistory)
+              loadCustomHistory();
+          else
+              loadLibrary();
+      }
   }
 
   // --- SPEAKER LIST MODAL (Secondary) ---
   // Used when clicking "Play" from the search results to confirm target speaker.
-  
-  async function playItem(uuid) { openSpeakerModal(uuid); }
-  
-  function openSpeakerModal(uuid) { 
-      selectedUuid = uuid; 
-      renderSpeakerList(); 
-      document.getElementById('speaker-modal').style.display = 'flex'; 
-  }
-  
-  function closeSpeakerModal() { document.getElementById('speaker-modal').style.display = 'none'; }
 
-async function renderSpeakerList() {
+  async function playItem(uuid) {
+      openSpeakerModal(uuid);
+  }
+
+  function openSpeakerModal(uuid) {
+      selectedUuid = uuid;
+      renderSpeakerList();
+      document.getElementById('speaker-modal').style.display = 'flex';
+  }
+
+  function closeSpeakerModal() {
+      document.getElementById('speaker-modal').style.display = 'none';
+  }
+
+  async function renderSpeakerList() {
       const [devices, maPlayers] = await Promise.all([
-          api('/api/status'),
-          api('/api/manager/players')
-      ]);
-      if (!Array.isArray(devices)) return;
-      
+                  api('/api/status'),
+                  api('/api/manager/players')
+              ]);
+      if (!Array.isArray(devices))
+          return;
+
       const list = document.getElementById('speaker-list');
       list.innerHTML = devices.map(d => {
           // Check if MASS can see it
           const p = maPlayers ? maPlayers.find(mp => mp.ip === d.ip) : null;
-          
+
           const isOffline = !d.online;
           const isMissingFromMass = !p;
           const isDisabled = isOffline || isMissingFromMass;
-          
+
           let subText = d.isStandby ? 'OFF' : 'ON';
-          if (isOffline) subText = 'OFFLINE';
-          else if (isMissingFromMass) subText = 'NO MASS';
-          
+          if (isOffline)
+              subText = 'OFFLINE';
+          else if (isMissingFromMass)
+              subText = 'NO MASS';
+
           // Gray out the button and disable clicks if unplayable using the new CSS class
           const btnClass = isDisabled ? 'btn btn-unreachable' : 'btn';
           const btnStyle = 'justify-content:space-between;';
@@ -1008,34 +1124,44 @@ async function renderSpeakerList() {
 
   async function confirmPlay(ip) {
       document.getElementById('speaker-modal').style.display = 'none';
-      await api('/api/manager/play', { 
-          method: 'POST', 
-          body: JSON.stringify({ uuid: selectedUuid, ip }) 
+      await api('/api/manager/play', {
+          method: 'POST',
+          body: JSON.stringify({
+              uuid: selectedUuid,
+              ip
+          })
       });
       alert(`Playing on ${ip}...`);
-  } 
-  
-	async function playCustomStream() {
+  }
+
+  async function playCustomStream() {
       const urlInput = document.getElementById('stream-url');
       const nameInput = document.getElementById('stream-name');
       const url = urlInput.value.trim();
       const name = nameInput.value.trim();
       const select = document.getElementById('global-speaker');
-      const playerId = select.value; 
-      
-      if (!playerId) return alert("Please select a speaker from the top menu.");     
-      if (!url) return alert("❌ Please enter a Stream URL.");
-      if (!name) return alert("❌ Please enter a Station Name.");
-      
-      const res = await api('/api/manager/play_stream', { 
-          method: 'POST', 
-          body: JSON.stringify({ player_id: playerId, url, name }) 
+      const playerId = select.value;
+
+      if (!playerId)
+          return alert("Please select a speaker from the top menu.");
+      if (!url)
+          return alert("❌ Please enter a Stream URL.");
+      if (!name)
+          return alert("❌ Please enter a Station Name.");
+
+      const res = await api('/api/manager/play_stream', {
+          method: 'POST',
+          body: JSON.stringify({
+              player_id: playerId,
+              url,
+              name
+          })
       });
-      
-      if(res.success) {
+
+      if (res.success) {
           urlInput.value = '';
           nameInput.value = '';
-          loadCustomHistory(); 
+          loadCustomHistory();
       } else {
           alert("Error: " + (res.error || "Failed to start stream."));
       }
@@ -1044,44 +1170,54 @@ async function renderSpeakerList() {
   async function loadCustomHistory() {
       const box = document.getElementById('custom-history-results');
       box.innerHTML = '<div style="padding:20px; color:#888">Loading History...</div>';
-      
+
       const library = await api('/api/manager/library');
-      if (!Array.isArray(library)) return;
-      
+      if (!Array.isArray(library))
+          return;
+
       // Filter for slot -1, reverse so newest is first
-      const history = library.filter(i => i.slot === -1).reverse(); 
-      
+      const history = library.filter(i => i.slot === -1).reverse();
+
       if (history.length === 0) {
           box.innerHTML = '<div style="padding:10px; color:#555">No recent unsaved streams.</div>';
       } else {
           box.innerHTML = history.map(i => renderCard(i, false, true, true)).join('');
       }
   }
-  
+
   // Saves history item to Fav (Slot 0) without modal
   async function saveToLibraryDirect(uuid) {
       const library = await api('/api/manager/library');
       const item = library.find(i => i.uuid === uuid);
-      if (!item) return;
+      if (!item)
+          return;
 
       // Promote to Favorite (Slot 0) and strip UUID so it saves as a new library item
-      const data = { ...item, slot: 0 };
-      
-      await api('/api/manager/save', { method: 'POST', body: JSON.stringify(data) });
+      const data = {
+          ...item,
+          slot: 0
+      };
+
+      await api('/api/manager/save', {
+          method: 'POST',
+          body: JSON.stringify(data)
+      });
       alert(`"${item.name}" saved to Favorites!`);
       loadCustomHistory(); // Refresh list
   }
 
   // Updated deleteItem to support optional refresh of history
-  async function deleteItem(uuid, isHistory = false) { 
-      if(confirm("Delete this item?")) { 
-          await api(`/api/manager/delete/${uuid}`, { method: 'DELETE' }); 
-          if(isHistory) loadCustomHistory();
-          else loadLibrary(); 
-      } 
+  async function deleteItem(uuid, isHistory = false) {
+      if (confirm("Delete this item?")) {
+          await api(`/api/manager/delete/${uuid}`, {
+              method: 'DELETE'
+          });
+          if (isHistory)
+              loadCustomHistory();
+          else
+              loadLibrary();
+      }
   }
-  
-
 </script>
 </body>
 </html>

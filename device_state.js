@@ -185,9 +185,11 @@ function handleWakeMemory(ip, isStandby, activePreset, finalPlayStatus) {
     if (!isStandby) {
         
         // 🌟 THE FIX: If the speaker natively starts playing a preset or stream within the 2.5s window,
-        // cancel the pending Auto-Resume timer so we don't hijack the user's physical button press!
-        if (AUTO_RESUME_TIMERS[ip] && (activePreset > 0 || finalPlayStatus === 'PLAY_STATE')) {
-            console.log(`[DeviceState] 🛑 Auto-Resume Cancelled: Speaker natively loaded a source.`);
+        // OR if there is an active UI lock (EXPECTATION) indicating the user JUST clicked something...
+        const userIsLoadingSomething = EXPECTATIONS[ip] && (EXPECTATIONS[ip].type === 'PRESET' || EXPECTATIONS[ip].type === 'TRACK');
+
+        if (AUTO_RESUME_TIMERS[ip] && (activePreset > 0 || finalPlayStatus === 'PLAY_STATE' || userIsLoadingSomething)) {
+            console.log(`[DeviceState] 🛑 Auto-Resume Cancelled: Speaker natively loaded a source or user action detected.`);
             clearTimeout(AUTO_RESUME_TIMERS[ip]);
             AUTO_RESUME_TIMERS[ip] = null;
         }
@@ -206,6 +208,15 @@ function handleWakeMemory(ip, isStandby, activePreset, finalPlayStatus) {
     if (oldState && oldState.isStandby && !isStandby) {
         // The speaker just woke up!
         if (WAKE_MEMORY[ip]) {
+            
+            // 🛑 CRITICAL BYPASS (ISSUE #55 FIX): 
+            // Check if the user woke the speaker by pressing a physical preset button or app button.
+            // If EXPECTATIONS has a PRESET lock, we absolutely know a command is already in flight!
+            if (EXPECTATIONS[ip] && EXPECTATIONS[ip].type === 'PRESET') {
+                console.log(`[DeviceState] 🛑 Auto-Resume Bypassed: User woke speaker via Preset action.`);
+                return; 
+            }
+
             const presetId = WAKE_MEMORY[ip];
             console.log(`\n[DeviceState] 🌅 Auto-Resume Enabled: Waking up ${ip}. Resuming Preset ${presetId}...`);
             
@@ -215,11 +226,9 @@ function handleWakeMemory(ip, isStandby, activePreset, finalPlayStatus) {
             // Wait 2.5 seconds for the speaker's network stack to fully settle
             AUTO_RESUME_TIMERS[ip] = setTimeout(async () => {
                 
-                // --- THE FIX (ISSUE #55) ---
-                // Retained for Web UI interactions
-                const mem = mass.getPresetMemory(ip);
-                if (mem && (Date.now() - mem.timestamp < 5000)) {
-                    console.log(`[DeviceState] 🛑 Auto-Resume Bypassed: User woke speaker via Preset ${mem.id}.`);
+                // Double check right before firing just to be safe
+                if (EXPECTATIONS[ip] && EXPECTATIONS[ip].type === 'PRESET') {
+                    console.log(`[DeviceState] 🛑 Auto-Resume Bypassed at Execution: User initiated action.`);
                     return; 
                 }
 
@@ -283,26 +292,48 @@ function evaluateExpectationLocks(ip, finalTrack, finalPlayStatus, isStandby, is
         return false; // 🚫 REJECT THE OVERWRITE! KEEP THE UI LOCKED!
     }
 }
-
-
-
-// ---  AUTO-HEALING WEBSOCKET INITIALIZER ---
+// --- AUTO-HEALING WEBSOCKET INITIALIZER ---
 async function initDevice(device) {
-    console.log(`[DeviceState] 🔌 Initializing WebSocket for ${device.name} (${device.ip})`);
+    console.log(`[DeviceState] 🔌 Initializing Hybrid Engine for ${device.name} (${device.ip})`);
     
-    // 1. Setup Baseline Cache (Only if it doesn't exist, to preserve locks during reconnects)
+    // 1. Setup Baseline Cache
     if (!NATIVE_CACHE[device.ip]) {
         NATIVE_CACHE[device.ip] = { device: device, playStatus: 'STOP_STATE', volume: 0, nowPlaying: {} };
-        FINAL_STATE[device.ip] = { ...device, online: true, readyForDisplay: true };
+        FINAL_STATE[device.ip] = { ...device, online: false, readyForDisplay: true };
     }
-    // --- Exponential Backoff State ---
+    
     let reconnectDelay = 5000;
     let failedAttempts = 0;
-	let isPoisoned = false; // Tracks if the current track contains socket-killing bytes
+    let activeWs = null; // Stores the socket so the watchdog can kill it
 
-    // Wrap the connection logic so it can restart itself
+    // 🌟 THE PERMANENT HTTP WATCHDOG (Online & Offline) 🌟
+    // A lightweight pulse running in both directions, exactly as you designed.
+    setInterval(async () => {
+        try {
+            await axios.get(`http://${device.ip}:8090/info`, { timeout: 2500 });
+            
+            // SPEAKER IS ALIVE!
+            if (FINAL_STATE[device.ip] && FINAL_STATE[device.ip].online === false) {
+                console.log(`[DeviceState] ☀️ Watchdog detected ${device.ip} is back online!`);
+                FINAL_STATE[device.ip].online = true;
+                
+                // Force an immediate fetch to instantly expand the UI card
+                await processSettledState(device.ip);
+            }
+        } catch (e) {
+            // SPEAKER IS DEAD!
+            if (FINAL_STATE[device.ip] && FINAL_STATE[device.ip].online === true) {
+                console.log(`[DeviceState] 🌩️ Watchdog detected ${device.ip} dropped offline.`);
+                FINAL_STATE[device.ip].online = false;
+                
+                // Forcefully kill the zombie WebSocket
+                if (activeWs) activeWs.terminate();
+            }
+        }
+    }, 5000);
+
+    // Wrap the connection logic
     async function fetchInitialAndConnect() {
-        // 2. INITIAL SEED FETCH (Catches up on missed tracks like Mozart after a drop!)
         try {
             const [npRes, volRes] = await Promise.all([
                 axios.get(`http://${device.ip}:8090/now_playing`, { timeout: 3500 }).catch(() => null),
@@ -310,8 +341,7 @@ async function initDevice(device) {
             ]);
             const parser = new xml2js.Parser({ explicitArray: false });
             
-			if (npRes && npRes.data) {
-                // --- THE HTTP SCRUBBER ---
+            if (npRes && npRes.data) {
                 let cleanXml = npRes.data.replace(/\ufffd/g, 'a').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
                 const npData = await parser.parseStringPromise(cleanXml);
                 if (npData.nowPlaying) {
@@ -326,23 +356,20 @@ async function initDevice(device) {
                     NATIVE_CACHE[device.ip].volume = parseInt(volData.volume.actualvolume);
                 }
             } 
-        } catch (e) {
-            // Silently ignore HTTP seed failures on sleeping devices
-        }
+        } catch (e) {}
 
-        // 3. Process the state so the UI updates immediately
-        // Only print the UI State block if it's the first few attempts to prevent spam
         const originalLog = console.log;
-        if (failedAttempts >= 3) console.log = function() {}; // Mute standard logs temporarily
+        if (failedAttempts >= 3) console.log = function() {}; 
         await processSettledState(device.ip);
-        console.log = originalLog; // Restore logs
+        console.log = originalLog; 
 
-		// 4. Start the WebSocket Listener
+        // Start the WebSocket
         const ws = new WebSocket(`ws://${device.ip}:8080`, 'gabbo');
-		
+        activeWs = ws; // Save to global scope so watchdog can access it
+
         ws.on('open', () => {
             if (failedAttempts > 0 && !POISONED_DEVICES[device.ip]) {
-                console.log(`[DeviceState] 🔌 WS Reconnected to ${device.ip}! Resuming normal operations.`);
+                console.log(`[DeviceState] 🔌 WS Reconnected to ${device.ip}!`);
             }
             if (!POISONED_DEVICES[device.ip]) {
                 reconnectDelay = 5000;
@@ -352,28 +379,13 @@ async function initDevice(device) {
 
         ws.on('message', async (data) => {
             try {
-                // 1. Convert the raw WebSocket buffer to a string first
                 let rawXml = data.toString('utf8');
-                
-				// --- 🚨 THE UNFILTERED RAW WEBSOCKET LOGGER 🚨 ---
-                // prints everything before the code can filter it out
-/*                 if (global.DEBUG_MODE) {
-                    console.log(`\n[RAW WS DUMP] 📥 from ${device.ip}:`);
-                    console.log(rawXml);
-                    console.log(`--------------------------------------\n`);
-                } */
-
-                // 2. THE PRE-SCRUBBER: Sanitize the raw XML before parsing
                 rawXml = rawXml.replace(/\ufffd/g, 'a').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
-
-                // 3. Give clean XML to strict parser
                 const parser = new xml2js.Parser({ explicitArray: false });
                 const result = await parser.parseStringPromise(rawXml);
 
-                // If it's not a standard update, we still return
                 if (!result.updates) return;
 
-                // UPDATE NATIVE CACHE INSTANTLY
                 if (result.updates.nowPlayingUpdated) {
                     const np = result.updates.nowPlayingUpdated.nowPlaying;
                     NATIVE_CACHE[device.ip].nowPlaying = np; 
@@ -382,20 +394,14 @@ async function initDevice(device) {
                 if (result.updates.volumeUpdated) {
                     NATIVE_CACHE[device.ip].volume = parseInt(result.updates.volumeUpdated.volume.actualvolume);
                 }
-				
-				
-				// --- NEW: THE WEBSOCKET PRESET INTERCEPTOR (BYPASS CLOUD) ---
+                
                 if (result.updates.nowSelectionUpdated) {
                     const selection = result.updates.nowSelectionUpdated;
-                    
-                    // Parse the Preset ID from the XML structure
                     let presetId = 0;
                     if (selection.preset) {
                         presetId = parseInt(selection.preset.id || (selection.preset.$ && selection.preset.$.id) || 0);
                     }
-                    
                     if (presetId > 0) {
-                        // Check if bypass is enabled in settings.json
                         const settingsPath = path.join(process.cwd(), 'config', 'settings.json');
                         let bypassEnabled = false;
                         if (fs.existsSync(settingsPath)) {
@@ -404,79 +410,47 @@ async function initDevice(device) {
                                 bypassEnabled = settings.bypassCloudEmulation === true; 
                             } catch(e) {}
                         }
-                        
                         if (bypassEnabled) {
                             console.log(`\n[DeviceState] 🚀 Bypass Cloud ON: Intercepted WebSocket selection for Preset ${presetId} on ${device.ip}`);
                             utils.executeSmartPreset(device.ip, presetId);
                         }
                     }
                 }
-				
-								
-				
-
-                // A hardware change occurred! Re-lock the UI if an expectation isn't already active.
+                
                 if (!EXPECTATIONS[device.ip]) FINAL_STATE[device.ip].readyForDisplay = false; 
 
                 if (DEBOUNCE_TIMERS[device.ip]) clearTimeout(DEBOUNCE_TIMERS[device.ip]);
-
                 DEBOUNCE_TIMERS[device.ip] = setTimeout(async () => {
-                    // HARDWARE SETTLED. RUN THE BUSINESS LOGIC ONCE.
                     await processSettledState(device.ip);
                 }, DEBOUNCE_DELAY_MS);
 
-            } catch (err) {
-                console.log(`[DeviceState] ⚠️ XML Parsing Error on ${device.ip}: ${err.message}`);
-            }
+            } catch (err) {}
         });
-	
-		ws.on('error', (err) => {
-            // --- THE SILENCER ---
-            // Catch protocol-level crashes from bad metadata bytes without hard failure loops
+    
+        ws.on('error', (err) => {
             if (err.message.includes('UTF-8')) {
                 if (!POISONED_DEVICES[device.ip]) {
                     console.log(`[DeviceState] 🧽 Bad metadata from ${device.ip} broke the socket.`);
-                    console.log(`[DeviceState] 🔇 Muting socket loop logs until Gapless Watchdog catches a clean track change...`);
                     POISONED_DEVICES[device.ip] = true;
                 }
-                reconnectDelay = 5000; // Background pings stay active quietly
-                return; // Suppress error propagation
+                reconnectDelay = 5000; 
+                return; 
             }
-            
             failedAttempts++;
-            
-            if (failedAttempts < 3 && !POISONED_DEVICES[device.ip]) {
-                console.log(`[DeviceState] ⚠️ WS Error on ${device.ip}: ${err.message}`);
-            } else if (failedAttempts === 3) {
-                if (!POISONED_DEVICES[device.ip]) {
-                    console.log(`[DeviceState] 🔇 Speaker ${device.ip} is unreachable. Suppressing WS logs until it wakes up.`);
-                }
-                // flag it as offline so UI grays it out
-                if (FINAL_STATE[device.ip]) FINAL_STATE[device.ip].online = false;
-            }
         });
-	
-		// --- AUTO-RECONNECT LOOP ---
+    
         ws.on('close', () => {
-            // Use unified dictionary to muzzle log spam when a device is marked poisoned
-            if (failedAttempts < 3 && !POISONED_DEVICES[device.ip]) {
-                console.log(`[DeviceState] 🔌 WS Disconnected from ${device.ip}. Reconnecting in ${reconnectDelay / 1000}s...`);
-            }
-            
             setTimeout(fetchInitialAndConnect, reconnectDelay);
-            
-            // Exponential backoff: Cap at 60s delay unless the poison shield has actively forced a 30s pause
-            if (reconnectDelay < 60000 && !POISONED_DEVICES[device.ip]) {
-                reconnectDelay = Math.min(reconnectDelay * 2, 60000);
+            if (reconnectDelay < 15000 && !POISONED_DEVICES[device.ip]) {
+                reconnectDelay = Math.min(reconnectDelay * 2, 15000);
             }
         });
-		
     }
 
     // Start the engine
     fetchInitialAndConnect();
-
 }
+
 
 // --- THE LOGIC ENGINE ---
 async function processSettledState(ip) {
@@ -804,7 +778,7 @@ async function processSettledState(ip) {
 }
 catch (error) {
     console.error(`[DeviceState] ❌ Error processing settled state for ${ip}:`, error.message);
-}
+	}
 }
 // --- SYNCHRONOUS GETTER ---
 async function get(device) {
@@ -837,9 +811,11 @@ async function get(device) {
     } else {
         delete STOP_TIMERS[device.ip]; // Reset if it starts playing again
     }
-
-    return currentState || { ...device, online: true, readyForDisplay: false };
+    
+    // FIX 3: Stop lying on boot! Default to false.
+    return currentState || { ...device, online: false, readyForDisplay: true };
 }
+
 
 function clearSession(ip) {
     console.log(`[DeviceState] 🧹 Session Cleared for ${ip} (Power Down / Reset)`);

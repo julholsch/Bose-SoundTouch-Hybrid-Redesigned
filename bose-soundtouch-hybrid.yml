@@ -1,5 +1,5 @@
 # ==============================================================================
-# BOSE SOUNDTOUCH HYBRID 2026 V3.5.1
+# BOSE SOUNDTOUCH HYBRID 2026 V3.5.5
 # ==============================================================================
 # --- VERSION TAGGING ---
 # Use the word 'latest' on the image line below to always pull the newest 
@@ -37,6 +37,7 @@ services:
     # image: ghcr.io/tjgigs/bose-soundtouch-hybrid-2026:v3 (auskommentiert)
     
     container_name: bose-soundtouch-hybrid
+
     environment:
       - NODE_ENV=production
       - TRUST_PROXY=${TRUST_PROXY:-false} 
@@ -47,8 +48,7 @@ services:
       # Example: America/New_York, Europe/London, Australia/Sydney
       # ==========================================================
       - TZ=America/Los_Angeles  # <-- Change this to your local timezone
-    # Unter Windows funktioniert network_mode: "host" oft nicht so gut wie auf Linux/NAS.
-    # Falls du die Seite im Browser nicht erreichst, müsstest du stattdessen Ports nutzen:
+      
     ports:
       - "3000:3000" 
 

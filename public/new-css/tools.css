@@ -108,7 +108,8 @@ body {
   margin: 0 auto;
 }
 
-a {
+.separation-line {
+  border-color: var(--border); margin: 10px 0;
 }
 
 button,
@@ -958,7 +959,9 @@ button {
   font-weight: bold;
 
   color: var(--btn-text-clr);
+
   background: var(--accent);
+  /*this is just the default button color. To individulize the colors for ich button I used inline-css.*/
 
   cursor: pointer;
 
@@ -968,19 +971,6 @@ button {
     height: 16px;
   }
 }
-
-/* button.primary {
-  border: none;
-
-  font-weight: bold;
-
-  color: #000;
-  background: var(--accent);
-  
-  &:hover {
-    opacity: 0.9;
-  }
-} */
 
 .btn-secondary {
   padding: 6px 12px;
@@ -1022,37 +1012,10 @@ button {
   color: var(--text);
 }
 
-button:active .nav-btn:active,
-.source-btn:active,
-.filter-pill:active {
-  filter: brightness(0.85);
-
-  transform: scale(0.95);
-}
-
-.btn.btn-pending,
-.btn-preset.btn-pending {
-  border-color: var(--pending) !important;
-
-  color: var(--pending) !important;
-  background: rgba(241, 196, 15, 0.15) !important;
-}
-
-.btn.btn-success {
-  border-color: var(--accent) !important;
-
-  color: var(--accent) !important;
-  background: rgba(46, 204, 113, 0.2) !important;
-}
-
 button:disabled,
 .btn:disabled {
   cursor: default !important;
   pointer-events: none !important;
-}
-
-.btn-pending:not(:disabled) {
-  cursor: wait !important;
 }
 
 /* 
@@ -1082,50 +1045,13 @@ button:disabled,
   backdrop-filter: blur(4px);
 }
 
-.modal-header {
-  display: flex;
-  position: sticky;
-  top: 0;
-  background-color: transparent;
-
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 12px;
-  padding: 10px;
-
-  &:after {
-    content: "";
-    position: absolute;
-    top: -5px;
-    left: 0;
-    z-index: -1;
-    backdrop-filter: blur(15px);
-    width: 100%;
-    height: calc(100% + 5px);
-      /* Create the gradient fade */
-    -webkit-mask-image: linear-gradient(
-                to bottom, 
-                rgba(0, 0, 0, 1) 10%,
-                rgba(0, 0, 0, .75) 80%,
-                rgba(0, 0, 0, 0) 100%
-            );
-    mask-image: linear-gradient(
-                to bottom, 
-                rgba(0, 0, 0, 1) 10%,
-                rgba(0, 0, 0, .75) 80%,
-                rgba(0, 0, 0, 0) 100%
-            );
-    
-  }
-}
-
 .modal-card {
   display: flex;
   overflow-y: auto;
 
   flex-direction: column;
-
-  width: 90%;
+  justify-content: center;
+  gap: 10px;
 
   max-width: 600px;
   max-height: 90dvh;
@@ -1144,28 +1070,77 @@ button:disabled,
   }
 }
 
-.modal-content {
+.modal-header {
+  position: sticky;
+  top: 0;
+
   display: flex;
 
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   
-  padding: 25px;
+  padding: 20px;
+  padding-bottom: 10px;
+
+  border-radius: 12px;
+
+  background-color: transparent;
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: 0;
+    z-index: -1;
+
+    width: 100%;
+
+    height: calc(100% + 5px);
+
+    backdrop-filter: blur(15px);
+
+    /* Create the gradient fade */
+    -webkit-mask-image: linear-gradient(
+                to bottom, 
+                rgba(0, 0, 0, 1) 10%,
+                rgba(0, 0, 0, .75) 80%,
+                rgba(0, 0, 0, 0) 100%
+            );
+    mask-image: linear-gradient(
+                to bottom, 
+                rgba(0, 0, 0, 1) 10%,
+                rgba(0, 0, 0, .75) 80%,
+                rgba(0, 0, 0, 0) 100%
+            );
+  }
+}
+
+.modal-content {
+  display: flex;
+  
+  padding: 20px;
+  gap: 10px;
+  flex-direction: column;
 }
 
 .modal-close-btn {
   border: none;
-  outline: 0 solid transparent;
-  background-color: var(--btn-bg);
+
   font-size: 1.5em;
 
   color: var(--text);
+  background-color: var(--btn-bg);
 
   opacity: 0.6;
 
-  cursor: pointer;
   transition: scale .2s ease-in-out;
+
+  cursor: pointer;
+  outline: 0 solid transparent;
+
   &:hover {
     transition: all .2s ease-in-out;
+
     outline: 2px solid var(--accent);
   }
 }
@@ -1231,23 +1206,27 @@ button:disabled,
 /*
 5.2 h-modal
 */
+
+
+
 /*
 5.3 pdf-modal
 */
 
-.modal-content.pdf-mode {
+.pdf-mode {
   display: flex;
   overflow-y: auto;
 
   flex-direction: column;
 
-  width: 95%;
-
-  max-width: 1000px;
-  height: 90vh;
+  width: 95dvw;
+  height: 90dvh;
   padding: 15px;
-  /* FIX: ALLOW SCROLLING ON MOBILE (Specifically iOS where iframes expand); */
   -webkit-overflow-scrolling: touch;
+}
+
+.pdf-modal-btn-wrapper {
+  display:flex; gap:10px;
 }
 
 .pdf-frame {
@@ -1256,6 +1235,7 @@ button:disabled,
   flex: 1;
 
   width: 100%;
+  height: 100%;
 
   border: 1px solid var(--border);
 
@@ -1263,11 +1243,53 @@ button:disabled,
   margin-top: 10px;
 
   background: #fff;
+
+  div {
+    padding:20px; text-align:center; color:var(--text); opacity:0.6;"
+  }
 }
 
 /*
 5.4 script-modal
 */
+
+#scriptContent {
+  overflow-x: auto;
+
+  padding: 15px;
+
+  border: 1px solid #333;
+
+  border-radius: 4px;
+  font-size: 13px;
+
+  line-height: 1.4;
+
+  white-space: pre;
+
+  color: #0f0;
+  background: #000;
+}
+
+.script-info {
+  padding: 10px;
+
+  border-radius: 4px;
+  font-size: 13px;
+
+  background-color: #2a3b4c;
+}
+
+.scriptModal-btn-wrapper {
+  display: flex;
+
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+
+  width: 100%;
+}
+
 /* --- MASS ERROR BANNER --- */
 
 #mass-error-banner {
