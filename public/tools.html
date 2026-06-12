@@ -82,7 +82,7 @@
 							<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
 							<div id="sortable-list" class="sortable-list"></div>
 						</div>
-						<button class="btn-primary" onclick="saveSearchOrder()" style="background: var(--card-border-accent-clr);">💾 Save Layout Order</button>
+						<button class="btn-primary" onclick="saveSearchOrder()" style="--btn-bg-clr: var(--card-border-accent-clr);">💾 Save Layout Order</button>
 					</div>
 
 					<div class="inner-panel" >
@@ -108,7 +108,7 @@
 								<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta.</label>
 							</div>
 						</div>
-						<button class="btn-primary" style="background: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
+						<button class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
 					</div>
 				</div>
 			</section> 
@@ -145,11 +145,11 @@
 									</select>
 								</div>
 							</div>
-							<button class="btn-primary"  onclick="restartHybrid(this)" style="background: var(--card-border-accent-clr)";>
+							<button class="btn-primary"  onclick="restartHybrid(this)" style="--btn-bg-clr: var(--card-border-accent-clr)";>
 								<img src="images/hybrid_icon.png" alt="Icon">
 								Restart SoundTouch Hybrid
 							</button>
-						<button class="btn-primary" style="background: #3498db;" onclick="triggerManualAudit()">
+						<button class="btn-primary" style="--btn-bg-clr: #3498db;" onclick="triggerManualAudit()">
 							🔍 Run Speaker Audit
 						</button>
 					</div>						
@@ -161,15 +161,15 @@
 							</div>
 						</div>
 
-						<button class="btn-primary" onclick="rescanMass(this)" style="background: #f39c12;">
+						<button class="btn-primary" onclick="rescanMass(this)" style="--btn-bg-clr: #f39c12;">
 							🔄 Soft Rescan (Keep-Alive)
 						</button>
 						
-						<button class="btn-primary" onclick="aggressiveReloadMass(this)" style="background: #d35400;">
+						<button class="btn-primary" onclick="aggressiveReloadMass(this)" style="--btn-bg-clr: #d35400;">
 							🚨 Aggressive Reload (DLNA & AirPlay)
 						</button>
 						
-						<button class="btn-primary" onclick="restartMass(this)" style="background:#e74c3c;">
+						<button class="btn-primary" onclick="restartMass(this)" style="--btn-bg-clr:#e74c3c;">
 							<img src="images/ma_icon.png" alt="MA"> Restart MASS Container
 						</button>
 					</div>
@@ -200,7 +200,7 @@
 							Verbose Debug
 						</label>
 						
-						<button class="btn-primary" style="background:#3498db;" onclick="downloadLogs()">💾 Download .txt</button>
+						<button class="btn-primary" style="--btn-bg-clr:#3498db;" onclick="downloadLogs()">💾 Download .txt</button>
 					</div>
 				</div>
 			</section>
@@ -245,7 +245,7 @@
 							<label for="pairNameInput">PAIR NAME</label>
 							<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo">
 						</div>
-						<button id="saveStereoPairBtn" class="btn-primary" style="background: var(--card-border-accent-clr)">
+						<button id="saveStereoPairBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)">
 							💾 Save Pair
 						</button>
 
@@ -280,7 +280,7 @@
 							<label>Target:</label>
 							<select id="wifi-target"></select>
 						</div>
-						<button class="btn-primary" onclick="pushWifi(this)" style="background: var(--card-border-accent-clr)">📡 PUSH WI-FI</button>
+						<button class="btn-primary" onclick="pushWifi(this)" style="--btn-bg-clr: var(--card-border-accent-clr)">📡 PUSH WI-FI</button>
 					</div>
 				</div>
 			</section>
@@ -372,8 +372,8 @@
 					To save it, select <strong>Keep</strong>, <strong>Save</strong>, or <strong>Accept</strong>.
 				</div>
 				<div class="scriptModal-btn-wrapper">
-					<button id="cancelScriptBtn" style="background: #555; color: white;" class="btn-primary">Cancel</button>
-					<button id="downloadScriptBtn" style="background: #007bff; color: white;" class="btn-primary">Download Script</button>
+					<button id="cancelScriptBtn" style="--btn-bg-clr: #555; color: white;" class="btn-primary">Cancel</button>
+					<button id="downloadScriptBtn" style="--btn-bg-clr: #007bff; color: white;" class="btn-primary">Download Script</button>
 				</div>
 			</div>
 		</div>

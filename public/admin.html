@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Speaker Admin</title>
-  <link rel="icon" type="image/png" href="images/hybrid_icon.png">
-  <link rel="stylesheet" href="style.css?v=26">
-  <link rel="manifest" href="manifest.json">
-  <script src="global_ui.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Speaker Admin</title>
+    
+    <link rel="icon" type="image/png" href="images/hybrid_icon.png">
+    
+    <!-- <link rel="stylesheet" href="style.css?v=26"> -->
+    <link rel="stylesheet" href="new-css/admin.css">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <script src="global_ui.js"></script>
 </head>
 <body>
-<div class="container">
+<div class="app-container">
 
     <header id="tools-header">
         <div id="app-title" class="app-header">
-            <div class="global-nav-img">
-                <img src="images/hybrid_icon.png" alt="Logo">
-                Bose SoundTouch Hybrid
-            </div>
-            <div class="nav-center-group">
-                <div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
-                <div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
-                <div class="global-link active" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
-                <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
-            </div>
+			<div class="header-inner-panel">
+				<div class="app-logo">
+					<img src="images/hybrid_icon.png" alt="Logo">
+					Bose SoundTouch Hybrid
+				</div>
+				<div class="global-nav-menu">
+					<div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
+					<div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
+					<div class="global-link active" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
+					<div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
+				</div>
+			</div>
         </div>
     </header>
     <div>
         <button class="btn-all-off" onclick="triggerGlobalAllOff()">
-            <span style="color: var(--danger); font-size: 1.1em;"><i class="icon-power"></i></span> All Off
+            <span><i class="icon-power"></i></span> All Off
         </button>
     </div>
 
@@ -64,22 +72,25 @@
       
       return `
         <div class="card">
-          <h3>${d.name}</h3>
-          <div class="sub-head">
-            <span>${d.type} <span id="mode-${d.ip}" class="mode-badge"></span></span>
-            <button id="pwr-${d.ip}" class="pwr-off" onclick="togglePower('${d.ip}')">POWER</button>
-          </div>
-          
-          <div class="info-row">
-            <span>${d.ip}</span> • 
-            <span id="wifi-${d.ip}">📶 ...</span>
-          </div>
+            <div class="card-header">
+                <h3 class="card-heading">${d.name}</h3>
+            </div>
 
+            <div class="card-sub-heading">
+                <button id="pwr-${d.ip}" class="btn-secondary" onclick="togglePower('${d.ip}')">POWER</button>
+            </div>        
+            <div class="info-row">
+                <p><strong>Type:</strong> <span>${d.type} <span id="mode-${d.ip}" class="mode-badge"></span></span></p>
+                <p><strong>IP:</strong> <span>${d.ip}</span></p>
+                <p><strong>WiFi Signal:</strong> <span id="wifi-${d.ip}">📶 ...</span></p>
+            </div>
+
+          <hr class="separation-line">
           <div class="control-row">
             <input type="text" id="n-${d.ip}" value="${d.name}" style="background:var(--bg-color); color:var(--text); border:1px solid #777; padding:4px; border-radius:3px;">
-            <button onclick="ren('${d.ip}')">Save</button>
+            <button class="btn-secondary" onclick="ren('${d.ip}')">Save</button>
           </div>
-          
+          <hr class="separation-line">
           <div class="control-row" style="align-items:flex-start; flex-direction:column; gap:5px;">
             <div style="display:flex; justify-content:space-between; width:100%;">
                 <label>Bass</label>
@@ -96,19 +107,18 @@
                        ontouchend="hideBubble('bass-${d.ip}')">
             </div>
           </div>
-          
+          <hr class="separation-line">
           <div class="control-row">
             <label>Auto-Off</label>
-            <button id="ao-${d.ip}" onclick="tA('${d.ip}', this)">...</button>
+            <button class="btn-secondary" id="ao-${d.ip}" onclick="tA('${d.ip}', this)">...</button>
           </div>
-          
-          <div class="control-row"><label>Bluetooth</label><button onclick="pBT('${d.ip}')">Pairing</button></div>	  
-          
+          <hr class="separation-line">
+          <div class="control-row"><label>Bluetooth</label><button class="btn-secondary" onclick="pBT('${d.ip}')">Pairing</button></div>	  
+          <hr class="separation-line">
           <div class="control-row ${hasClock ? '' : 'hidden'}">
             <label>Clock</label>
-            <button id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
+            <button class="btn-secondary" id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
           </div>
-
           <div class="tools-area">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                  <span id="fw-${d.ip}" style="font-size:0.75em; color:var(--text); opacity:0.8; line-height:1.2;"></span>
@@ -126,89 +136,91 @@
     devices.forEach(d => { if(d.online) fetchDeviceState(d.ip); });
   }
 
-  function showBubble(idSuffix) {
-      const bubble = document.getElementById(`bubble-${idSuffix}`);
-      const el = document.getElementById(`br-${idSuffix.split('-')[1]}`); 
-      if (bubble && el) {
-          const percent = (el.value - el.min) / (el.max - el.min);
-          const newLeft = percent * (el.offsetWidth - 15) + (15/2); 
-          bubble.style.left = `${newLeft}px`;
-          bubble.innerText = el.value;
-          bubble.classList.add('visible');
-      }
-  }
+    function showBubble(idSuffix) {
+        const bubble = document.getElementById(`bubble-${idSuffix}`);
+        const el = document.getElementById(`br-${idSuffix.split('-')[1]}`); 
+        if (bubble && el) {
+            const percent = (el.value - el.min) / (el.max - el.min);
+            const newLeft = percent * (el.offsetWidth - 15) + (15/2); 
+            bubble.style.left = `${newLeft}px`;
+            bubble.innerText = el.value;
+            bubble.classList.add('visible');
+        }
+    }
 
-  function hideBubble(idSuffix) {
-      const bubble = document.getElementById(`bubble-${idSuffix}`);
-      if (bubble) bubble.classList.remove('visible');
-  }
+    function hideBubble(idSuffix) {
+        const bubble = document.getElementById(`bubble-${idSuffix}`);
+        if (bubble) bubble.classList.remove('visible');
+    }
 
-  function handleBassInput(ip, value, el) {
-      const label = document.getElementById(`bv-${ip}`);
-      if (label) label.innerText = `(${value})`;
-      const bubble = document.getElementById(`bubble-bass-${ip}`);
-      if (bubble && el) {
-          bubble.innerText = value;
-          const percent = (value - el.min) / (el.max - el.min);
-          const newLeft = percent * (el.offsetWidth - 15) + (15/2); 
-          bubble.style.left = `${newLeft}px`;
-      }
-  }
+    function handleBassInput(ip, value, el) {
+        const label = document.getElementById(`bv-${ip}`);
+        if (label) label.innerText = `(${value})`;
+        const bubble = document.getElementById(`bubble-bass-${ip}`);
+        if (bubble && el) {
+            bubble.innerText = value;
+            const percent = (value - el.min) / (el.max - el.min);
+            const newLeft = percent * (el.offsetWidth - 15) + (15/2); 
+            bubble.style.left = `${newLeft}px`;
+        }
+    }
 
-  async function fetchDeviceState(ip) {
-      try {
-          const res = await fetch(`/api/admin/device_status?ip=${ip}`);
-          const s = await res.json();
-          
-          const nameInput = document.getElementById(`n-${ip}`);
-          if(nameInput && document.activeElement !== nameInput && s.name) nameInput.value = s.name;
-          
-          const fwEl = document.getElementById(`fw-${ip}`);
-          if (fwEl && s.fw && s.fw !== '---') {
-              const shortFw = s.fw.split('.').slice(0,3).join('.');
-              fwEl.innerText = `v${shortFw}`;
-          }
+    async function fetchDeviceState(ip) {
+        try {
+            const res = await fetch(`/api/admin/device_status?ip=${ip}`);
+            const s = await res.json();
+            
+            const nameInput = document.getElementById(`n-${ip}`);
+            if(nameInput && document.activeElement !== nameInput && s.name) nameInput.value = s.name;
+            
+            const fwEl = document.getElementById(`fw-${ip}`);
+            if (fwEl && s.fw && s.fw !== '---') {
+                const shortFw = s.fw.split('.').slice(0,3).join('.');
+                fwEl.innerText = `v${shortFw}`;
+            }
 
-          const pwrBtn = document.getElementById(`pwr-${ip}`);
-          const modeBadge = document.getElementById(`mode-${ip}`);
-          if(pwrBtn) {
-              if (s.power === 'ON') {
-                  pwrBtn.className = 'pwr-on'; pwrBtn.innerText = 'ON';
-                  if(modeBadge) modeBadge.innerText = '';
-              } else {
-                  pwrBtn.className = 'pwr-off'; pwrBtn.innerText = 'OFF';
-                  if(modeBadge) modeBadge.innerText = '(STANDBY)';
-              }
-          }
+            const pwrBtn = document.getElementById(`pwr-${ip}`);
+            const modeBadge = document.getElementById(`mode-${ip}`);
+            if(pwrBtn) {
+                if (s.power === 'ON') {
+                    if(modeBadge) modeBadge.innerText = '';
+                } else {
+                    if(modeBadge) modeBadge.innerText = '(STANDBY)';
+                }
+            }
 
-          const wifi = document.getElementById(`wifi-${ip}`);
-          if(wifi && s.ssid) {            
-              const freqText = s.freq ? `  ${s.freq} ` : ' ';
-              wifi.innerText = `📶 ${s.ssid}${freqText}(${s.rssi})`;
-          }
+            const wifi = document.getElementById(`wifi-${ip}`);
+            if(wifi && s.ssid) {            
+                const freqText = s.freq ? `  ${s.freq} ` : ' ';
+                wifi.innerText = `📶 ${s.ssid}${freqText}(${s.rssi})`;
+            }
 
-          const br = document.getElementById(`br-${ip}`);
-          if(br && document.activeElement !== br) br.value = s.bass;
-          
-          const bv = document.getElementById(`bv-${ip}`);
-          if(bv && document.activeElement !== br) bv.innerText = `(${s.bass})`;
+            const br = document.getElementById(`br-${ip}`);
+            if(br && document.activeElement !== br) br.value = s.bass;
+            
+            const bv = document.getElementById(`bv-${ip}`);
+            if(bv && document.activeElement !== br) bv.innerText = `(${s.bass})`;
 
-          const clk = document.getElementById(`clk-${ip}`);
-          if(clk) { clk.innerText = s.clock === 'true' ? 'ON' : 'OFF'; clk.className = s.clock === 'true' ? 'state-on' : 'state-off'; }
+            const clk = document.getElementById(`clk-${ip}`);
+            if(clk) { 
+                clk.innerText = s.clock === 'true' ? 'ON' : 'OFF'; 
+            }
 
-          const ao = document.getElementById(`ao-${ip}`);
-          if(ao) { ao.innerText = s.autoOff === 'true' ? 'ON' : 'OFF'; ao.className = s.autoOff === 'true' ? 'state-on' : 'state-off'; }
+            const ao = document.getElementById(`ao-${ip}`);
+            if(ao) { 
+                ao.innerText = s.autoOff === 'true' ? 'ON' : 'OFF'; 
+            }
 		  
-		 // Update the Source Toggle Button text
-          const srcBtn = document.getElementById(`src-${ip}`);
-          if (srcBtn && s.rawSource) {
-              if (s.rawSource === 'AUX') srcBtn.innerText = 'AUX';
-              else if (s.rawSource === 'BLUETOOTH') srcBtn.innerText = 'BLUETOOTH';
-              else srcBtn.innerText = 'WIFI';
-          } 
+            // Update the Source Toggle Button text
+            const srcBtn = document.getElementById(`src-${ip}`);
+            if (srcBtn && s.rawSource) {
+                if (s.rawSource === 'AUX') srcBtn.innerText = 'AUX';
+                else if (s.rawSource === 'BLUETOOTH') srcBtn.innerText = 'BLUETOOTH';
+                else srcBtn.innerText = 'WIFI';
+            } 
 
-      } catch(e) {}
-  }
+        } catch(e) {}
+    }
 
 	async function togglePower(ip) { 
       // 1. OPTIMISTIC UI UPDATE: Instantly flip the button state locally
@@ -216,14 +228,12 @@
       const modeBadge = document.getElementById(`mode-${ip}`);
       
       if (pwrBtn) {
-          if (pwrBtn.innerText === 'ON') {
-              pwrBtn.className = 'pwr-off'; 
-              pwrBtn.innerText = 'OFF';
+          if (pwrBtn.innerText === 'OFF') {
+              pwrBtn.innerText = 'POWER';
               if(modeBadge) modeBadge.innerText = '(STANDBY)';
           } else {
-              pwrBtn.className = 'pwr-on'; 
-              pwrBtn.innerText = 'ON';
-              if(modeBadge) modeBadge.innerText = '';
+              pwrBtn.innerText = 'OFF';
+              if(modeBadge) modeBadge.innerText = '(ACTIVE)';
           }
       }
 
@@ -260,75 +270,94 @@
       }
   }
 
-  async function sB(ip, value) { await fetch('/api/admin/bass', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip, value }) }); }
-  async function pBT(ip) { await fetch('/api/admin/bluetooth', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) }); alert("Pairing Mode Active"); }
+    async function sB(ip, value) { 
+        await fetch('/api/admin/bass', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ 
+                ip, 
+                value }) 
+        }); 
+    }
+    async function pBT(ip) { 
+        await fetch('/api/admin/bluetooth', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ 
+                ip 
+            }) 
+        }); 
+        alert("Pairing Mode Active"); 
+    }
   
-  async function tS(ip, tag, btn) { 
-      btn.innerText = "...";
-      const res = await fetch('/api/admin/settings_toggle', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip, tag }) }); 
-      const d = await res.json(); 
-      if(d.error) alert("Error: " + d.error);
-      else { btn.innerText = d.state === 'true' ? 'ON' : 'OFF'; btn.className = d.state === 'true' ? 'state-on' : 'state-off'; }
-  }
+    async function tS(ip, tag, btn) { 
+        btn.innerText = "...";
+        const res = await fetch('/api/admin/settings_toggle', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ ip, tag }) 
+        }); 
+        const d = await res.json(); 
+        if(d.error) alert("Error: " + d.error);
+        else { 
+            btn.innerText = d.state === 'true' ? 'ON' : 'OFF'; 
+        }
+    }
   
-  async function tA(ip, btn) { 
-      btn.innerText = "...";
-      const r = await fetch('/api/admin/auto_off', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) }); 
-      const d = await r.json(); 
-      btn.innerText = d.state === 'true' ? 'ON' : 'OFF'; btn.className = d.state === 'true' ? 'state-on' : 'state-off';
-  }
+    async function tA(ip, btn) { 
+        btn.innerText = "...";
+        const r = await fetch('/api/admin/auto_off', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ ip }) 
+        }); 
+        const d = await r.json(); 
+        btn.innerText = d.state === 'true' ? 'ON' : 'OFF'; 
+    }
 
-  async function dS(ip) { 
-    const box = document.getElementById(`log-${ip}`); box.style.display = 'block'; box.value = "Scanning...";
-    const res = await fetch(`/api/admin/deepscan?ip=${ip}`);
-    const data = await res.json();
-    box.value = Object.entries(data).map(([k, v]) => `=== /${k} ===\n${formatXml(v)}\n`).join('\n');
-  }
+    async function dS(ip) { 
+        const box = document.getElementById(`log-${ip}`); box.style.display = 'block'; box.value = "Scanning...";
+        const res = await fetch(`/api/admin/deepscan?ip=${ip}`);
+        const data = await res.json();
+        box.value = Object.entries(data).map(([k, v]) => `=== /${k} ===\n${formatXml(v)}\n`).join('\n');
+    }
 
-  async function rebootSpk(ip) {
-    if(!confirm("Are you sure you want to completely reboot this speaker via Telnet? This will take a moment.\n\n⚠️ Note: Once rebooted, the system will forcefully restart the DLNA and AirPlay providers to restore the socket. Active audio streams on other speakers may momentarily stop.")) return;
-    
-    await fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) });
-    alert("✅ Telnet Reboot Command sent!\n\nThe network providers will aggressively reload in 90 seconds.");
-  }
+    async function rebootSpk(ip) {
+        if(!confirm("Are you sure you want to completely reboot this speaker via Telnet? This will take a moment.\n\n⚠️ Note: Once rebooted, the system will forcefully restart the DLNA and AirPlay providers to restore the socket. Active audio streams on other speakers may momentarily stop.")) return;
+        
+        await fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) });
+        alert("✅ Telnet Reboot Command sent!\n\nThe network providers will aggressively reload in 90 seconds.");
+    }
 
+    async function toggleSource(ip, btn) {
+        // 1. OPTIMISTIC UI: Switching source ALWAYS wakes the speaker up natively.
+        const pwrBtn = document.getElementById(`pwr-${ip}`);
+        const modeBadge = document.getElementById(`mode-${ip}`);
+        
+        if (pwrBtn && pwrBtn.innerText === 'OFF') {
+            pwrBtn.innerText = 'ON';
+            if(modeBadge) modeBadge.innerText = '';
+        }
 
+        try {
+            // 2. SEND COMMAND: Let the backend handle the complex Preset -> Stop sequence
+            const r = await fetch('/api/admin/toggle_source', { 
+                method: 'POST', 
+                headers: {'Content-Type':'application/json'}, 
+                body: JSON.stringify({ ip }) 
+            });
+            const d = await r.json();
+            
+            if (d.success) {
+                // 3. Update the button text instantly (WIFI, AUX, BLUETOOTH)
+                btn.innerText = d.new_state;
+            }
+        } catch(e) {
+            console.error("Failed to toggle source", e);
+        }
+    }
 
-
-
-
-  
-
-async function toggleSource(ip, btn) {
-      // 1. OPTIMISTIC UI: Switching source ALWAYS wakes the speaker up natively.
-      const pwrBtn = document.getElementById(`pwr-${ip}`);
-      const modeBadge = document.getElementById(`mode-${ip}`);
-      
-      if (pwrBtn && pwrBtn.innerText === 'OFF') {
-          pwrBtn.className = 'pwr-on'; 
-          pwrBtn.innerText = 'ON';
-          if(modeBadge) modeBadge.innerText = '';
-      }
-
-      try {
-          // 2. SEND COMMAND: Let the backend handle the complex Preset -> Stop sequence
-          const r = await fetch('/api/admin/toggle_source', { 
-              method: 'POST', 
-              headers: {'Content-Type':'application/json'}, 
-              body: JSON.stringify({ ip }) 
-          });
-          const d = await r.json();
-          
-          if (d.success) {
-              // 3. Update the button text instantly (WIFI, AUX, BLUETOOTH)
-              btn.innerText = d.new_state;
-          }
-      } catch(e) {
-          console.error("Failed to toggle source", e);
-      }
-  }
-
-  loadAdmin();
+    loadAdmin();
 </script>
 </body>
 </html>

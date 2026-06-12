@@ -8,9 +8,9 @@
     "includeReboot": true,
     "searchMenuOrder": [
         "global",
-        "radio",
+        "spotify",
         "nas",
-        "spotify"
+        "radio"
     ],
     "bypassCloudEmulation": false
 }

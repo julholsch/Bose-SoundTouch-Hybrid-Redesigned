@@ -73,5 +73,35 @@
       "shuffle": false,
       "repeat": "off"
     }
+  },
+  {
+    "uuid": "795eb0ac",
+    "slot": 0,
+    "speakerIp": "",
+    "name": "Blep",
+    "subtitle": "Local NAS • By Filesystem (local disk)",
+    "uri": "library://playlist/138",
+    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fplaylist%2F138",
+    "type": "playlist",
+    "provider": "filesystem_local",
+    "settings": {
+      "shuffle": true,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "29c800bf",
+    "slot": 0,
+    "speakerIp": "",
+    "name": "PonyvilleFM - The original",
+    "subtitle": "Local NAS",
+    "uri": "library://radio/1",
+    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
+    "type": "radio",
+    "provider": "builtin",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
   }
 ]

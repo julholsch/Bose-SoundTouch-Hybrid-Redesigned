@@ -9,7 +9,8 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+p {
   padding: 0;
 
   margin: 0;
@@ -941,6 +942,12 @@ button {
   background: var(--btn-bg);
 
   cursor: pointer;
+  transition:scale .1s ease-out;
+  scale: 1;
+  &:active {
+    scale: .95;
+    transition: all .15s ease-out;
+  }
 }
 
 .btn-primary {
@@ -952,7 +959,7 @@ button {
 
   padding: 10px;
 
-  border: none;
+  border: 1px solid transparent;
 
   border-radius: 4px;
 
@@ -960,15 +967,30 @@ button {
 
   color: var(--btn-text-clr);
 
-  background: var(--accent);
-  /*this is just the default button color. To individulize the colors for ich button I used inline-css.*/
-
+  background-color: var(--btn-bg-clr);
+  scale: 1;
   cursor: pointer;
-
+  transition: color .15s ease-out, 
+    border .15s ease-out, 
+    background-color .15s ease-out, 
+    scale .1s ease-out;
+  
   img {
     width: auto;
 
     height: 16px;
+  }
+
+  &:hover {
+    transition: all .15s ease-out;
+    background-color: var(--btn-bg);
+    color: var(--btn-bg-clr);
+    border: 1px solid var(--btn-bg-clr);
+  }
+
+  &:active {
+    scale: .95;
+    transition: all .15s ease-out;
   }
 }
 
