@@ -26,20 +26,66 @@
                 Bose SoundTouch Hybrid
             </div>
             <div class="global-nav-menu">
-                <div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
-                <div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
-                <div class="global-link active" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
-                <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
+                <div class="global-link" onmousedown="window.location.href='control.html'">Remote</div>
+                <div class="global-link" onmousedown="window.location.href='manager.html'">Library</div>
+                <div class="global-link active" onmousedown="window.location.href='admin.html'">Speaker</div>
+                <div class="global-link" onmousedown="window.location.href='tools.html'">System</div>
             </div>
         </div>
     </header>
-    <div>
-        <button class="btn-secondary" onclick="triggerGlobalAllOff()">
-            <span><i class="icon-power"></i></span> All Off
-        </button>
-    </div>
+    <main class="app-content">
+        <div class="speaker-status-bar">
+            <button class="btn-secondary" onclick="triggerGlobalAllOff()">
+                <span><i class="icon-power"></i></span> All Off
+            </button>
+        </div>
+        <section id="stereo-pairing" class="card" style="--card-border-accent-clr: #f39c12;">
+            <div class="card-header" onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
+                <div class="card-heading-wrapper">
+                    <h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
+                    <span id="log-chevron">▼</span>
+                </div>
+                <div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
+            </div>				
+            <div id="stereoPairingCollapse" class="inner-collapse-container">
+                <h4 class="container-heading">Active Combinations</h4>
+                <div class="active-pairs-wrapper">
+                    <ul id="activeStereoPairsList">
+                        <li class="no-active-pair-li-element">No active pairings found.</li>
+                    </ul>
+                    <span id="stereoPairCount">0 Pairs</span>
+                </div>
 
-    <div id="admin-grid" class="speaker-grid">Loading Speakers...</div>
+                <hr class="separation-line">
+
+                <h4 class="container-heading">Create New Pair</h4>
+                <div class="pairing-setup-wrapper">
+                    <div class="pairing-setup-column">
+                        <label for="leftSpeakerSelect">LEFT CHANNEL</label>
+                        <select id="leftSpeakerSelect">
+                            <option value="" disabled selected>Select ST10...</option>
+                        </select>
+                    </div>
+                    <div class="pairing-setup-column">
+                        <label for="rightSpeakerSelect">RIGHT CHANNEL</label>
+                        <select id="rightSpeakerSelect">
+                            <option value="" disabled selected>Select ST10...</option>
+                        </select>
+                    </div>
+                    <div class="pairing-setup-column">
+                        <label for="pairNameInput">PAIR NAME</label>
+                        <input type="text" id="pairNameInput" placeholder="e.g. Office Stereo">
+                    </div>
+                    <button id="saveStereoPairBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)">
+                        💾 Save Pair
+                    </button>
+
+                </div>
+            </div>
+        </section>
+
+        <div id="speaker-grid" class="speaker-grid">Loading Speakers...</div>
+    </main>
 </div>
 
 <script>
@@ -57,88 +103,104 @@
     return formatted.replace(/<</g, '<').replace(/>>/g, '>').replace(/<>/g, '');
   }
 
-  async function loadAdmin() {
-    const statusRes = await fetch('/api/status');
-    const devices = await statusRes.json();
-    
-    document.getElementById('admin-grid').innerHTML = devices.map(d => {
-      if (!d.online) return `<div class="card" style="border-style:dashed;"><h3>${d.name}</h3><div style="color:#e74c3c; font-weight:bold; font-size:0.8em; margin-top:10px;">OFFLINE / UNREACHABLE</div></div>`;
-      	
-      const typeStr = d.type || "";
-      const hasClock = typeStr.includes("20") || typeStr.includes("30") || typeStr.includes("Portable");
-      
-      return `
-        <div class="card">
-            <div class="card-header speaker">
-                <h3 class="card-heading">${d.name}</h3>
-                <div class="card-sub-heading">
-                    <button id="pwr-${d.ip}" class="btn-secondary" onclick="togglePower('${d.ip}')">POWER</button>
-                </div>        
-            </div>
+    async function loadAdmin() {
+        const statusRes = await fetch('/api/status');
+        const devices = await statusRes.json();
+        
+        // Conditioning display of stereo-pairing
+        const soundTouch10Devices = devices.filter(device => {
+            const typeStr = device.type || "";
+            return typeStr.includes("10");
+        });
+        const isStereoCapable = soundTouch10Devices.length >= 2;
+        document.getElementById("stereo-pairing").style.display = isStereoCapable ? "" : "none";
 
-            <div class="inner-panel">
-                <div class="inner-panel-heading">Speaker Info</div>
-                <div class="info-row">
-                    <p><strong>Type:</strong> <span>${d.type} <span id="mode-${d.ip}" class="mode-badge"></span></span></p>
-                    <p><strong>IP:</strong> <span>${d.ip}</span></p>
-                    <p><strong>WiFi Signal:</strong> <span id="wifi-${d.ip}">📶 ...</span></p>
-                </div>
-            </div>
 
-            <div class="control-row">
-                <input type="text" id="n-${d.ip}" value="${d.name}" style="background:var(--bg-color); color:var(--text); border:1px solid #777; padding:4px; border-radius:3px;">
-                <button class="btn-secondary" onclick="ren('${d.ip}')">Save</button>
-            </div>
-            <hr class="separation-line">
-            <div class="control-row" style="align-items:flex-start; flex-direction:column; gap:5px;">
-                <div style="display:flex; justify-content:space-between; width:100%;">
-                    <label>Bass</label>
-                    <span id="bv-${d.ip}" style="color:var(--text); opacity:0.8;">(${d.bass})</span>
-                </div>
-                <div class="slider-container">
-                    <span id="bubble-bass-${d.ip}" class="vol-bubble"></span>
-                    <input type="range" id="br-${d.ip}" min="-9" max="0" value="${d.bass}" 
-                        oninput="handleBassInput('${d.ip}', this.value, this)"
-                        onchange="sB('${d.ip}',this.value)"
-                        onmousedown="showBubble('bass-${d.ip}')"
-                        onmouseup="hideBubble('bass-${d.ip}')"
-                        ontouchstart="showBubble('bass-${d.ip}')"
-                        ontouchend="hideBubble('bass-${d.ip}')">
-                </div>
-            </div>
-            <hr class="separation-line">
-            <div class="inner-panel">
-                <div class="control-row">
-                    <label>Auto-Off</label>
-                    <button class="btn-secondary" id="ao-${d.ip}" onclick="tA('${d.ip}', this)">...</button>
-                </div>
-                <div class="control-row">
-                    <label>Bluetooth</label>
-                    <button class="btn-secondary" onclick="pBT('${d.ip}')">Pairing</button>
-                </div>	  
-                <div class="control-row ${hasClock ? '' : 'hidden'}">
-                    <label>Clock</label>
-                    <button class="btn-secondary" id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
-                </div>
-            </div>
-            <hr class="separation-line">
-            <div class="tools-area">
-                <span id="fw-${d.ip}" style="font-size:0.75em; color:var(--text); opacity:0.8; line-height:1.2;"></span>
-                <div style="display:flex; gap: 8px;">
-                    <button id="src-${d.ip}" class="btn-sm" style="background:#3498db; color:white;" onclick="toggleSource('${d.ip}', this)">...</button>
-                    <button class="btn-sm" style="background:#e74c3c; color:white;" onclick="rebootSpk('${d.ip}')">Reboot</button>
-                    <button class="btn-sm" style="background:#34495e; color:white;" onclick="dS('${d.ip}')">Deep Scan</button>
-                </div>
-            </div>
-            <div id="deep-scan-wrapper-${d.ip}" class="deep-scan-wrapper">
-                <textarea readonly class="deep-scan-display" id="log-${d.ip}"></textarea>
-                <button onClick="closeDeepScan('${d.ip}')" class="btn-secondary">Close DeepScan</button>
-            </div>
-        </div>`;
+        document.getElementById('speaker-grid').innerHTML = devices.map(d => {
+            if (!d.online) return `
+                <div class="card">
+                    <h3 class="card-heading">${d.name}</h3>
+                    <div class="card-sub-heading">OFFLINE / UNREACHABLE</div>
+                </div>`;
+                
+            const typeStr = d.type || "";
+            const hasClock = typeStr.includes("20") || typeStr.includes("30") || typeStr.includes("Portable");
+            
+            
+            return `
+                <div class="card">
+                    <div class="card-header speaker">
+                        <h3 class="card-heading">${d.name}</h3>
+                        <div class="card-sub-heading">
+                            <button id="pwr-${d.ip}" class="btn-secondary" onclick="togglePower('${d.ip}')"><i class="icon-power"></i></button>
+                        </div>        
+                    </div>
+
+                    <div class="inner-panel">
+                        <div class="inner-panel-heading">Speaker Info</div>
+                        <div class="info-row">
+                            <p><strong>Type:</strong> <span>${d.type} <span id="mode-${d.ip}" class="mode-badge"></span></span></p>
+                            <p><strong>IP:</strong> <span>${d.ip}</span></p>
+                            <p><strong>WiFi Signal:</strong> <span id="wifi-${d.ip}">...</span></p>
+                        </div>
+                    </div>
+                    <div class="inner-panel">
+                        <label class="control-row-label">Speaker Name</label>
+                        <div class="control-row control-row-speaker-name">
+                            <input class="rename-speaker" type="text" id="n-${d.ip}" value="${d.name}">
+                            <button class="btn-secondary" onclick="ren('${d.ip}')">Save</button>
+                        </div>
+                    </div>
+                    <div class="inner-panel">
+                        <div class="control-row-slider">
+                            <div class="slider-header">
+                                <label class="control-row-label">Bass</label>
+                                <span id="bv-${d.ip}">(${d.bass})</span>
+                            </div>
+                            <div class="slider-container">
+                                <span id="bubble-bass-${d.ip}" class="vol-bubble"></span>
+                                <input type="range" id="br-${d.ip}" min="-9" max="0" value="${d.bass}" 
+                                    oninput="handleBassInput('${d.ip}', this.value, this)"
+                                    onchange="sB('${d.ip}',this.value)"
+                                    onmousedown="showBubble('bass-${d.ip}')"
+                                    onmouseup="hideBubble('bass-${d.ip}')"
+                                    ontouchstart="showBubble('bass-${d.ip}')"
+                                    ontouchend="hideBubble('bass-${d.ip}')">
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <label class="control-row-label">Auto-Off</label>
+                            <button class="btn-secondary" id="ao-${d.ip}" onclick="tA('${d.ip}', this)">...</button>
+                        </div>
+                        <div class="control-row">
+                            <label class="control-row-label">Bluetooth</label>
+                            <button class="btn-secondary" onclick="pBT('${d.ip}')">Pairing</button>
+                        </div>	  
+                        <div class="control-row ${hasClock ? '' : 'hidden'}">
+                            <label class="control-row-label">Clock</label>
+                            <button class="btn-secondary" id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
+                        </div>
+                        <div class="control-row">
+                            <label class="control-row-label">Source</label>
+                            <button class="btn-secondary" id="src-${d.ip}" onclick="toggleSource('${d.ip}', this)">...</button>
+                        </div>
+                    </div>
+                    <div class="tools-area">
+                        <span id="fw-${d.ip}" class="speaker-firmware"></span>
+                        <div style="display:flex; gap: 8px;">
+                            <button class="btn-sm" style="background:#e74c3c; color:white;" onclick="rebootSpk('${d.ip}')">Reboot</button>
+                            <button class="btn-sm" style="background:#34495e; color:white;" onclick="dS('${d.ip}')">Deep Scan</button>
+                        </div>
+                    </div>
+                    <div id="deep-scan-wrapper-${d.ip}" class="deep-scan-wrapper">
+                        <textarea readonly class="deep-scan-display" id="log-${d.ip}"></textarea>
+                        <button onClick="closeDeepScan('${d.ip}')" class="btn-secondary">Close DeepScan</button>
+                    </div>
+                </div>`;
         }).join('');
 
-    devices.forEach(d => { if(d.online) fetchDeviceState(d.ip); });
-  }
+        devices.forEach(d => { if(d.online) fetchDeviceState(d.ip); });
+    }
 
     function showBubble(idSuffix) {
         const bubble = document.getElementById(`bubble-${idSuffix}`);
@@ -187,8 +249,12 @@
             const modeBadge = document.getElementById(`mode-${ip}`);
             if(pwrBtn) {
                 if (s.power === 'ON') {
-                    if(modeBadge) modeBadge.innerText = '';
+                    pwrBtn.classList.add(`ON`);
+                    pwrBtn.classList.remove(`OFF`);
+                    if(modeBadge) modeBadge.innerText = '(ACTIVE)';
                 } else {
+                    pwrBtn.classList.add(`OFF`);
+                    pwrBtn.classList.remove(`ON`);
                     if(modeBadge) modeBadge.innerText = '(STANDBY)';
                 }
             }
@@ -196,7 +262,7 @@
             const wifi = document.getElementById(`wifi-${ip}`);
             if(wifi && s.ssid) {            
                 const freqText = s.freq ? `  ${s.freq} ` : ' ';
-                wifi.innerText = `📶 ${s.ssid}${freqText}(${s.rssi})`;
+                wifi.innerText = `${s.ssid}${freqText}(${s.rssi})`;
             }
 
             const br = document.getElementById(`br-${ip}`);
@@ -226,53 +292,55 @@
         } catch(e) {}
     }
 
-	async function togglePower(ip) { 
-      // 1. OPTIMISTIC UI UPDATE: Instantly flip the button state locally
-      const pwrBtn = document.getElementById(`pwr-${ip}`);
-      const modeBadge = document.getElementById(`mode-${ip}`);
-      
-      if (pwrBtn) {
-          if (pwrBtn.innerText === 'OFF') {
-              pwrBtn.innerText = 'POWER';
-              if(modeBadge) modeBadge.innerText = '(STANDBY)';
-          } else {
-              pwrBtn.innerText = 'OFF';
-              if(modeBadge) modeBadge.innerText = '(ACTIVE)';
-          }
-      }
+    async function togglePower(ip) { 
+        // 1. OPTIMISTIC UI UPDATE: Instantly flip the button state locally
+        const pwrBtn = document.getElementById(`pwr-${ip}`);
+        const modeBadge = document.getElementById(`mode-${ip}`);
+        
+            if (pwrBtn) {
+                if (pwrBtn.classList.contains(`ON`)) {
+                    pwrBtn.classList.add(`OFF`);
+                    pwrBtn.classList.remove(`ON`);
+                    if(modeBadge) modeBadge.innerText = '(STANDBY)';
+                } else {
+                    pwrBtn.classList.add(`ON`);
+                    pwrBtn.classList.remove(`OFF`);
+                    if(modeBadge) modeBadge.innerText = '(ACTIVE)';
+                }
+            }
 
-      // 2. Send the command to the backend
-      await fetch('/api/admin/key', { 
-          method: 'POST', 
-          headers: {'Content-Type':'application/json'}, 
-          body: JSON.stringify({ ip, key: 'POWER' }) 
-      }); 
-      
-      // 3. Fetch true hardware state 1.5s later to ensure sync
-      setTimeout(() => fetchDeviceState(ip), 1500); 
-  }
-  
-  async function ren(ip) { 
-      try {
-          const newName = document.getElementById(`n-${ip}`).value;
-          const res = await fetch('/api/admin/name', { 
-              method: 'POST', 
-              headers: {'Content-Type':'application/json'}, 
-              body: JSON.stringify({ ip, name: newName }) 
-          }); 
-          
-          if (!res.ok) {
-              const errText = await res.text();
-              alert("Speaker rejected the name change: " + errText);
-              return; 
-          }
-          
-          alert("Saved"); 
-          setTimeout(() => fetchDeviceState(ip), 2000); 
-      } catch (e) {
-          alert("Network error: " + e.message);
-      }
-  }
+        // 2. Send the command to the backend
+        await fetch('/api/admin/key', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ ip, key: 'POWER' }) 
+        }); 
+        
+        // 3. Fetch true hardware state 1.5s later to ensure sync
+        setTimeout(() => fetchDeviceState(ip), 1500); 
+    }
+    
+    async function ren(ip) { 
+        try {
+            const newName = document.getElementById(`n-${ip}`).value;
+            const res = await fetch('/api/admin/name', { 
+                method: 'POST', 
+                headers: {'Content-Type':'application/json'}, 
+                body: JSON.stringify({ ip, name: newName }) 
+            }); 
+            
+            if (!res.ok) {
+                const errText = await res.text();
+                alert("Speaker rejected the name change: " + errText);
+                return; 
+            }
+            
+            alert("Saved"); 
+            setTimeout(() => fetchDeviceState(ip), 2000); 
+        } catch (e) {
+            alert("Network error: " + e.message);
+        }
+    }
 
     async function sB(ip, value) { 
         await fetch('/api/admin/bass', { 
@@ -346,9 +414,10 @@
         const pwrBtn = document.getElementById(`pwr-${ip}`);
         const modeBadge = document.getElementById(`mode-${ip}`);
         
-        if (pwrBtn && pwrBtn.innerText === 'OFF') {
-            pwrBtn.innerText = 'ON';
-            if(modeBadge) modeBadge.innerText = '';
+        if (pwrBtn && pwrBtn.classList.contains(`OFF`)) {
+            pwrBtn.classList.add(`ON`);
+            pwrBtn.classList.remove(`OFF`);
+            if(modeBadge) modeBadge.innerText = '(ACTIVE)';
         }
 
         try {
@@ -368,6 +437,225 @@
             console.error("Failed to toggle source", e);
         }
     }
+
+    async function loadTools() {
+        try {
+            const statusRes = await fetch('/api/status');
+            const devices = await statusRes.json();
+
+            const allOptions = devices.filter(d => d.online).map(d => `<option value="${d.ip}">${d.name} (${d.ip})</option>`).join('');
+            const usbOption = `<option value="203.0.113.1">🔌 USB Cable / Initial Wi-Fi Setup (203.0.113.1)</option>`;
+
+            // ---> BOOT STEREO UI WITH SHARED DATA
+            initStereoUI(devices);
+
+        } catch (e) {
+            console.error("Failed to load tools / status", e);
+            // Still boot the stereo UI with an empty array so dummies inject
+            initStereoUI([]);
+        }
+    }
+
+
+    // ==========================================
+    // ST10 STEREO PAIRING UI LOGIC
+    // ==========================================
+    let st10Speakers = [];
+    let activePairs = []; // Track saved pairs to disable them in dropdowns
+
+    function initStereoUI(devices) {
+        st10Speakers = devices.filter(s => s.type === 'SoundTouch 10');
+
+        // --- INJECT DUMMIES FOR TESTING ---
+        st10Speakers.push({
+            ip: "10.0.0.91",
+            name: "Dummy ST10 (Alpha)",
+            type: "SoundTouch 10"
+        });
+
+        fetchStereoPairs();
+    }
+
+    function populateStereoDropdowns() {
+        const leftSelect = document.getElementById('leftSpeakerSelect');
+        const rightSelect = document.getElementById('rightSpeakerSelect');
+        if (!leftSelect || !rightSelect)
+            return;
+
+        const leftVal = leftSelect.value;
+        const rightVal = rightSelect.value;
+
+        leftSelect.innerHTML = '<option value="" disabled selected>Select Left ST10...</option>';
+        rightSelect.innerHTML = '<option value="" disabled selected>Select Right ST10...</option>';
+
+        // Build a quick lookup of IPs that are already in a saved pair
+        const pairedIps = new Set();
+        activePairs.forEach(p => {
+            pairedIps.add(p.leftIp);
+            pairedIps.add(p.rightIp);
+        });
+
+        st10Speakers.forEach(spk => {
+            const isAlreadyPaired = pairedIps.has(spk.ip);
+
+            // 🌟 THE FIX: Use originalName if available, fallback to regular name
+            const displayName = spk.originalName || spk.name;
+
+            // Build Left Option
+            const optLeft = new Option(displayName, spk.ip);
+            if (isAlreadyPaired || spk.ip === rightVal) {
+                optLeft.disabled = true;
+                optLeft.style.color = 'var(--text-secondary)';
+                optLeft.style.fontStyle = 'italic';
+                if (isAlreadyPaired)
+                    optLeft.text += ' (Already Paired)';
+            }
+            leftSelect.add(optLeft);
+
+            // Build Right Option
+            const optRight = new Option(displayName, spk.ip);
+            if (isAlreadyPaired || spk.ip === leftVal) {
+                optRight.disabled = true;
+                optRight.style.color = 'var(--text-secondary)';
+                optRight.style.fontStyle = 'italic';
+                if (isAlreadyPaired)
+                    optRight.text += ' (Already Paired)';
+            }
+            rightSelect.add(optRight);
+        });
+
+        leftSelect.value = leftVal || '';
+        rightSelect.value = rightVal || '';
+    }
+
+    document.getElementById('leftSpeakerSelect')?.addEventListener('change', populateStereoDropdowns);
+    document.getElementById('rightSpeakerSelect')?.addEventListener('change', populateStereoDropdowns);
+
+
+    async function fetchStereoPairs() {
+        try {
+            //  Added /admin
+            const res = await fetch('/api/admin/stereo-pairs');
+            if (!res.ok) return;
+            const pairs = await res.json();
+            renderStereoPairs(pairs);
+            populateStereoDropdowns(); // Re-disables IPs
+        } catch (e) {}
+    }
+
+    function renderStereoPairs(pairs) {
+        const list = document.getElementById('activeStereoPairsList');
+        activePairs = pairs; // 🌟 FIX: Ensure the global tracking array stays updated
+        document.getElementById('stereoPairCount').innerText = `${pairs.length} Pairs`;
+
+        if (pairs.length === 0) {
+            list.innerHTML = '<li class="no-active-pairs-li-element">No active pairings found.</li>';
+            return;
+        }
+
+        // 🌟 FIX: Helper function to look up the real hardware name by IP
+        const getRealName = (ip) => {
+            const spk = st10Speakers.find(s => s.ip === ip);
+            return spk ? (spk.originalName || spk.name) : ip;
+        };
+
+        list.innerHTML = pairs.map(p => `
+            <li class="active-pairs-li-element">
+                <div>
+                    <strong>${p.name}</strong><br>
+                    <small>Left: ${getRealName(p.leftIp)} | Right: ${getRealName(p.rightIp)}</small>
+                </div>
+                <button class="btn-sm" onclick="deleteStereoPair('${p.id}', '${p.leftIp}', '${p.rightIp}')">
+                    🗑️ Delete
+                </button>
+            </li>
+        `).join('');
+    }
+
+    document.getElementById('saveStereoPairBtn')?.addEventListener('click', async() => {
+        const leftSelect = document.getElementById('leftSpeakerSelect');
+        const rightSelect = document.getElementById('rightSpeakerSelect');
+        const nameInput = document.getElementById('pairNameInput');
+
+        const leftIp = leftSelect.value;
+        const rightIp = rightSelect.value;
+        const name = nameInput.value.trim();
+
+        if (!leftIp || !rightIp || !name)
+            return alert("Select both speakers and provide a name.");
+
+        if (!confirm(`Save "${name}" as a stereo pair?\n\nThis will reboot BOTH speakers to apply the left/right audio separation.`)) 
+            return;
+
+        const btn = document.getElementById('saveStereoPairBtn');
+        const origText = btn.innerHTML;
+        btn.innerHTML = `⏳ Saving...`;
+        btn.disabled = true;
+
+        try {
+            // FIXED PATH: Added /admin
+            const res = await fetch('/api/admin/stereo-pairs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ leftIp, rightIp, name })
+            });
+
+            if (res.ok) {
+
+            // 🌟 AUTOMATED TARGETED REBOOTS (Ignores 10.0.0.9x Dummies)
+            if (!leftIp.startsWith('10.0.0.9')) {
+                fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: leftIp }) });
+            }
+            if (!rightIp.startsWith('10.0.0.9')) {
+                fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: rightIp }) });
+            }
+                
+                alert("✅ Pair saved! Reboot Commands sent to both speakers.\n\nThe network providers will aggressively reload in 90 seconds.");
+
+                nameInput.value = '';
+                leftSelect.value = '';
+                rightSelect.value = '';
+                fetchStereoPairs();
+            } else {
+                alert("❌ Failed to save pairing to the server.");
+            }
+        } catch (e) {
+            alert("❌ Network Error: Could not reach the server.");
+        }
+        
+        btn.innerHTML = origText;
+        btn.disabled = false;
+    });
+
+    async function deleteStereoPair(id, leftIp, rightIp) {
+        if (!confirm("Are you sure you want to delete this stereo pair?\n\nThis will reboot BOTH speakers to clear their stereo roles.")) 
+            return;
+
+        try {
+            // FIXED PATH: Added /admin
+            await fetch(`/api/admin/stereo-pairs/${id}`, { method: 'DELETE' });
+            
+            // 🌟 AUTOMATED TARGETED REBOOTS (Ignores 10.0.0.9x Dummies)
+            if (!leftIp.startsWith('10.0.0.9')) {
+                fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: leftIp }) });
+            }
+            if (!rightIp.startsWith('10.0.0.9')) {
+                fetch('/api/admin/reboot_speaker', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip: rightIp }) });
+            }
+            
+            alert("✅ Pair deleted! Telnet Reboot Commands sent to both speakers.\n\nThey will return to standalone mode shortly.");
+            fetchStereoPairs();
+        } catch (e) {
+            alert("❌ Error deleting pair.");
+        }
+    }
+
+    // ==========================================
+    // FINAL EXECUTION COMMANDS
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadTools();
+    });
 
     loadAdmin();
 </script>

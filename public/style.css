@@ -53,6 +53,8 @@ input[type=range] {
 
   /* Yellow */
   --danger: #e74c3c;
+  --off-clr: #ff2008;
+  --on-clr: #4ae73c;
   --input-bg: #000;
   --input-text: #fff;
   --title-color: #fff;
@@ -60,7 +62,7 @@ input[type=range] {
   --pill-bg: #333;
   --panel-bg: #111;
   --panel-border: #222;
-  --btn-bg: #222;
+  --btn-bg: #3a3a3a;
   --btn-border: #333;
   --btn-text: #ccc;
   --btn-hover-bg: #333;
@@ -99,6 +101,7 @@ body.light-mode {
   --btn-hover-text: #000;
   --console-text: var(--input-text);
 }
+
 
 body {
   min-height: 100vh;
@@ -231,7 +234,7 @@ button,
 
 .global-link,
 .nav-link {
-  padding: 8px 16px;
+    padding: 6px 14px;
 
   border: 1px solid transparent;
 
