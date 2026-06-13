@@ -19,25 +19,22 @@
 </head>
 <body>
 <div class="app-container">
-
-    <header id="tools-header">
-        <div id="app-title" class="app-header">
-			<div class="header-inner-panel">
-				<div class="app-logo">
-					<img src="images/hybrid_icon.png" alt="Logo">
-					Bose SoundTouch Hybrid
-				</div>
-				<div class="global-nav-menu">
-					<div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
-					<div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
-					<div class="global-link active" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
-					<div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
-				</div>
-			</div>
+    <header class="app-header">
+        <div class="header-inner-panel">
+            <div class="app-logo">
+                <img src="images/hybrid_icon.png" alt="Logo">
+                Bose SoundTouch Hybrid
+            </div>
+            <div class="global-nav-menu">
+                <div class="global-link" onmousedown="window.location.href='control.html'">Remote Control</div>
+                <div class="global-link" onmousedown="window.location.href='manager.html'">Library Manager</div>
+                <div class="global-link active" onmousedown="window.location.href='admin.html'">Speaker Admin</div>
+                <div class="global-link" onmousedown="window.location.href='tools.html'">System Tools</div>
+            </div>
         </div>
     </header>
     <div>
-        <button class="btn-all-off" onclick="triggerGlobalAllOff()">
+        <button class="btn-secondary" onclick="triggerGlobalAllOff()">
             <span><i class="icon-power"></i></span> All Off
         </button>
     </div>
@@ -72,66 +69,73 @@
       
       return `
         <div class="card">
-            <div class="card-header">
+            <div class="card-header speaker">
                 <h3 class="card-heading">${d.name}</h3>
+                <div class="card-sub-heading">
+                    <button id="pwr-${d.ip}" class="btn-secondary" onclick="togglePower('${d.ip}')">POWER</button>
+                </div>        
             </div>
 
-            <div class="card-sub-heading">
-                <button id="pwr-${d.ip}" class="btn-secondary" onclick="togglePower('${d.ip}')">POWER</button>
-            </div>        
-            <div class="info-row">
-                <p><strong>Type:</strong> <span>${d.type} <span id="mode-${d.ip}" class="mode-badge"></span></span></p>
-                <p><strong>IP:</strong> <span>${d.ip}</span></p>
-                <p><strong>WiFi Signal:</strong> <span id="wifi-${d.ip}">📶 ...</span></p>
+            <div class="inner-panel">
+                <div class="inner-panel-heading">Speaker Info</div>
+                <div class="info-row">
+                    <p><strong>Type:</strong> <span>${d.type} <span id="mode-${d.ip}" class="mode-badge"></span></span></p>
+                    <p><strong>IP:</strong> <span>${d.ip}</span></p>
+                    <p><strong>WiFi Signal:</strong> <span id="wifi-${d.ip}">📶 ...</span></p>
+                </div>
             </div>
 
-          <hr class="separation-line">
-          <div class="control-row">
-            <input type="text" id="n-${d.ip}" value="${d.name}" style="background:var(--bg-color); color:var(--text); border:1px solid #777; padding:4px; border-radius:3px;">
-            <button class="btn-secondary" onclick="ren('${d.ip}')">Save</button>
-          </div>
-          <hr class="separation-line">
-          <div class="control-row" style="align-items:flex-start; flex-direction:column; gap:5px;">
-            <div style="display:flex; justify-content:space-between; width:100%;">
-                <label>Bass</label>
-                <span id="bv-${d.ip}" style="color:var(--text); opacity:0.8;">(${d.bass})</span>
+            <div class="control-row">
+                <input type="text" id="n-${d.ip}" value="${d.name}" style="background:var(--bg-color); color:var(--text); border:1px solid #777; padding:4px; border-radius:3px;">
+                <button class="btn-secondary" onclick="ren('${d.ip}')">Save</button>
             </div>
-            <div class="slider-container" style="position:relative; width:100%;">
-                <span id="bubble-bass-${d.ip}" class="vol-bubble"></span>
-                <input type="range" id="br-${d.ip}" min="-9" max="0" value="${d.bass}" 
-                       oninput="handleBassInput('${d.ip}', this.value, this)"
-                       onchange="sB('${d.ip}',this.value)"
-                       onmousedown="showBubble('bass-${d.ip}')"
-                       onmouseup="hideBubble('bass-${d.ip}')"
-                       ontouchstart="showBubble('bass-${d.ip}')"
-                       ontouchend="hideBubble('bass-${d.ip}')">
+            <hr class="separation-line">
+            <div class="control-row" style="align-items:flex-start; flex-direction:column; gap:5px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <label>Bass</label>
+                    <span id="bv-${d.ip}" style="color:var(--text); opacity:0.8;">(${d.bass})</span>
+                </div>
+                <div class="slider-container">
+                    <span id="bubble-bass-${d.ip}" class="vol-bubble"></span>
+                    <input type="range" id="br-${d.ip}" min="-9" max="0" value="${d.bass}" 
+                        oninput="handleBassInput('${d.ip}', this.value, this)"
+                        onchange="sB('${d.ip}',this.value)"
+                        onmousedown="showBubble('bass-${d.ip}')"
+                        onmouseup="hideBubble('bass-${d.ip}')"
+                        ontouchstart="showBubble('bass-${d.ip}')"
+                        ontouchend="hideBubble('bass-${d.ip}')">
+                </div>
             </div>
-          </div>
-          <hr class="separation-line">
-          <div class="control-row">
-            <label>Auto-Off</label>
-            <button class="btn-secondary" id="ao-${d.ip}" onclick="tA('${d.ip}', this)">...</button>
-          </div>
-          <hr class="separation-line">
-          <div class="control-row"><label>Bluetooth</label><button class="btn-secondary" onclick="pBT('${d.ip}')">Pairing</button></div>	  
-          <hr class="separation-line">
-          <div class="control-row ${hasClock ? '' : 'hidden'}">
-            <label>Clock</label>
-            <button class="btn-secondary" id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
-          </div>
-          <div class="tools-area">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                 <span id="fw-${d.ip}" style="font-size:0.75em; color:var(--text); opacity:0.8; line-height:1.2;"></span>
-                 <div style="display:flex; gap: 8px;">
-					<button id="src-${d.ip}" style="font-size:0.7em; background:#3498db; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;" onclick="toggleSource('${d.ip}', this)">...</button>
-                     <button style="font-size:0.7em; background:#e74c3c; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;" onclick="rebootSpk('${d.ip}')">Reboot</button>
-                     <button style="font-size:0.7em; background:#34495e; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;" onclick="dS('${d.ip}')">Deep Scan</button>
-                 </div>
+            <hr class="separation-line">
+            <div class="inner-panel">
+                <div class="control-row">
+                    <label>Auto-Off</label>
+                    <button class="btn-secondary" id="ao-${d.ip}" onclick="tA('${d.ip}', this)">...</button>
+                </div>
+                <div class="control-row">
+                    <label>Bluetooth</label>
+                    <button class="btn-secondary" onclick="pBT('${d.ip}')">Pairing</button>
+                </div>	  
+                <div class="control-row ${hasClock ? '' : 'hidden'}">
+                    <label>Clock</label>
+                    <button class="btn-secondary" id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
+                </div>
             </div>
-          </div>
-         <textarea id="log-${d.ip}"></textarea>
+            <hr class="separation-line">
+            <div class="tools-area">
+                <span id="fw-${d.ip}" style="font-size:0.75em; color:var(--text); opacity:0.8; line-height:1.2;"></span>
+                <div style="display:flex; gap: 8px;">
+                    <button id="src-${d.ip}" class="btn-sm" style="background:#3498db; color:white;" onclick="toggleSource('${d.ip}', this)">...</button>
+                    <button class="btn-sm" style="background:#e74c3c; color:white;" onclick="rebootSpk('${d.ip}')">Reboot</button>
+                    <button class="btn-sm" style="background:#34495e; color:white;" onclick="dS('${d.ip}')">Deep Scan</button>
+                </div>
+            </div>
+            <div id="deep-scan-wrapper-${d.ip}" class="deep-scan-wrapper">
+                <textarea readonly class="deep-scan-display" id="log-${d.ip}"></textarea>
+                <button onClick="closeDeepScan('${d.ip}')" class="btn-secondary">Close DeepScan</button>
+            </div>
         </div>`;
-    }).join('');
+        }).join('');
 
     devices.forEach(d => { if(d.online) fetchDeviceState(d.ip); });
   }
@@ -316,10 +320,18 @@
     }
 
     async function dS(ip) { 
-        const box = document.getElementById(`log-${ip}`); box.style.display = 'block'; box.value = "Scanning...";
+        const wrapper = document.getElementById(`deep-scan-wrapper-${ip}`)
+        const box = document.getElementById(`log-${ip}`); 
+        wrapper.classList.add(`opend`) 
+        box.value = "Scanning...";
         const res = await fetch(`/api/admin/deepscan?ip=${ip}`);
         const data = await res.json();
         box.value = Object.entries(data).map(([k, v]) => `=== /${k} ===\n${formatXml(v)}\n`).join('\n');
+    }
+
+    async function closeDeepScan(ip) {
+        const wrapper = document.getElementById(`deep-scan-wrapper-${ip}`)
+        wrapper.classList.remove(`opend`) 
     }
 
     async function rebootSpk(ip) {
