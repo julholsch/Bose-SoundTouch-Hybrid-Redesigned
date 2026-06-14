@@ -346,6 +346,14 @@ input:disabled + label {
 
 .card-heading {
   margin: 0 0 5px 0;
+
+  img {
+    width: auto;
+
+    height: 16px;
+
+    opacity: 0.8;
+  }
 }
 
 .card-sub-heading {
@@ -491,7 +499,7 @@ button {
   cursor: pointer;
   scale: 1;
 
-  &:active {
+  &:active:not(:disabled) {
     transition: all .15s ease-out;
     scale: .95;
   }
@@ -529,7 +537,7 @@ button {
     height: 16px;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     border: 1px solid var(--btn-bg-clr);
 
     color: var(--btn-bg-clr);
@@ -538,7 +546,7 @@ button {
     transition: all .15s ease-out;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transition: all .15s ease-out;
     scale: .95;
   }
@@ -557,7 +565,7 @@ button {
   color: var(--btn-text);
   background: var(--btn-bg);
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: #888;
 
     color: var(--text);
@@ -567,6 +575,57 @@ button {
     .icon-power {
       color: var(--on-clr);
     }
+  }
+
+  &.power {
+    font-size: 1rem;
+
+    color: var(--text-secondary);
+    background: var(--btn-bg);
+
+    &.on {
+      border: none;
+
+      font-weight: bold;
+
+      color: black;
+      background: var(--accent);
+    }
+  }
+
+  &.join {
+    color: var(--text-secondary);
+    background: var(--btn-bg);
+    grid-column: span 4;
+
+    &:hover {
+      border-color: #999;
+
+      color: var(--btn-hover-text);
+      background: var(--btn-hover-bg);
+    }
+  }
+
+  /* 3. EXCEPTION: The PLAY button when Paused (Yellow but Clickable) */
+
+  &.play.btn-pending:not(:disabled) {
+    cursor: pointer;
+  }
+
+  &.active:not(:disabled) {
+    border-color: var(--accent);
+
+    color: var(--accent);
+    background: rgba(46, 204, 113, 0.2);
+  }
+
+  &.disabled,
+  &.btn-disabled,
+  &:disabled {
+    opacity: .8;
+
+    cursor: not-allowed;
+    pointer-events: auto;
   }
 }
 
@@ -582,18 +641,20 @@ button {
   background: var(--btn-bg);
 
   cursor: pointer;
-}
 
-.btn-sm:hover {
-  border-color: var(--text);
+  &:hover:not(:disabled) {
+    border-color: var(--text);
 
-  color: var(--text);
+    color: var(--text);
+  }
 }
 
 button:disabled,
 .btn:disabled {
-  cursor: default !important;
-  pointer-events: none !important;
+  opacity: .8;
+
+  cursor: not-allowed;
+  pointer-events: auto;
 }
 
 input[type=range] {
@@ -627,7 +688,7 @@ input[type=range]::-webkit-slider-thumb {
 
   /* Restores your exact Green theme! */
   transition: transform 0.1s ease-in-out,
-              -webkit-transform 0.1s ease-in-out !important;
+              -webkit-transform 0.1s ease-in-out;
 
   cursor: pointer;
 }
@@ -646,7 +707,7 @@ input[type=range]::-moz-range-thumb {
   /* Restores your exact Green theme! */
   border: none;
 
-  transition: transform 0.1s ease-in-out !important;
+  transition: transform 0.1s ease-in-out;
 
   cursor: pointer;
 }
@@ -674,8 +735,17 @@ input[type=range]:active {
   cursor: grabbing;
 }
 
+.group-slider input[type=range]::-moz-range-thumb,
+.group-slider input[type=range]::-webkit-slider-thumb {
+  background: var(--group);
+}
+
+.group-slider input[type=range] {
+  accent-color: var(--group);
+}
+
 .hidden {
-  display: none !important;
+  display: none;
 }
 
 /* --- MASS ERROR BANNER --- */
@@ -835,11 +905,11 @@ input[type=range]:active {
   }
 
   body {
-    padding: 10px !important;
+    padding: 10px;
   }
 
   .card {
-    padding: 15px !important;
+    padding: 15px;
   }
 
   .header-inner-panel {
@@ -848,7 +918,7 @@ input[type=range]:active {
     flex-direction: column;
     gap: 15px;
 
-    height: auto !important;
+    height: auto;
     padding: 15px;
 
     text-align: center;
@@ -866,7 +936,7 @@ input[type=range]:active {
   }
 
   .global-nav-menu {
-    display: flex !important;
+    display: flex;
 
     flex-wrap: wrap;
     justify-content: center;
@@ -888,15 +958,15 @@ input[type=range]:active {
     background: var(--btn-bg);
 
     &.active {
-      border-color: var(--accent) !important;
+      border-color: var(--accent);
 
-      color: black !important;
-      background: var(--accent) !important;
+      color: black;
+      background: var(--accent);
     }
   }
 
   .stream-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
 
@@ -910,4 +980,281 @@ input[type=range]:active {
       margin-top: 5px;
     }
   }
+}
+
+.status {
+  font-size: 0.75em;
+
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+
+  color: var(--text-secondary);
+}
+
+.status.master {
+  color: var(--group);
+}
+
+.playing-info {
+  display: flex;
+
+  align-items: center;
+  gap: 15px;
+
+  height: 70px;
+
+  margin-bottom: 15px;
+}
+
+.art {
+  position: relative;
+
+  overflow: hidden;
+
+  width: 60px;
+
+  height: 60px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 4px;
+
+  background: var(--art-bg);
+
+  object-fit: cover;
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+  }
+}
+
+.meta {
+  display: flex;
+  overflow: hidden;
+
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.track {
+  display: block;
+  overflow: hidden;
+
+  margin-bottom: 3px;
+  font-size: 1rem;
+
+  font-weight: bold;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--text);
+}
+
+.artist {
+  font-size: 0.85em;
+
+  color: var(--text-secondary);
+}
+
+.controls {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+  margin-bottom: 15px;
+}
+
+.presets-row {
+  display: grid;
+
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+
+  margin-bottom: 15px;
+}
+
+.slider-container {
+  position: relative;
+
+  display: flex;
+
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-text {
+  width: 30px;
+
+  font-size: 0.8em;
+
+  text-align: right;
+
+  color: var(--text-secondary);
+}
+
+.group-label {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 0.7em;
+
+  font-weight: bold;
+
+  text-transform: uppercase;
+
+  color: var(--group);
+}
+
+/* --- FLOATING VOLUME BUBBLE --- */
+
+.vol-bubble {
+  position: absolute;
+  top: -50px;
+
+  /* Floats above the slider */
+  padding: 4px 8px;
+
+  border-radius: 4px;
+  font-size: 0.8em;
+
+  font-weight: bold;
+
+  color: #000;
+  background: var(--accent);
+
+  pointer-events: none;
+
+  /* Let clicks pass through */
+  opacity: 0;
+
+  /* Hidden by default */
+  transform: translateX(-50%);
+
+  /* Centers bubble on the handle */
+  z-index: 100;
+
+  white-space: nowrap;
+
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+
+  transition: none;
+  /* SNAPPY: No fading; */
+}
+
+/* Show bubble when active */
+
+.vol-bubble.visible {
+  opacity: 1;
+
+  -webkit-transform: translateX(-50%) scale(2.0);
+
+  /* iPhone specific */
+  transform: translateX(-50%) scale(2.0);
+}
+
+/* Triangle pointer at bottom of bubble */
+
+.vol-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+
+  border-width: 4px;
+  border-style: solid;
+  border-color: var(--accent) transparent transparent transparent;
+
+  margin-left: -4px;
+}
+
+.grid {
+  grid-template-columns: 1fr;
+
+  padding-bottom: 60px;
+}
+
+/* =========================================
+   8. STATE MACHINE VISUALS (CORRECTED)
+   ========================================= */
+/* 1. GREEN (Active/Playing) - Play Button & Active Preset */
+
+.btn-active,
+.active-locked {
+  border-color: var(--accent);
+
+  color: var(--accent);
+  background-color: rgba(46, 204, 113, 0.2);
+
+  opacity: 1;
+
+  cursor: pointer;
+}
+
+/* 2. YELLOW (Pending/Transition) - Pause, Seek, Loading */
+
+.btn-pending,
+.btn-pending:hover,
+.btn-pending:disabled {
+  border-color: var(--pending);
+
+  color: var(--pending);
+  background-color: rgba(241, 196, 15, 0.15);
+
+  cursor: wait;
+  pointer-events: auto;
+}
+
+/* 4. DISABLED (Locked) */
+
+.btn-disabled:not(.btn-pending) {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* 5. MASTER JOIN (Purple) */
+
+.btn-master-join,
+.btn-master-join:hover {
+  border-color: var(--group);
+
+  color: var(--group);
+  background-color: rgba(155, 89, 182, 0.2);
+
+  cursor: default;
+}
+
+/* 6. BLANK ART (Placeholder) - FIX: Uses Theme Variable */
+
+.art-blank {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid var(--border);
+
+  background-color: var(--art-bg);
+}
+
+.art-blank::after {
+  content: "🎵";
+
+  color: var(--text);
+
+  opacity: 0.3;
+  /* NOTICE: font-size was removed from here!; */
 }

@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>SoundTouch Hybrid Control</title>
-  <link rel="icon" type="image/png" href="images/hybrid_icon.png">
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/morphdom/2.7.0/morphdom-umd.min.js"></script>
-  <script src="global_ui.js"></script> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Bose SoundTouch Hybrid</title>
+    
+    <link rel="icon" type="image/png" href="images/hybrid_icon.png">
+    
+    <!-- <link rel="stylesheet" href="style.css?v=26"> -->
+    <link rel="stylesheet" href="new-css/control.css">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <script src="global_ui.js"></script>
 </head>
 <body>
 
-<div class="container">
+<div class="app-container">
 
-    <header id="tools-header">
-        <div id="app-title" class="app-header">
-            <div class="global-nav-img">
+    <header class="app-header">
+        <div class="header-inner-panel">
+            <div class="app-logo">
                 <img src="images/hybrid_icon.png" alt="Logo">
                 Bose SoundTouch Hybrid
             </div>
-            <div class="nav-center-group">
+            <div class="global-nav-menu">
                 <div class="global-link active" onmousedown="window.location.href='control.html'">Remote</div>
                 <div class="global-link" onmousedown="window.location.href='manager.html'">Library</div>
                 <div class="global-link" onmousedown="window.location.href='admin.html'">Speaker</div>
@@ -471,11 +476,9 @@
         const newHTML = sortedList.map(d => {
             if (!d.online)
                 return `
-                <div class="card" style="min-height: auto; height: fit-content; align-self: start; border-style: dashed; opacity: 0.7;">
-                    <div class="header" style="margin-bottom: 0;">
-                        <h3>${d.name}</h3>
-                        <span class="status" style="color: #e74c3c; font-weight: bold;">OFFLINE</span>
-                    </div>
+                <div class="card">
+                    <h3 class="card-heading">${d.name}</h3>
+                    <div class="card-sub-heading">OFFLINE / UNREACHABLE</div>
                 </div>`;
             const ui = calculateUi(d);
 
@@ -512,8 +515,8 @@
         // 2. The actual image is an positioned <img> on top (z-index: 10).
         // 3. If the image fails to load, onerror hides it, revealing the emoji underneath
         const artHtml = `
-            <div class="art ${ui.artPlaceholder}" style="position:relative; overflow:hidden;">
-                ${ui.art && ui.art !== 'custom_url' ? `<img src="${ui.art}" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:10;" onerror="this.style.display='none'">` : ''}
+            <div class="art ${ui.artPlaceholder}">
+                ${ui.art && ui.art !== 'custom_url' ? `<img src="${ui.art}" onerror="this.style.display='none'">` : ''}
             </div>
         `;
 
@@ -521,50 +524,56 @@
         const cls = (val) => val ? 'btn-disabled' : ''; // Utility for CSS classes
 
         return `
-        <div class="card" id="card-${d.ip}">
-            <div class="header">
-                <h3>${d.name} <img src="images/bose_icon.png" style="height:16px; width:auto; opacity:0.8;" alt="Bose"></h3>
-                <span class="status ${isGroupMaster || isGroupMember ? 'master' : ''}">${statusText}</span>
-            </div>
-            <div class="playing-info ${ui.volDisabled ? 'transitioning-info' : ''}">
-                ${artHtml}
-                <div class="meta"><span class="track">${ui.track}</span><span class="artist">${ui.artist}</span></div>
-            </div>
-            <div class="controls">
-                <button class="btn power ${ui.pwrClass}" ${clickPower}><i class="icon-power"></i></button>
-                <button class="btn prev ${ui.prevClass}" ${dis(ui.prevDisabled)} ${clickPrev}>⏮</button>
-                <button class="btn play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
-                <button class="btn next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
-                ${isGroupMaster ? `<div class="master-badge">GROUP MASTER</div>` : ''}
-                ${showSync ? `<button class="btn join ${ui.joinClass} ${cls(ui.joinDisabled)}" ${clickSync} ${dis(ui.joinDisabled)}>${syncText}</button>` : ''}
-            </div>
-            <div class="presets-row">
-                ${[1, 2, 3, 4, 5, 6].map(n => {
-                    const isActive = (ui.presetNum === n);
-                    const pClick = `onmousedown="uiPreset('${d.ip}', ${n})"`;
-                    return `<button class="btn-preset ${isActive ? 'active' : ''} ${cls(ui.presetDisabled)}" ${dis(ui.presetDisabled)} ${pClick}>${n}</button>`;
-                }).join('')}
-            </div>
+            <div class="card" id="card-${d.ip}">
+                <div class="card-header speaker">
+                    <h3 class="card-heading">
+                        ${d.name} 
+                        <img src="images/bose_icon.png" alt="Bose">
+                    </h3>
+                    <span class="status ${isGroupMaster || isGroupMember ? 'master' : ''}">${statusText}</span>
+                </div>
+                <div class="playing-info ${ui.volDisabled ? 'transitioning-info' : ''}">
+                    ${artHtml}
+                    <div class="meta">
+                        <span class="track">${ui.track}</span>
+                        <span class="artist">${ui.artist}</span>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn-secondary power ${ui.pwrClass}" ${clickPower}><i class="icon-power"></i></button>
+                    <button class="btn-secondary prev ${ui.prevClass}" ${dis(ui.prevDisabled)} ${clickPrev}>⏮</button>
+                    <button class="btn-secondary play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
+                    <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
+                    ${isGroupMaster ? `<div class="master-badge">GROUP MASTER</div>` : ''}
+                    ${showSync ? `<button class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" ${clickSync} ${dis(ui.joinDisabled)}>${syncText}</button>` : ''}
+                </div>
+                <div class="presets-row">
+                    ${[1, 2, 3, 4, 5, 6].map(n => {
+                        const isActive = (ui.presetNum === n);
+                        const pClick = `onmousedown="uiPreset('${d.ip}', ${n})"`;
+                        return `<button class="btn-secondary btn-preset ${isActive ? 'active' : ''} ${cls(ui.presetDisabled)}" ${dis(ui.presetDisabled)} ${pClick}>${n}</button>`;
+                    }).join('')}
+                </div>
 
-            <div class="slider-container ${cls(ui.volDisabled)}" style="position:relative;">
-                <span style="font-size:0.8em; color:var(--text-secondary)">VOL</span>
-                <span id="bubble-${d.ip}" class="vol-bubble"></span>
+                <div class="slider-container ${cls(ui.volDisabled)}">
+                    <span class="slider-text">VOL</span>
+                    <span id="bubble-${d.ip}" class="vol-bubble"></span>
 
-                <input type="range" id="vol-${d.ip}" min="0" max="100" value="${d.volume}" ${dis(ui.volDisabled)}
-                    oninput="handleVolumeInput('${d.ip}', this.value, this)" 
-                    onchange="handleVolumeSet('${d.ip}', this.value)"
-                    onmousedown="showBubble('${d.ip}')"
-                    onmouseup="hideBubble('${d.ip}')"
-                    ontouchstart="showBubble('${d.ip}')"
-                    ontouchend="hideBubble('${d.ip}')">
-                    
-                <span id="vol-txt-${d.ip}" style="font-size:0.8em; color:var(--text-secondary); width:25px; text-align:right;">${d.volume}</span>
-            </div>
+                    <input type="range" id="vol-${d.ip}" min="0" max="100" value="${d.volume}" ${dis(ui.volDisabled)}
+                        oninput="handleVolumeInput('${d.ip}', this.value, this)" 
+                        onchange="handleVolumeSet('${d.ip}', this.value)"
+                        onmousedown="showBubble('${d.ip}')"
+                        onmouseup="hideBubble('${d.ip}')"
+                        ontouchstart="showBubble('${d.ip}')"
+                        ontouchend="hideBubble('${d.ip}')">
+                        
+                    <span id="vol-txt-${d.ip}" class="slider-text">${d.volume}</span>
+                </div>
 
-            ${isGroupMaster && d.zone && d.zone.member ? `
+                ${isGroupMaster && d.zone && d.zone.member ? `
                 <div class="group-label">GROUP VOLUME</div>
-                <div class="slider-container group-slider ${cls(ui.volDisabled)}" style="position:relative;">
-                    <span style="font-size:0.8em; color:var(--group)">GRP</span>
+                <div class="slider-container group-slider ${cls(ui.volDisabled)}">
+                    <span class="slider-text">GRP</span>
                     
                     <span id="bubble-grp-${d.ip}" class="vol-bubble"></span>
 
@@ -576,26 +585,26 @@
                             ontouchstart="showGroupBubble('${d.ip}')"
                             ontouchend="hideGroupBubble('${d.ip}')">
                             
-                    <span id="grp-txt-${d.ip}" style="font-size:0.8em; color:var(--group); width:25px; text-align:right; font-weight:bold;">${groupMaxVolume}</span>
+                    <span id="grp-txt-${d.ip}" class="slider-text">${groupMaxVolume}</span>
                 </div>` : ''}
-            ${d.stereoRole === 'LEFT' ? `
+                ${d.stereoRole === 'LEFT' ? `
                 <div class="group-label">L/R BALANCE</div>
-                    <div class="slider-container ${cls(ui.volDisabled)}" style="position:relative;">
-                    <span style="font-size:0.8em; color:var(--text-secondary)">BAL</span>
-                    
-                    <span id="bubble-bal-${d.ip}" class="vol-bubble"></span>
+                    <div class="slider-container ${cls(ui.volDisabled)}">
+                        <span class="slider-text">BAL</span>
+                        
+                        <span id="bubble-bal-${d.ip}" class="vol-bubble"></span>
 
-                    <input type="range" id="bal-${d.ip}" min="-50" max="50" value="0" ${dis(ui.volDisabled)}
-                            oninput="handleBalanceInput('${d.ip}', this.value, this)"
-                            onchange="handleBalanceSet('${d.ip}', this.value)"
-                            onmousedown="showBalBubble('${d.ip}')"
-                            onmouseup="hideBalBubble('${d.ip}')"
-                            ontouchstart="showBalBubble('${d.ip}')"
-                            ontouchend="hideBalBubble('${d.ip}')">
-                            
-                    <span id="bal-txt-${d.ip}" style="font-size:0.8em; color:var(--text-secondary); width:30px; text-align:right;">C</span>
-                </div>` : ''}
-        </div>`;
+                        <input type="range" id="bal-${d.ip}" min="-50" max="50" value="0" ${dis(ui.volDisabled)}
+                                oninput="handleBalanceInput('${d.ip}', this.value, this)"
+                                onchange="handleBalanceSet('${d.ip}', this.value)"
+                                onmousedown="showBalBubble('${d.ip}')"
+                                onmouseup="hideBalBubble('${d.ip}')"
+                                ontouchstart="showBalBubble('${d.ip}')"
+                                ontouchend="hideBalBubble('${d.ip}')">
+                                
+                        <span id="bal-txt-${d.ip}" class="slider-text">C</span>
+                    </div>` : ''}
+            </div>`;
         }).join('');
 
         // --- DOM UPDATE ---
