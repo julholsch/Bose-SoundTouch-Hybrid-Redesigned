@@ -285,107 +285,109 @@ if (!isReady) {
         }
         console.log("=========================================================================");
 
-		// STEP 2: Force Injection Check & Pre-Flight Execution
-        console.log(`\n-----------------------------------------------------------------------`);
-        console.log(`[Boot] Handing over to Pre-Flight Speaker Configuration...`); 
-        console.log(`-------------------------------------------------------------------------`);       		
-        
-        let forceInjectTarget = null;
-        let forceRebootTarget = null;
-        const flagPath = path.join(USER_ROOT, 'force_inject.json');
-        if (fs.existsSync(flagPath)) {
-            try {
-                const flagData = JSON.parse(fs.readFileSync(flagPath, 'utf8'));
-                // Read the new variables safely from the JSON payload
-                forceInjectTarget = flagData.forceInjectTarget || null;
-                forceRebootTarget = flagData.forceRebootTarget || null;
-                if (flagData.debugMode === true) {
-                    global.DEBUG_MODE = true;
-                    console.log(`[Boot] 🐛 Verbose Debug Mode RESTORED from Force flag.`);
+        if (process.env.PRE_FLIGHT_ON_START_UP === 'true') {
+            // STEP 2: Force Injection Check & Pre-Flight Execution
+            console.log(`\n-----------------------------------------------------------------------`);
+            console.log(`[Boot] Handing over to Pre-Flight Speaker Configuration...`); 
+            console.log(`-------------------------------------------------------------------------`);       		
+            
+            let forceInjectTarget = null;
+            let forceRebootTarget = null;
+            const flagPath = path.join(USER_ROOT, 'force_inject.json');
+            if (fs.existsSync(flagPath)) {
+                try {
+                    const flagData = JSON.parse(fs.readFileSync(flagPath, 'utf8'));
+                    // Read the new variables safely from the JSON payload
+                    forceInjectTarget = flagData.forceInjectTarget || null;
+                    forceRebootTarget = flagData.forceRebootTarget || null;
+                    if (flagData.debugMode === true) {
+                        global.DEBUG_MODE = true;
+                        console.log(`[Boot] 🐛 Verbose Debug Mode RESTORED from Force flag.`);
+                    }
+                    if (forceInjectTarget || forceRebootTarget) {
+                        console.log(`[Boot] 🚨 FORCE SEQUENCE FLAG DETECTED!`);
+                        if (forceInjectTarget) console.log(`   ├─ Inject Target: ${forceInjectTarget}`);
+                        if (forceRebootTarget) console.log(`   ├─ Reboot Target: ${forceRebootTarget}`);
+                    }                
+                    // Delete the file so it only executes once!
+                    fs.unlinkSync(flagPath);
+                } catch (e) {
+                    console.error("[Boot] ⚠️ Error reading force_inject.json flag file.", e);
                 }
-                if (forceInjectTarget || forceRebootTarget) {
-                    console.log(`[Boot] 🚨 FORCE SEQUENCE FLAG DETECTED!`);
-                    if (forceInjectTarget) console.log(`   ├─ Inject Target: ${forceInjectTarget}`);
-                    if (forceRebootTarget) console.log(`   ├─ Reboot Target: ${forceRebootTarget}`);
-                }                
-                // Delete the file so it only executes once!
-                fs.unlinkSync(flagPath);
-            } catch (e) {
-                console.error("[Boot] ⚠️ Error reading force_inject.json flag file.", e);
             }
-        }
-        // Pass the new variables to the updated engine
-        const preflightData = await preflight.runSetup(forceInjectTarget, forceRebootTarget);
-        if (!preflightData.success) console.log(`[Boot] ⚠️ Pre-Flight encountered a soft error. Continuing boot...\n`);
-        
-
-// STEP 3: The Great Wait (Reboot Polling)
-        if (preflightData.rebootedIps && preflightData.rebootedIps.length > 0) {
-            console.log(`\n=======================================================================`);
-            console.log(`⏳ SPEAKER REBOOT SEQUENCE INITIATED`);
-            console.log(`=========================================================================\n`);
-            console.log(`[Boot] Waiting for ${preflightData.rebootedIps.length} speaker(s) to finish rebooting...`);
-            console.log(`[Boot] Bose SoundTouch speakers are historically very slow.`);
-            console.log(`[Boot] Please wait ~90 seconds for shutdown and network reconnection.\n`);
+            // Pass the new variables to the updated engine
+            const preflightData = await preflight.runSetup(forceInjectTarget, forceRebootTarget);
+            if (!preflightData.success) console.log(`[Boot] ⚠️ Pre-Flight encountered a soft error. Continuing boot...\n`);
             
-            console.log(`[Boot] ⏳ Phase 1/2: Allowing 35 seconds for speakers to drop offline...`);
-            await new Promise(r => setTimeout(r, 35000));
-            
-            console.log(`\n[Boot] ⏳ Phase 2/2: Polling speakers until network reconnects...`);
-
-            for (const ip of preflightData.rebootedIps) {
-                let online = false, attempts = 0;
-                let finalInfo = null; 
-                process.stdout.write(`[Boot] Polling ${ip} `); 
+    
+            // STEP 3: The Great Wait (Reboot Polling)
+            if (preflightData.rebootedIps && preflightData.rebootedIps.length > 0) {
+                console.log(`\n=======================================================================`);
+                console.log(`⏳ SPEAKER REBOOT SEQUENCE INITIATED`);
+                console.log(`=========================================================================\n`);
+                console.log(`[Boot] Waiting for ${preflightData.rebootedIps.length} speaker(s) to finish rebooting...`);
+                console.log(`[Boot] Bose SoundTouch speakers are historically very slow.`);
+                console.log(`[Boot] Please wait ~90 seconds for shutdown and network reconnection.\n`);
                 
-                while (!online && attempts < 24) { 
-                    try {
-                        const res = await axios.get(`http://${ip}:8090/info`, { timeout: 2000 });
-                        online = true;
-                        finalInfo = res.data;
-                        console.log(` ✅ Online!`);
-                        
-                        if (!ALIVE_SPEAKERS.find(s => s.ip === ip)) {
-                            const originalSpeaker = SPEAKERS.find(s => s.ip === ip);
-                            if (originalSpeaker) ALIVE_SPEAKERS.push(originalSpeaker);
+                console.log(`[Boot] ⏳ Phase 1/2: Allowing 35 seconds for speakers to drop offline...`);
+                await new Promise(r => setTimeout(r, 35000));
+                
+                console.log(`\n[Boot] ⏳ Phase 2/2: Polling speakers until network reconnects...`);
+    
+                for (const ip of preflightData.rebootedIps) {
+                    let online = false, attempts = 0;
+                    let finalInfo = null; 
+                    process.stdout.write(`[Boot] Polling ${ip} `); 
+                    
+                    while (!online && attempts < 24) { 
+                        try {
+                            const res = await axios.get(`http://${ip}:8090/info`, { timeout: 2000 });
+                            online = true;
+                            finalInfo = res.data;
+                            console.log(` ✅ Online!`);
+                            
+                            if (!ALIVE_SPEAKERS.find(s => s.ip === ip)) {
+                                const originalSpeaker = SPEAKERS.find(s => s.ip === ip);
+                                if (originalSpeaker) ALIVE_SPEAKERS.push(originalSpeaker);
+                            }
+                        } catch (e) {
+                            attempts++;
+                            process.stdout.write('.'); 
+                            await new Promise(r => setTimeout(r, 5000)); 
                         }
-                    } catch (e) {
-                        attempts++;
-                        process.stdout.write('.'); 
-                        await new Promise(r => setTimeout(r, 5000)); 
+                    }
+                    
+                    if (!online) {
+                        console.log(` ⚠️ Timeout. Moving on.`);
+                    } else if (finalInfo) {
+                        try {
+                            const data = await parser.parseStringPromise(finalInfo);
+                            const info = data.info || {};
+                            const currentMargeUrl = info.margeURL || info.margeServerUrl || "";
+    
+                            if (!currentMargeUrl.includes(`${process.env.APP_IP}:${process.env.APP_PORT}`)) { 
+                                console.log(`\n=======================================================================`);
+                                console.log(`🚨 LEGACY V1/V2 CONFIGURATION DETECTED ON ${ip}!`);
+                                console.log(`   The speaker is refusing the V3 update because an old USB hack file`);
+                                console.log(`   is overriding the internal memory.`);
+                                console.log(``);
+                                console.log(`   TO FIX THIS AUTOMATICALLY:`);
+                                console.log(`   1. Plug your "remote_services" USB setup cable into the speaker.`);
+                                console.log(`   2. Reboot the speaker (unplug power, wait 10s, plug back in).`);
+                                console.log(`   3. Wait 1 minute for it to connect to Wi-Fi.`);
+                                console.log(`   4. Click "Restart SoundTouch Hybrid" in the System Tools menu.`);
+                                console.log(``);
+                                console.log(`   The Telnet Janitor will detect the USB, safely wipe the file,`);
+                                console.log(`   reboot the speaker, and complete the V3 upgrade automatically!`);
+                                console.log(`=======================================================================\n`);
+                            }
+                        } catch (err) {}
                     }
                 }
-                
-                if (!online) {
-                    console.log(` ⚠️ Timeout. Moving on.`);
-                } else if (finalInfo) {
-                    try {
-                        const data = await parser.parseStringPromise(finalInfo);
-                        const info = data.info || {};
-                        const currentMargeUrl = info.margeURL || info.margeServerUrl || "";
-
-                        if (!currentMargeUrl.includes(`${process.env.APP_IP}:${process.env.APP_PORT}`)) { 
-                            console.log(`\n=======================================================================`);
-                            console.log(`🚨 LEGACY V1/V2 CONFIGURATION DETECTED ON ${ip}!`);
-                            console.log(`   The speaker is refusing the V3 update because an old USB hack file`);
-                            console.log(`   is overriding the internal memory.`);
-                            console.log(``);
-                            console.log(`   TO FIX THIS AUTOMATICALLY:`);
-                            console.log(`   1. Plug your "remote_services" USB setup cable into the speaker.`);
-                            console.log(`   2. Reboot the speaker (unplug power, wait 10s, plug back in).`);
-                            console.log(`   3. Wait 1 minute for it to connect to Wi-Fi.`);
-                            console.log(`   4. Click "Restart SoundTouch Hybrid" in the System Tools menu.`);
-                            console.log(``);
-                            console.log(`   The Telnet Janitor will detect the USB, safely wipe the file,`);
-                            console.log(`   reboot the speaker, and complete the V3 upgrade automatically!`);
-                            console.log(`=======================================================================\n`);
-                        }
-                    } catch (err) {}
-                }
+                console.log(`\n=======================================================================`);
+                console.log(`✅ ALL SPEAKER REBOOTS COMPLETE`);
+                console.log(`=======================================================================\n`);
             }
-            console.log(`\n=======================================================================`);
-            console.log(`✅ ALL SPEAKER REBOOTS COMPLETE`);
-            console.log(`=======================================================================\n`);
         }
 
         // STEP 4: Establish Territory (WebSockets)

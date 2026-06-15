@@ -10,7 +10,6 @@
     
     <link rel="icon" type="image/png" href="images/hybrid_icon.png">
     
-    <!-- <link rel="stylesheet" href="style.css?v=26"> -->
     <link rel="stylesheet" href="new-css/control.css">
     
     <link rel="manifest" href="manifest.json">
@@ -35,13 +34,16 @@
             </div>
         </div>
     </header>
-    <div>
-        <button class="btn-all-off" onclick="triggerGlobalAllOff()">
-            <span style="color: var(--danger); font-size: 1.1em;"><i class="icon-power"></i></span> All Off
-        </button>
-    </div>
+    <main class="app-content">
+        <div class="speaker-status-bar">
+            <button class="btn-secondary" onclick="triggerGlobalAllOff()">
+                <span><i class="icon-power"></i></span> All Off
+            </button>
+        </div>
 
-  <div id="app" class="speaker-grid">Loading Speakers...</div>
+        <div id="app" class="speaker-grid">Loading Speakers...</div>
+
+    </main>
 </div>
 
 <script>
@@ -182,7 +184,7 @@
             track: effectiveDevice.track || effectiveDevice.source,
             artist: effectiveDevice.artist,
             art: effectiveDevice.art,
-            artPlaceholder: effectiveDevice.artPlaceholder || 'art-blank', 
+            artPlaceholder: effectiveDevice.artPlaceholder || 'art-off', 
             pwrClass: !effectiveDevice.isStandby ? 'on' : '',          
             playClass: '',          
             prevClass: '', 
@@ -194,7 +196,10 @@
             prevDisabled: true,          
             volDisabled: device.isStandby, 
             joinDisabled: false, 
-            presetDisabled: false
+            presetDisabled: false,
+            sourceAuxDisabled: false,
+            sourceBluetoothDisabled: false,
+            sourceWifiDisabled: false
         };
 
         // --- NATIVE STATE HANDLING ---
@@ -257,7 +262,10 @@
             ui.prevDisabled = true;
             ui.volDisabled = true; 
             ui.joinDisabled = false; 
-            ui.presetDisabled = false; 
+            ui.presetDisabled = false;
+            ui.sourceAuxDisabled = false;
+            ui.sourceBluetoothDisabled = false;
+            ui.sourceWifiDisabled = false;
             ui.presetNum = 0; 
         }
 
@@ -272,7 +280,10 @@
                 ui.prevDisabled = true;
                 ui.joinDisabled = false; 
                 ui.presetDisabled = false; 
-                ui.volDisabled = true; 
+                ui.volDisabled = true;
+                ui.sourceAuxDisabled = false;
+                ui.sourceBluetoothDisabled = false;
+                ui.sourceWifiDisabled = false; 
                 ui.presetNum = 0;
                 ui.art = ""; 
                 ui.track = "Off"; 
@@ -286,12 +297,15 @@
                 ui.nextDisabled = true;
                 ui.prevDisabled = true;
                 ui.volDisabled = false;
+                ui.sourceAuxDisabled = false;
+                ui.sourceBluetoothDisabled = false;
+                ui.sourceWifiDisabled = false; 
                 ui.presetNum = 0;
                 ui.art = "";
                 ui.track = "Ready";
                 ui.artist = "";
                 ui.playClass = '';
-                ui.artPlaceholder = 'art-blank';
+                ui.artPlaceholder = 'art-off';
             } else if (effectiveLock.type === 'PRESET') {
                 ui.isStandby = false;
                 ui.pwrClass = 'on';
@@ -300,11 +314,14 @@
                 ui.nextDisabled = true;
                 ui.prevDisabled = true;
                 ui.volDisabled = false;
+                ui.sourceAuxDisabled = false;
+                ui.sourceBluetoothDisabled = false;
+                ui.sourceWifiDisabled = false; 
                 ui.art = "";
                 ui.track = "Loading...";
                 ui.artist = "";
                 ui.playClass = '';
-                ui.artPlaceholder = 'art-blank';
+                ui.artPlaceholder = 'art-off';
             } else if (effectiveLock.type === 'TRANSPORT') {
                 if (effectiveLock.val === 'PLAY_PAUSE') {
                     // Optimistic toggling of the Play button color.
@@ -313,11 +330,17 @@
                         ui.playDisabled = false;
                         ui.nextDisabled = true;
                         ui.prevDisabled = true;
+                        ui.sourceAuxDisabled = true;
+                        ui.sourceBluetoothDisabled = true;
+                        ui.sourceWifiDisabled = true; 
                     } else {
                         ui.playClass = 'btn-active'; // Green (Expect Play)
                         ui.playDisabled = false;
                         ui.nextDisabled = true;
                         ui.prevDisabled = true;
+                        ui.sourceAuxDisabled = true;
+                        ui.sourceBluetoothDisabled = true;
+                        ui.sourceWifiDisabled = true; 
                     }
                 } else if (effectiveLock.val === 'PREV_TRACK') {
                     ui.prevClass = 'btn-pending';
@@ -325,12 +348,18 @@
                     ui.playDisabled = true;
                     ui.nextDisabled = true;
                     ui.prevDisabled = false;
+                    ui.sourceAuxDisabled = true;
+                    ui.sourceBluetoothDisabled = true;
+                    ui.sourceWifiDisabled = true; 
                 } else if (effectiveLock.val === 'NEXT_TRACK') {
                     ui.nextClass = 'btn-pending';
                     ui.playClass = 'btn-pending';
                     ui.playDisabled = true;
                     ui.prevDisabled = true;
                     ui.nextDisabled = false;
+                    ui.sourceAuxDisabled = true;
+                    ui.sourceBluetoothDisabled = true;
+                    ui.sourceWifiDisabled = true; 
                 }
             } else if (effectiveLock.type === 'JOIN') {
                 ui.isStandby = false;
@@ -342,11 +371,14 @@
                 ui.playDisabled = true;
                 ui.nextDisabled = true;
                 ui.prevDisabled = true;
+                ui.sourceAuxDisabled = false;
+                ui.sourceBluetoothDisabled = false;
+                ui.sourceWifiDisabled = false; 
                 ui.playClass = '';
                 ui.art = "";
                 ui.track = "Joining...";
                 ui.artist = "";
-                ui.artPlaceholder = 'art-blank';
+                ui.artPlaceholder = 'art-off';
             }
         }
 
@@ -356,6 +388,9 @@
             ui.nextDisabled = true;
             ui.prevDisabled = true;
             ui.presetDisabled = true;
+            ui.sourceAuxDisabled = true;
+            ui.sourceBluetoothDisabled = true;
+            ui.sourceWifiDisabled = true; 
         }
 
         return ui;
@@ -493,7 +528,7 @@
 
             /// Determines visibility of the Sync/Join button. Hide if it's a stereo pair.
             const showSync = !isGroupMaster && !isGroupMember && d.stereoRole !== 'LEFT';
-            const syncText = ui.isStandby ? "Power On & Join" : "Sync to Master";
+            const syncText = "Join Master";
 
             // Calculates the group max volume for the Master's group slider.
             let groupMaxVolume = 0;
@@ -509,6 +544,9 @@
             const clickNext = `onmousedown="uiTransport('${d.ip}', 'NEXT_TRACK')"`;
             const clickPower = `onmousedown="uiTogglePower('${d.ip}', ${ui.isStandby})"`;
             const clickSync = `onmousedown="uiJoinGroup('${d.ip}')"`;
+            const clickAux = `onmousedown="uiAux('${d.ip}')"`;
+            const clickBluetooth = `onmousedown="uiBluetooth('${d.ip}')"`;
+            const clickWifi = `onmousedown="uiWifi('${d.ip}')"`;
         
         // --- THE ATOMIC FIX (Artwork Z-Index Sandwich) ---
         // 1. ui.artPlaceholder provides the base layer CSS emoji.
@@ -539,22 +577,37 @@
                         <span class="artist">${ui.artist}</span>
                     </div>
                 </div>
-                <div class="controls">
-                    <button class="btn-secondary power ${ui.pwrClass}" ${clickPower}><i class="icon-power"></i></button>
-                    <button class="btn-secondary prev ${ui.prevClass}" ${dis(ui.prevDisabled)} ${clickPrev}>⏮</button>
-                    <button class="btn-secondary play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
-                    <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
-                    ${isGroupMaster ? `<div class="master-badge">GROUP MASTER</div>` : ''}
-                    ${showSync ? `<button class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" ${clickSync} ${dis(ui.joinDisabled)}>${syncText}</button>` : ''}
+                <div class="speaker-controls-wrapper">
+                    <div class="speaker-controls">
+                        <button class="btn-secondary power ${ui.pwrClass}" ${clickPower}><i class="icon-power"></i></button>
+                        <button class="btn-secondary prev ${ui.prevClass}" ${dis(ui.prevDisabled)} ${clickPrev}>⏮</button>
+                        <button class="btn-secondary play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
+                        <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
+                    </div>
+                    <div class="speaker-controls">
+                        ${isGroupMaster ? `<div class="master-badge">GROUP MASTER</div>` : ''}
+                        ${isGroupMember ? `<div class="master-badge">GROUP MEMBER</div>` : ''}                       
+                    </div>
+                    <div class="speaker-controls">
+                        <select data-master-select="${d.ip}"></select>
+                        <button data-master-button="${d.ip}" class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" onmousedown="joinMaster('${d.ip}')" ${dis(ui.joinDisabled)}>${syncText}</button>
+                    </div>
+                    
+                    <p class="speaker-controls-label">Presets</p>
+                    <div class="speaker-controls">
+                        ${[1, 2, 3, 4, 5, 6].map(n => {
+                            const isActive = (ui.presetNum === n);
+                            const pClick = `onmousedown="uiPreset('${d.ip}', ${n})"`;
+                            return `<button class="btn-secondary btn-preset ${isActive ? 'active' : ''} ${cls(ui.presetDisabled)}" ${dis(ui.presetDisabled)} ${pClick}>${n}</button>`;
+                        }).join('')}
+                    </div>
+                    <p class="speaker-controls-label">Sources</p>
+                    <div class="speaker-controls">
+                        <button class="btn-secondary" ${dis(ui.sourceAuxDisabled)} ${clickAux}>AUX</button>
+                        <button class="btn-secondary" ${dis(ui.sourceBluetoothDisabled)} ${clickBluetooth}>Bluetooth</button>
+                        <button class="btn-secondary" ${dis(ui.sourceWifiDisabled)} ${clickWifi}>WiFi</button>
+                    </div>
                 </div>
-                <div class="presets-row">
-                    ${[1, 2, 3, 4, 5, 6].map(n => {
-                        const isActive = (ui.presetNum === n);
-                        const pClick = `onmousedown="uiPreset('${d.ip}', ${n})"`;
-                        return `<button class="btn-secondary btn-preset ${isActive ? 'active' : ''} ${cls(ui.presetDisabled)}" ${dis(ui.presetDisabled)} ${pClick}>${n}</button>`;
-                    }).join('')}
-                </div>
-
                 <div class="slider-container ${cls(ui.volDisabled)}">
                     <span class="slider-text">VOL</span>
                     <span id="bubble-${d.ip}" class="vol-bubble"></span>
@@ -612,12 +665,18 @@
         // Uses morphdom (if available) to smoothly animate sorting changes without refreshing the whole page.
         if (force || newHTML !== lastRenderedHTML) {
             if (typeof morphdom === 'function') {
-                morphdom(container, `<div id="app" class="grid">${newHTML}</div>`);
+                morphdom(container, `<div id="app" class="speaker-grid">${newHTML}</div>`);
             } else {
                 container.innerHTML = newHTML;
             }
             lastRenderedHTML = newHTML;
+
+            // 3. ERST JETZT, wenn ALLE Karten im DOM existieren, die Dropdowns befüllen
+            sortedList.forEach(device => {
+                populateJoinZoneDropdown(device.ip);
+            });
         }
+
     } 
 
     // --- ACTIONS (User Inputs & Network) ---
@@ -703,6 +762,36 @@
         });
     }
 
+    async function uiAux(ip) {
+        await fetch('/api/admin/aux', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ 
+                ip 
+            }) 
+        }); 
+    }
+
+    async function uiBluetooth(ip) {
+        await fetch('/api/admin/bluetooth', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ 
+                ip 
+            }) 
+        }); 
+    }
+
+    async function uiWifi(ip) {
+        await fetch('/api/admin/wifi', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify({ 
+                ip 
+            }) 
+        }); 
+    }
+
     // Handles Preset click. Sets optimistic lock to "Loading...".
     function uiPreset(ip, n) {
         LockManager.set(ip, 'PRESET', n);
@@ -733,6 +822,133 @@
         sendCommand('/api/key', {
             ip,
             key
+        });
+    }
+
+async function populateJoinZoneDropdown(ip) {
+    try {
+        // 1. Fetch all registered speakers from the status endpoint
+        const statusRes = await fetch('/api/status');
+        const devices = await statusRes.json();
+
+        // 2. Locate the specific dropdown element for this speaker
+        const masterSelect = document.querySelector(`[data-master-select="${ip}"]`);
+        if (!masterSelect) return;
+
+        // 3. Get the zone status of the current speaker first (with a strict 1s timeout)
+        let currentSpeakerZone = null;
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
+
+            const currentRes = await fetch(`/api/getZone?ip=${ip}`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (currentRes.ok) {
+                currentSpeakerZone = await currentRes.json();
+            }
+        } catch (e) {
+            // If the speaker itself is physically unreachable/offline, lock its dropdown immediately
+            console.warn(`[Dropdown-Query] Current speaker ${ip} is offline/unreachable.`);
+            masterSelect.disabled = true;
+            masterSelect.innerHTML = '<option value="" disabled selected>Speaker Offline</option>';
+            return;
+        }
+
+        let connectedMasterIp = null;
+        const availableTargets = [];
+
+        // 4. Query all other registered devices individually with strict 1s timeouts
+        const targetPromises = devices.map(async (device) => {
+            if (device.ip === ip) return; // Cannot join itself
+
+            // Create an AbortController to enforce a strict network timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
+
+            try {
+                const res = await fetch(`/api/getZone?ip=${device.ip}`, { signal: controller.signal });
+                clearTimeout(timeoutId); // Clear timeout immediately if the speaker responds in time
+                
+                // If the device answers (Status 200), it is REACHABLE (Active or Standby!)
+                if (res.ok) {
+                    const zoneData = await res.json();
+
+                    // Check if this device is the master of our current speaker
+                    if (currentSpeakerZone && currentSpeakerZone.role === 'SLAVE' && currentSpeakerZone.masterMac) {
+                        if (zoneData && zoneData.myMac && zoneData.myMac.toString().trim().toLowerCase() === currentSpeakerZone.masterMac.toString().trim().toLowerCase()) {
+                            connectedMasterIp = device.ip;
+                        }
+                    }
+
+                    // Only exclude active SLAVES. Standby or Master devices are perfectly valid targets.
+                    if (!zoneData || zoneData.role !== 'SLAVE') {
+                        availableTargets.push({
+                            ip: device.ip,
+                            name: device.name || device.ip,
+                            role: zoneData ? zoneData.role : null
+                        });
+                    }
+                }
+            } catch (err) {
+                // Physically dead/unreachable devices will hit this catch block after exactly 1 second.
+                // They are safely skipped and will NO LONGER freeze/block the dropdown rendering.
+                clearTimeout(timeoutId);
+                console.warn(`[Dropdown-Query] Speaker ${device.ip} is completely unreachable (Timeout). Skipping.`);
+            }
+        });
+
+        // Wait for all individual fetch attempts to settle (Maximum wait time is now capped at 1 second!)
+        await Promise.all(targetPromises);
+
+        // 5. Populate the HTML dropdown with all successfully reached devices
+        if (availableTargets.length === 0) {
+            masterSelect.disabled = true;
+            masterSelect.innerHTML = '<option value="" disabled selected>No Speaker Available</option>';
+        } else {
+            masterSelect.disabled = false;
+
+            const placeholderSelected = connectedMasterIp ? '' : 'selected';
+            let optionsHtml = `<option value="" disabled ${placeholderSelected}>Select Master</option>`;
+            
+            availableTargets.forEach(target => {
+                const suffix = target.role === 'MASTER' ? ' (Active Group)' : '';
+                const isSelected = target.ip === connectedMasterIp ? 'selected' : '';
+                
+                optionsHtml += `<option value="${target.ip}" ${isSelected}>${target.name}${suffix}</option>`;
+            });
+
+            masterSelect.innerHTML = optionsHtml;
+
+            // Explicitly force the selected property value on the element
+            if (connectedMasterIp) {
+                masterSelect.value = connectedMasterIp;
+            }
+        }
+
+    } catch (error) {
+        console.error("Critical error while populating the dropdown:", error);
+    }
+}
+    function joinMaster(slaveIp) {
+        // 1. Das zugehörige Dropdown-Element über die Slave-IP finden
+        const masterSelect = document.querySelector(`[data-master-select="${slaveIp}"]`);
+        
+        // Sicherheitscheck: Wurde überhaupt ein Master ausgewählt?
+        if (!masterSelect || !masterSelect.value) {
+            alert("Bitte wähle zuerst einen Master-Lautsprecher aus dem Dropdown aus!");
+            return;
+        }
+        
+        const masterIp = masterSelect.value;
+
+        // 2. Den LockManager wie gehabt für das Optimistic UI setzen
+        LockManager.set(slaveIp, 'JOIN', 'MASTER');
+        
+        // 3. Beide IPs (Slave und den gewählten Master) ans Backend senden
+        sendCommand('/api/addZoneSlave', {
+            slaveIp,
+            masterIp
         });
     }
 

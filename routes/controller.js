@@ -316,6 +316,206 @@ router.post('/play_content', async(req, res) => {
     }
 });
 
+
+router.get("/getZone", async (req, res) => {
+    // Unterstützt body (wie dein Entwurf) oder query-Parameter
+    const ip = req.body?.ip || req.query?.ip;
+    if (!ip) return res.status(400).send({error: "Missing IP address"});
+
+    const parser = new xml2js.Parser({explicitArray: false});
+
+    try {
+        let zRes;
+        try {
+            // 1. XML von der Bose-API holen
+            zRes = await axios.get(`http://${ip}:8090/getZone`);
+        } catch (axiosErr) {
+            // GEZIELTER FIX: Wenn Bose mit 404 antwortet, existiert keine Zone (Standalone)
+            if (axiosErr.response && axiosErr.response.status === 404) {
+                return res.send({
+                    inZone: false,
+                    role: "STANDALONE",
+                    masterMac: null,
+                    members: [],
+                });
+            }
+            // Andere Netzwerkfehler (z.B. Host Unreachable) an den äußeren Catch übergeben
+            throw axiosErr;
+        }
+
+        // --- HIER IST DER FIX FÜR DAS LEERE FRAGMENT ---
+        // 2. Parsen des XML-Inhalts, falls die Box in einer Zone ist (200 OK)
+        let zData;
+        try {
+            zData = await parser.parseStringPromise(zRes.data);
+        } catch (parseErr) {
+            // Wenn das XML kaputt oder leer ist (wie z.B. nur </zone>), wirft xml2js einen Fehler.
+            // Das fangen wir ab und wissen: Der Lautsprecher ist Standalone oder im Standby.
+            return res.send({
+                inZone: false,
+                role: "STANDALONE",
+                masterMac: null,
+                members: [],
+            });
+        }
+
+        // Sicherheitsprüfung, falls das XML zwar valide war, aber die Struktur unerwartet leer ist
+        if (!zData || !zData.zone) {
+            return res.send({
+                inZone: false,
+                role: "STANDALONE",
+                masterMac: null,
+                members: [],
+            });
+        }
+
+        // 3. Master-MAC auslesen (Prüfung auf flache Struktur ODER unter $)
+        const rawMaster = zData.zone.master || (zData.zone.$ ? zData.zone.$.master : null);
+        const masterMac = rawMaster ? rawMaster.toString().trim().toLowerCase() : null;
+
+        // 4. Eigene MAC ermitteln, um die Rolle zu bestimmen
+        let myMac = MAC_CACHE[ip];
+        if (!myMac) {
+            const iRes = await axios.get(`http://${ip}:8090/info`);
+            const id = await parser.parseStringPromise(iRes.data);
+            const rawMyMac = id.info.deviceID || id.info.$.deviceID;
+            myMac = rawMyMac ? rawMyMac.toString().trim().toLowerCase() : null;
+            if (myMac) MAC_CACHE[ip] = myMac;
+        } else {
+            myMac = myMac.toString().trim().toLowerCase();
+        }
+
+        // Wenn die eigene MAC identisch mit der Master-MAC der Zone ist, ist es der Master
+        const isMaster = myMac === masterMac;
+
+        // 5. Mitglieder-Liste parsen (Muster aus /zone_volume)
+        const members = [];
+        if (zData.zone.member) {
+            // Wenn es nur ein Member gibt, ist es ein Objekt. Bei mehreren ein Array.
+            const memberData = Array.isArray(zData.zone.member) ? zData.zone.member : [zData.zone.member];
+
+            memberData.forEach((m) => {
+                members.push({
+                    ip: m.ipaddress || (m.$ ? m.$.ipaddress : null),
+                    mac: m._ ? m._.toString().trim().toLowerCase() : null, // xml2js packt den reinen Textinhalt des Tags in Unterstrich (_)
+                });
+            });
+        }
+
+        // 6. Strukturierte Antwort ans Frontend senden
+        res.send({
+            inZone: true,
+            role: isMaster ? "MASTER" : "SLAVE",
+            masterMac: masterMac,
+            myMac: myMac,
+            members: members,
+        });
+    } catch (err) {
+        res.status(500).send({error: err.message});
+    }
+});
+
+router.post("/addZoneSlave", async (req, res) => {
+    const {slaveIp, masterIp} = req.body;
+    if (SYNC_LOCKS.has(slaveIp)) return res.send({success: false, message: "Sync Busy"});
+    SYNC_LOCKS.add(slaveIp);
+
+    try {
+        const slaveDevice = SPEAKERS.find((s) => s.ip === slaveIp);
+        const slaveState = await deviceState.get(slaveDevice);
+        if (!slaveState || slaveState.isStandby) deviceState.clearSession(slaveIp);
+    } catch (e) {}
+
+    deviceState.setExpectation(slaveIp, "JOIN", "SLAVE");
+
+    try {
+        let finalMasterIp = null;
+        let finalMasterMac = null;
+        let isMasterAlreadyInZone = false;
+
+        // 1. Weiche für die Master-Ermittlung
+        if (masterIp) {
+            finalMasterIp = masterIp;
+            const chosenMaster = SPEAKERS.find((s) => s.ip === masterIp);
+            if (chosenMaster) {
+                const masterState = await deviceState.get(chosenMaster);
+                finalMasterMac = masterState?.mac;
+
+                // PERFORMANCE-BOOST 1: Statt localhost-HTTP-Call nutzen wir direkt den
+                // bereits im Speicher liegenden Zustand deines deviceState-Managers!
+                if (masterState && masterState.zone) {
+                    isMasterAlreadyInZone = true;
+                }
+            }
+        }
+
+        if (!finalMasterMac) {
+            const candidates = [];
+            for (const d of SPEAKERS) {
+                if (d.ip === slaveIp) continue;
+                try {
+                    const state = await deviceState.get(d);
+                    if (state && !state.isStandby) {
+                        const zoneMaster = state.zone ? state.zone.master : null;
+                        const myMac = state.mac;
+                        if (!zoneMaster || zoneMaster === myMac) {
+                            candidates.push({
+                                ...d,
+                                mac: myMac,
+                                playing: state.playStatus === "PLAY_STATE",
+                                hasZone: !!state.zone,
+                            });
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            const playingCandidate = candidates.find((c) => c.playing);
+            if (playingCandidate) {
+                finalMasterIp = playingCandidate.ip;
+                finalMasterMac = playingCandidate.mac;
+                isMasterAlreadyInZone = playingCandidate.hasZone;
+            } else if (candidates.length > 0) {
+                finalMasterIp = candidates[0].ip;
+                finalMasterMac = candidates[0].mac;
+                isMasterAlreadyInZone = candidates[0].hasZone;
+            }
+        }
+
+        if (!finalMasterIp || !finalMasterMac) {
+            return res.status(400).send({error: "Kein gültiger Master-Lautsprecher gefunden oder ausgewählt."});
+        }
+
+        // 2. Eigene MAC des Slaves ermitteln
+        let slaveMac = MAC_CACHE[slaveIp];
+        if (!slaveMac) {
+            const i = await axios.get(`http://${slaveIp}:8090/info`);
+            const p = new xml2js.Parser({explicitArray: false});
+            const id = await p.parseStringPromise(i.data);
+            slaveMac = id.info.deviceID || id.info.$.deviceID;
+        }
+
+        // 3. PERFORMANCE-BOOST 2: Timeout komplett eliminiert!
+        // Wir jagen die XML-Payloads parallel raus.
+        const groupXml = `<zone master="${finalMasterMac}"><member ipaddress="${slaveIp}">${slaveMac}</member></zone>`;
+        const zoneEndpoint = isMasterAlreadyInZone ? "addZoneSlave" : "setZone";
+
+        console.log(`[Zone-Bridge] Sende Befehle parallel an Master ${finalMasterIp} (${zoneEndpoint})`);
+
+        await Promise.all([
+            sendBoseXml(finalMasterIp, "rebroadcastlatencymode", '<rebroadcastlatencymode mode="SYNC_TO_ZONE"/>'),
+            sendBoseXml(finalMasterIp, zoneEndpoint, groupXml),
+        ]);
+
+        res.send({success: true});
+    } catch (err) {
+        res.status(500).send({error: err.message});
+    } finally {
+        SYNC_LOCKS.delete(slaveIp);
+    }
+});
+
+
 router.post('/join', async(req, res) => {
     const { slaveIp } = req.body;
     if (SYNC_LOCKS.has(slaveIp)) return res.send({ success: false, message: "Sync Busy" });
@@ -434,7 +634,7 @@ router.post('/join', async(req, res) => {
 			} finally {
 				SYNC_LOCKS.delete(slaveIp);
 			}
-		});
+});
 
 router.post('/zone_volume', async(req, res) => {
     const { masterIp, delta } = req.body;

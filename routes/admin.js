@@ -243,6 +243,39 @@ router.post('/admin/bluetooth', async(req, res) => {
         res.status(500).send(e.message);
     }
 });
+router.post("/admin/aux", async (req, res) => {
+    try {
+        await axios.post(
+            `http://${req.body.ip}:8090/select`,
+            `<ContentItem source="AUX" sourceAccount="AUX" />`,
+            BOSE_HEADERS
+        );
+        res.send({
+            success: true,
+        });
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
+router.post("/admin/wifi", async (req, res) => {
+    const { ip } = req.body;
+    const parser = new xml2js.Parser({
+        explicitArray: false
+    });
+    const host = req.get('host');
+    try {
+        await axios.post(
+            `http://${req.body.ip}:8090/select`,
+            `<ContentItem source="LOCAL_INTERNET_RADIO" location="http://${host}/silent.mp3"><itemName>Ready</itemName></ContentItem>`,
+            BOSE_HEADERS
+        );
+        res.send({
+            success: true,
+        });
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
 router.post('/admin/settings_toggle', async(req, res) => {
     const { ip, tag } = req.body;

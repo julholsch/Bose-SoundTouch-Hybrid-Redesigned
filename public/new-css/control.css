@@ -748,6 +748,14 @@ input[type=range]:active {
   display: none;
 }
 
+.speaker-status-bar {
+  display: flex;
+
+  justify-content: center;
+
+  width: 100%;
+}
+
 /* --- MASS ERROR BANNER --- */
 
 #mass-error-banner {
@@ -1039,6 +1047,21 @@ input[type=range]:active {
   }
 }
 
+.art-off::after {
+  content: "💤";
+
+  /* The Sleepy Face */
+  opacity: 0.4;
+
+  /* Slightly brighter for the emoji */
+}
+
+/* Sizing specific to the location */
+
+.art.art-off::after {
+  font-size: 40px;
+}
+
 .meta {
   display: flex;
   overflow: hidden;
@@ -1068,22 +1091,42 @@ input[type=range]:active {
   color: var(--text-secondary);
 }
 
-.controls {
-  display: grid;
-
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-
-  margin-bottom: 15px;
+.speaker-controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.presets-row {
+.speaker-controls {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 8px;
+}
 
-  grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
+.speaker-controls-label {
+    font-size: 0.9em;
 
-  margin-bottom: 15px;
+    color: var(--text-secondary);
+    margin-bottom: -3px;
+}
+
+.master-badge {
+  padding: 8px;
+
+  border: 1px solid rgba(155, 89, 182, 0.3);
+
+  border-radius: 4px;
+  font-size: 0.8em;
+
+  font-weight: bold;
+  letter-spacing: 0.5px;
+
+  text-align: center;
+  text-transform: uppercase;
+
+  color: var(--group);
+  background: rgba(155, 89, 182, 0.15);
+  grid-column: span 4;
 }
 
 .slider-container {

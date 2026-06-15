@@ -53,15 +53,11 @@ services:
       - "3000:3000" 
 
     volumes:
-          # 1. LIVE-EDITING (Dein Front-End)
-          # Wir mappen nur den public-Ordner, damit dein CSS/HTML sofort aktualisiert wird
-          - ./public:/app/public
+      - ./public:/app/public
+      - ./config-data:/app/config
+      - ./routes:/app/routes
+      - ./server.js:/app/server.js
 
-          # 2. NUTZERDATEN (Der "spezielle Ordner")
-          # Wir erstellen lokal einen Ordner 'config-data', damit dein Projektordner sauber bleibt
-          - C:\docker\data\bose-soundtouch-hybrid\config-data:/app/config
-
-          # System-relevante Mounts (beibehalten)
-          - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
 
     restart: unless-stopped
