@@ -528,7 +528,7 @@
 
             /// Determines visibility of the Sync/Join button. Hide if it's a stereo pair.
             const showSync = !isGroupMaster && !isGroupMember && d.stereoRole !== 'LEFT';
-            const syncText = "Join Master";
+            const syncText = "Join";
 
             // Calculates the group max volume for the Master's group slider.
             let groupMaxVolume = 0;
@@ -584,12 +584,17 @@
                         <button class="btn-secondary play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
                         <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
                     </div>
+
+                    ${isGroupMaster || isGroupMember ? `<p class="speaker-controls-label">Join Zone</p>` : ''}
                     <div class="speaker-controls">
                         ${isGroupMaster ? `<div class="master-badge">GROUP MASTER</div>` : ''}
-                        ${isGroupMember ? `<div class="master-badge">GROUP MEMBER</div>` : ''}                       
+                        ${isGroupMember ? `<div class="master-badge">GROUP MEMBER OF</div>` : ''}                       
                     </div>
+                    ${isGroupMaster || isGroupMember ? `` : '<p class="speaker-controls-label">Join Zone</p>'}
                     <div class="speaker-controls">
-                        <select data-master-select="${d.ip}"></select>
+                        <div class="custom-dropdown-wrapper">
+                            <select class="master-select" data-master-select="${d.ip}"></select>
+                        </div>
                         <button data-master-button="${d.ip}" class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" onmousedown="joinMaster('${d.ip}')" ${dis(ui.joinDisabled)}>${syncText}</button>
                     </div>
                     
@@ -912,7 +917,7 @@ async function populateJoinZoneDropdown(ip) {
             let optionsHtml = `<option value="" disabled ${placeholderSelected}>Select Master</option>`;
             
             availableTargets.forEach(target => {
-                const suffix = target.role === 'MASTER' ? ' (Active Group)' : '';
+                const suffix = target.role === 'MASTER' ? ' (Master)' : '';
                 const isSelected = target.ip === connectedMasterIp ? 'selected' : '';
                 
                 optionsHtml += `<option value="${target.ip}" ${isSelected}>${target.name}${suffix}</option>`;

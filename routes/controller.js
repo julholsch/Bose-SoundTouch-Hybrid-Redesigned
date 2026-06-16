@@ -482,6 +482,14 @@ router.post("/addZoneSlave", async (req, res) => {
             }
         }
 
+        if (!finalMasterIp) {
+            deviceState.clearSession(slaveIp);
+            await sendBoseXml(slaveIp, "key", `<key state="press" sender="Gabbo">POWER</key>`);
+            await sleep(PRESS_DELAY);
+            await sendBoseXml(slaveIp, "key", `<key state="release" sender="Gabbo">POWER</key>`);
+            return res.send({success: true, message: "Fallback to Power On"});
+        }
+
         if (!finalMasterIp || !finalMasterMac) {
             return res.status(400).send({error: "Kein gültiger Master-Lautsprecher gefunden oder ausgewählt."});
         }
@@ -494,6 +502,11 @@ router.post("/addZoneSlave", async (req, res) => {
             const id = await p.parseStringPromise(i.data);
             slaveMac = id.info.deviceID || id.info.$.deviceID;
         }
+
+        await sendBoseXml(slaveIp, "key", `<key state="press" sender="Gabbo">POWER</key>`);
+        await sleep(PRESS_DELAY);
+        await sendBoseXml(slaveIp, "key", `<key state="release" sender="Gabbo">POWER</key>`);
+
 
         // 3. PERFORMANCE-BOOST 2: Timeout komplett eliminiert!
         // Wir jagen die XML-Payloads parallel raus.

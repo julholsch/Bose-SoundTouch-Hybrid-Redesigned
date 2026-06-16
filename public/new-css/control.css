@@ -596,7 +596,7 @@ button {
   &.join {
     color: var(--text-secondary);
     background: var(--btn-bg);
-    grid-column: span 4;
+    width: ;
 
     &:hover {
       border-color: #999;
@@ -1107,7 +1107,69 @@ input[type=range]:active {
     font-size: 0.9em;
 
     color: var(--text-secondary);
-    margin-bottom: -3px;
+    margin-bottom: -5px;
+}
+
+/* Target the select element specifically using your data attribute */
+select[data-master-select] {
+  /* Strips away the native browser styling (including the default arrow) */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  /* Crucial resets so the browser doesn't warp your layout */
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 6px;
+  margin: 0;
+  padding: 0 12px;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  font-weight: bold;
+  
+  color: var(--btn-text);
+  font-size: 0.85em;
+  height: 100%;
+
+  &:hover {
+    border-color: #888;
+
+    color: var(--text);
+  }
+
+  &:active,
+  &:focus  {
+    border-color: var(--accent);
+    outline: 2px solid var(--accent);
+    color: var(--text);
+  }
+
+    
+}
+.custom-dropdown-wrapper {
+  grid-column: span 5;
+  position: relative;
+    display: block;
+
+  z-index: 0;
+  &::after {
+      content: "▼";
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      z-index: 1;
+      transform: translateY(-50%);
+      /* Makes sure clicks on the arrow still open the select dropdown beneath it */
+      pointer-events: none; 
+  }
+}
+
+
+/* Remove the default arrow specifically for Internet Explorer/Edge legacy if needed */
+select[data-master-select]::-ms-expand {
+    display: none;
 }
 
 .master-badge {
