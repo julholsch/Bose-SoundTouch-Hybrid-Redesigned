@@ -1,180 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Bose SoundTouch Library Manager</title>
-  <link rel="icon" type="image/png" href="images/hybrid_icon.png"> 
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-  <script src="global_ui.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <title>Bose SoundTouch Library Manager</title>
+
+    <link rel="icon" type="image/png" href="images/hybrid_icon.png"> 
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="new-css/manager.css">
+
+    <link rel="manifest" href="manifest.json">
+
+    <script src="global_ui.js"></script>
 </head>
+
 <body>
+<div class="app-container">
 
-<div class="container">
-
-    <header id="tools-header">
-        <div id="app-title" class="app-header">
-            <div class="global-nav-img">
+    <header class="app-header">
+        <div class="header-inner-panel">
+            <div class="app-logo">
                 <img src="images/hybrid_icon.png" alt="Logo">
                 Bose SoundTouch Hybrid
             </div>
-            <div class="nav-center-group">
-                <div class="global-link" onmousedown="window.location.href='control.html'">Remote</div>
-                <div class="global-link active" onmousedown="window.location.href='manager.html'">Library</div>
-                <div class="global-link" onmousedown="window.location.href='admin.html'">Speaker</div>
-                <div class="global-link" onmousedown="window.location.href='tools.html'">System</div>
+            <div class="global-nav-menu">
+                <button class="global-link" onclick="window.location.href='control.html'">Remote</button>
+                <button class="global-link active" onclick="window.location.href='manager.html'">Library</button>
+                <button class="global-link" onclick="window.location.href='admin.html'">Speaker</button>
+                <button class="global-link" onclick="window.location.href='tools.html'">System</button>
             </div>
         </div>
     </header>
 
-    <h2 style="margin-bottom: 20px; font-size:1.4em; color:var(--title-color); display:flex; align-items:center; gap:12px; justify-content:center;">
-        SoundTouch Library 
-        <span style="font-size:0.6em; color:#888; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">via</span> 
-        <img src="images/ma_logo.png" style="height:28px; width:auto;" alt="MA">
-    </h2>
+    <main class="app-content">
+        <h2 class="libary-title">
+            SoundTouch Library 
+            <span>via</span> 
+            <img src="images/ma_logo.png" alt="MA">
+        </h2>
 
-    <div class="top-bar">
-        <div class="speaker-selector-container">
-            <span class="speaker-label" id="play-on-label">Play On:</span>
-            <select id="global-speaker" onchange="handleSpeakerChange()">
-                <option value="">Loading...</option>
-            </select>
+        <div class="top-bar">
+            <div class="speaker-selector-container">
+                <span class="speaker-label" id="play-on-label">Play On:</span>
+                <select id="global-speaker" onchange="handleSpeakerChange()">
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+        
+            <div class="nav-tabs manager-main-tabs">
+                <button class="nav-btn active" data-tab-target="library" onclick="switchTab('library')">
+                    My Library
+                    <img src="images/bose_icon.png">
+                </button>
+                
+                <button class="nav-btn" data-tab-target="nowplaying" onclick="switchTab('nowplaying')">
+                    Now Playing
+                    <span style="font-size:1.2em;">🎵</span>
+                </button>
+
+                <button class="nav-btn" data-tab-target="recents" onclick="switchTab('recents')">
+                    Recents
+                    <img src="images/hybrid_icon.png">
+                </button>
+                
+                <button class="nav-btn" data-tab-target="search" onclick="switchTab('search')">
+                    Search 
+                    <img src="images/ma_icon.png">
+                </button>
+                
+                <button class="nav-btn" data-tab-target="custom" onclick="switchTab('custom')">
+                    Custom &#127760;
+                </button>
+            </div>
         </div>
-    
-        <div class="nav-tabs manager-main-tabs">
-            <button class="nav-btn active" data-tab="library" onclick="switchTab('library')">
-                My Library
-                <img src="images/bose_icon.png">
-            </button>
-            
-            <button class="nav-btn" data-tab="nowplaying" onclick="switchTab('nowplaying')">
-                Now Playing
-                <span style="font-size:1.2em;">🎵</span>
-            </button>
 
-            <button class="nav-btn" data-tab="recents" onclick="switchTab('recents')">
-                Recents
-                <img src="images/hybrid_icon.png">
-            </button>
+        <div id="tab-library" data-tab="library">
+            <div class="section-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <span style="white-space:nowrap;">Physical Presets</span>
+                <select id="preset-view-filter" class="mini-select" onchange="loadLibrary()">
+                    <option value="">Global (Default)</option>
+                </select>
+            </div>
+            <div id="lib-presets" class="grid">Loading...</div>
             
-            <button class="nav-btn" data-tab="search" onclick="switchTab('search')">
-                Search 
-                <img src="images/ma_icon.png">
-            </button>
-            
-            <button class="nav-btn" data-tab="custom" onclick="switchTab('custom')">
-                Custom &#127760;
-            </button>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 8px; border: 1px solid var(--border);">
+                <div class="section-title" style="margin: 0; padding: 0; border: none; display: flex; align-items: baseline; gap: 6px; white-space: nowrap;">
+                    <span>FAVORITES</span>
+                </div>
+                
+                <div class="fav-controls">
+                    <div class="filter-pill fav-pill active" onclick="setFavFilter('all')">All</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('playlist')">Playlists</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('artist')">Artists</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('album')">Albums</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('track')">Tracks</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('radio')">Radio</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('podcast')">Podcasts</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('audiobook')">Audiobooks</div>
+                    
+                    <select id="fav-provider-filter" class="mini-select" style="max-width: 140px; background-color: var(--bg);" onchange="loadLibrary()">
+                        <option value="all">All Providers</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="lib-favorites" class="grid">Loading...</div>
         </div>
-  </div>
 
-  <div id="tab-library">
-	<div class="section-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <span style="white-space:nowrap;">Physical Presets</span>
-        <select id="preset-view-filter" class="mini-select" onchange="loadLibrary()">
-            <option value="">Global (Default)</option>
-        </select>
-    </div>
-    <div id="lib-presets" class="grid">Loading...</div>
-	
-    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 8px; border: 1px solid var(--border);">
-        <div class="section-title" style="margin: 0; padding: 0; border: none; display: flex; align-items: baseline; gap: 6px; white-space: nowrap;">
-            <span>FAVORITES</span>
+        <div id="tab-nowplaying" data-tab="nowplaying" style="display:none">
+            <div class="np-view">
+                <div class="np-card">
+                    <img id="np-img" src="" class="np-art" style="display:none;" onerror="this.style.display='none'">
+                    <div id="np-track" class="np-track">Loading...</div>
+                    <div id="np-artist" class="np-artist">---</div>
+                    <div id="np-album" class="np-album">---</div>
+                    <div id="np-status" class="np-status-badge">CONNECTING</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-recents" data-tab="recents" style="display:none">
+            <div class="section-title">Recently Played from Music Assistant</div>
+            <div id="recents-results" class="grid">Loading...</div>
+        </div>
+
+        <div id="tab-search" data-tab="search" style="display:none">
+            <div class="search-header">
+                <div class="source-row" id="dynamic-source-row"></div>
+                <div class="filter-row" id="filter-row">
+                    <div class="filter-pill active" onclick="setFilter('playlist')">Playlists</div>
+                    <div class="filter-pill" onclick="setFilter('artist')">Artists</div>
+                    <div class="filter-pill" onclick="setFilter('album')">Albums</div>
+                    <div class="filter-pill" onclick="setFilter('track')">Tracks</div>
+                    <div class="filter-pill" id="filter-radio" onclick="setFilter('radio')" style="display:none">Radio</div>
+                    <div class="filter-pill" id="filter-podcast" onclick="setFilter('podcast')" style="display:none">Podcasts</div>
+                    <div class="filter-pill" id="filter-audiobook" onclick="setFilter('audiobook')" style="display:none">Audiobooks</div>
+                    <div class="filter-pill" onclick="setFilter('all')">All</div>
+                    <select id="provider-filter" class="mini-select" style="margin-left:auto; display:none; max-width:160px; background-color:var(--card);" onchange="doSearch()">
+                        <option value="all">All Providers</option>
+                    </select>		
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
+                    <select id="limit" onchange="doSearch()">
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="doSearch()">Go</button>
+                </div>
+            </div>
+            <div id="search-results" class="grid"></div>
         </div>
         
-        <div class="fav-controls">
-            <div class="filter-pill fav-pill active" onclick="setFavFilter('all')">All</div>
-            <div class="filter-pill fav-pill" onclick="setFavFilter('playlist')">Playlists</div>
-            <div class="filter-pill fav-pill" onclick="setFavFilter('artist')">Artists</div>
-            <div class="filter-pill fav-pill" onclick="setFavFilter('album')">Albums</div>
-            <div class="filter-pill fav-pill" onclick="setFavFilter('track')">Tracks</div>
-            <div class="filter-pill fav-pill" onclick="setFavFilter('radio')">Radio</div>
-            <div class="filter-pill fav-pill" onclick="setFavFilter('podcast')">Podcasts</div>
-            <div class="filter-pill fav-pill" onclick="setFavFilter('audiobook')">Audiobooks</div>
+        <div id="tab-custom" data-tab="custom" style="display:none">
+            <div class="card" style="margin-bottom: 20px; border-left: 3px solid #2ecc71;">
+                <h3 style="margin-top:0;">&#127760; Stream Custom URL</h3>
+                <div class="sub-head" style="margin-bottom:15px;">Inject a radio stream or file directly to a speaker.</div>
+                
+                <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:flex-end;">
+                    <div style="flex: 2; min-width: 200px;">
+                        <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">STREAM URL</label>
+                        <input type="text" id="stream-url" placeholder="http://stream.radioparadise.com/aac-320" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
+                    </div>
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">STATION NAME</label>
+                        <input type="text" id="stream-name" placeholder="Custom Station" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
+                    </div>
+                    <div style="flex-shrink: 0; padding-bottom: 1px;">
+                        <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="playCustomStream()">▶ STREAM NOW</button>
+                    </div>
+                </div>
+            </div>
             
-            <select id="fav-provider-filter" class="mini-select" style="max-width: 140px; background-color: var(--bg);" onchange="loadLibrary()">
-                <option value="all">All Providers</option>
-            </select>
+            <div class="section-title">Recent Unsaved Streams</div>
+            <div id="custom-history-results" class="grid">Loading...</div>
         </div>
-    </div>
-
-    <div id="lib-favorites" class="grid">Loading...</div>
-  </div>
-
-    <div id="tab-nowplaying" style="display:none">
-        <div class="np-view">
-            <div class="np-card">
-                <img id="np-img" src="" class="np-art" style="display:none;" onerror="this.style.display='none'">
-                <div id="np-track" class="np-track">Loading...</div>
-                <div id="np-artist" class="np-artist">---</div>
-                <div id="np-album" class="np-album">---</div>
-                <div id="np-status" class="np-status-badge">CONNECTING</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="tab-recents" style="display:none">
-        <div class="section-title">Recently Played from Music Assistant</div>
-        <div id="recents-results" class="grid">Loading...</div>
-    </div>
-
-    <div id="tab-search" style="display:none">
-        <div class="search-header">
-            <div class="source-row" id="dynamic-source-row"></div>
-            <div class="filter-row" id="filter-row">
-                <div class="filter-pill active" onclick="setFilter('playlist')">Playlists</div>
-                <div class="filter-pill" onclick="setFilter('artist')">Artists</div>
-                <div class="filter-pill" onclick="setFilter('album')">Albums</div>
-                <div class="filter-pill" onclick="setFilter('track')">Tracks</div>
-                <div class="filter-pill" id="filter-radio" onclick="setFilter('radio')" style="display:none">Radio</div>
-                <div class="filter-pill" id="filter-podcast" onclick="setFilter('podcast')" style="display:none">Podcasts</div>
-                <div class="filter-pill" id="filter-audiobook" onclick="setFilter('audiobook')" style="display:none">Audiobooks</div>
-                <div class="filter-pill" onclick="setFilter('all')">All</div>
-                <select id="provider-filter" class="mini-select" style="margin-left:auto; display:none; max-width:160px; background-color:var(--card);" onchange="doSearch()">
-                    <option value="all">All Providers</option>
-                </select>		
-            </div>
-            <div class="search-bar">
-                <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
-                <select id="limit" onchange="doSearch()">
-                    <option value="25" selected>25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-                <button class="primary" onclick="doSearch()">Go</button>
-            </div>
-        </div>
-        <div id="search-results" class="grid"></div>
-    </div>
-  
-    <div id="tab-custom" style="display:none">
-      <div class="card" style="margin-bottom: 20px; border-left: 3px solid #2ecc71;">
-          <h3 style="margin-top:0;">&#127760; Stream Custom URL</h3>
-          <div class="sub-head" style="margin-bottom:15px;">Inject a radio stream or file directly to a speaker.</div>
-          
-          <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:flex-end;">
-              <div style="flex: 2; min-width: 200px;">
-                  <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">STREAM URL</label>
-                  <input type="text" id="stream-url" placeholder="http://stream.radioparadise.com/aac-320" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
-              </div>
-              <div style="flex: 1; min-width: 150px;">
-                  <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">STATION NAME</label>
-                  <input type="text" id="stream-name" placeholder="Custom Station" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
-              </div>
-              <div style="flex-shrink: 0; padding-bottom: 1px;">
-				<button class="btn primary" onclick="playCustomStream()" style="padding: 9px 20px; margin: 0;">▶ STREAM NOW</button>
-              </div>
-          </div>
-      </div>
-      
-      <div class="section-title">Recent Unsaved Streams</div>
-      <div id="custom-history-results" class="grid">Loading...</div>
-  </div>
+    </main>
 </div>
-
 <div id="modal" class="modal">
   <div class="modal-content">
     <h3 style="margin-top:0;">Save to Library</h3>
@@ -491,28 +498,29 @@
 
   // --- TAB NAVIGATION ---
   // Handles switching between Library, Now Playing, Recents,Search, and custom views.
-  function switchTab(t) {
-      state.tab = t;
+  function switchTab(tabTarget) {
+      state.tab = tabTarget;
 
       // Hide all tabs
       ['library', 'nowplaying', 'recents', 'search', 'custom'].forEach(tab => {
-          document.getElementById('tab-' + tab).style.display = 'none';
+          document.querySelector(`[data-tab="${tab}"]`).style.display = 'none';
       });
 
       // Show active tab
-      document.getElementById('tab-' + t).style.display = 'block';
+      document.querySelector(`[data-tab="${tabTarget}"]`).style.display = 'block';
 
       // Update button active states
-      document.querySelectorAll('.nav-btn').forEach(b => {
-          if (b.dataset.tab === t)
-              b.classList.add('active');
-          else
-              b.classList.remove('active');
+      document.querySelectorAll(`[data-tab-target]`).forEach(button => {
+          if (button.dataset.tabTarget === tabTarget) {
+            button.classList.add('active');
+          } else {
+            button.classList.remove('active');
+          }
       });
 
       // Update Label UI (Changes color to indicate Now Playing mode)
       const label = document.getElementById('play-on-label');
-      if (t === 'nowplaying') {
+      if (tabTarget === 'nowplaying') {
           label.innerText = "Now Playing On:";
           label.style.color = "var(--accent)";
           startNpPolling();
@@ -523,11 +531,11 @@
       }
 
       // Refresh Data for specific tabs
-      if (t === 'library')
+      if (tabTarget === 'library')
           loadLibrary();
-      if (t === 'recents')
+      if (tabTarget === 'recents')
           loadRecents();
-      if (t === 'custom')
+      if (tabTarget === 'custom')
           loadCustomHistory();
   }
 
@@ -583,7 +591,7 @@
 
       const devices = await api('/api/status');
       if (Array.isArray(devices)) {
-          const device = devices.find(d => d.ip === targetIp);
+          const device = devices.find(device => device.ip === targetIp);
 
           if (device) {
               // ⏱️ ANCHOR LOGIC: Reset stopwatch if Bose pushes a new time OR the track changes!

@@ -10,10 +10,9 @@
 
 /* --- THE "SNAPPY" ENFORCER --- */
 
-button,
+
 .btn,
 .nav-link,
-.global-link,
 .filter-pill,
 .source-btn,
 .btn-preset,
@@ -241,10 +240,9 @@ body {
    3. SHARED COMPONENTS
    ========================================= */
 
-button,
+
 .btn,
 .nav-link,
-.global-link,
 .filter-pill,
 .source-btn,
 .btn-preset {
@@ -257,30 +255,7 @@ button,
 
 /* Explicitly set cards to default cursor */
 
-.card {
-  cursor: default;
-}
 
-.global-nav,
-.app-header {
-  display: flex;
-
-  justify-content: space-between;
-  align-items: center;
-
-  height: 80px;
-  padding: 15px 25px;
-
-  border: 1px solid var(--border);
-
-  border-radius: 12px;
-  margin-bottom: 20px;
-
-  background: var(--card);
-
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  backdrop-filter: blur(5px);
-}
 
 #tools-header {
   position: sticky;
@@ -344,7 +319,6 @@ button,
   }
 }
 
-.global-link,
 .nav-link {
     padding: 6px 14px;
 
@@ -365,13 +339,11 @@ button,
   cursor: pointer;
 }
 
-.global-link:hover,
 .nav-link:hover {
   color: var(--text);
   background: var(--nav-hover);
 }
 
-.global-link.active,
 .nav-link.active {
   border-color: rgba(46, 204, 113, 0.2);
 
@@ -505,7 +477,6 @@ option {
   background: var(--input-bg);
 }
 
-button,
 .btn {
   display: inline-flex;
 
@@ -527,7 +498,7 @@ button,
   cursor: pointer;
 }
 
-button:hover,
+
 .btn:hover {
   border-color: #999;
 
@@ -535,7 +506,7 @@ button:hover,
   background: var(--btn-hover-bg);
 }
 
-button.primary,
+
 .btn.primary {
   border: none;
 
@@ -545,7 +516,7 @@ button.primary,
   background: var(--accent);
 }
 
-button.primary:hover,
+
 .btn.primary:hover {
   opacity: 0.9;
 }
@@ -553,7 +524,6 @@ button.primary:hover,
 /* --- NEW: TACTILE CLICK FEEDBACK --- */
 /* Creates an instant "pushed down" effect when any button is clicked/tapped */
 
-button:active,
 .btn:active,
 .nav-btn:active,
 .source-btn:active,
@@ -1811,17 +1781,7 @@ Uses Variables for Theme Support #admin-grid textarea {
     padding: 15px !important;
   }
 
-  .app-header {
-    overflow: hidden;
 
-    flex-direction: column;
-    gap: 15px;
-
-    height: auto !important;
-    padding: 15px;
-
-    text-align: center;
-  }
 
   .global-nav-img {
     flex-direction: row;
@@ -1856,14 +1816,6 @@ Uses Variables for Theme Support #admin-grid textarea {
     gap: 6px !important;
   }
 
-  .app-header button.btn-help {
-    width: 100%;
-
-    padding: 10px;
-
-    margin-top: 0;
-  }
-
   .header-brand-stack {
     margin-right: 0 !important;
   }
@@ -1890,7 +1842,6 @@ Uses Variables for Theme Support #admin-grid textarea {
     display: none !important;
   }
 
-  .global-link,
   .nav-link {
     flex-grow: 1;
 

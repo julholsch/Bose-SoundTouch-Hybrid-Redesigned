@@ -593,7 +593,10 @@
                     ${isGroupMaster || isGroupMember ? `` : '<p class="speaker-controls-label">Join Zone</p>'}
                     <div class="speaker-controls">
                         <div class="custom-dropdown-wrapper">
-                            <select class="master-select" data-master-select="${d.ip}"></select>
+                            
+                            <select class="master-select" data-master-select="${d.ip}">
+                                
+                            </select>
                         </div>
                         <button data-master-button="${d.ip}" class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" onmousedown="joinMaster('${d.ip}')" ${dis(ui.joinDisabled)}>${syncText}</button>
                     </div>
@@ -913,8 +916,10 @@ async function populateJoinZoneDropdown(ip) {
         } else {
             masterSelect.disabled = false;
 
+            let optionsHtml = `<button> <selectedcontent></selectedcontent></button>`;
+
             const placeholderSelected = connectedMasterIp ? '' : 'selected';
-            let optionsHtml = `<option value="" disabled ${placeholderSelected}>Select Master</option>`;
+            optionsHtml += `<option value="" disabled ${placeholderSelected}>Select Master</option>`;
             
             availableTargets.forEach(target => {
                 const suffix = target.role === 'MASTER' ? ' (Master)' : '';
