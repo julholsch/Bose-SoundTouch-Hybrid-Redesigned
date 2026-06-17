@@ -32,259 +32,346 @@
 				</div>
 			</div>
 		</header>
-		<main class="tools">
-			<section id="system-and-guides" class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
-				<div class="card-grid">
-					<div class="inner-panel" >
-						<h3 class="inner-panel-heading">📖 Guides and Help</h3>
-						<div class="theme-and-guides">
-							<button class="btn-secondary" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
-							<button class="btn-secondary" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
+
+        <div class="nav-tabs manager-main-tabs">
+            <button class="nav-btn active" data-tab-btn="preferences" onclick="switchToolsTab('preferences')">Application Preferences</button>
+            <button class="nav-btn" data-tab-btn="services" onclick="switchToolsTab('services')">System Services & Tools</button>
+        </div>
+		
+
+		<div id="tab-preferences" data-tab-name="preferences" style="--card: var(--card-purple-tint);" class="tools-subpage">
+			<main class="tools">
+				<section id="app-preferences" class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
+					<div class="two-column-header">
+						<div class="card-header">
+							<h3 class="card-heading">⚙️ Application Preferences</h3>
+							<span class="card-sub-heading">Configure UI layouts and background automation rules.</span>
 						</div>
 					</div>
-					<div class="inner-panel" >
-						<h3 class="inner-panel-heading">ℹ️ System Inforamtion</h3>
-						<div class="badge-wrapper">
-							<div class="app-version-wrapper">
-								<div class="badge-pill">
-									<img src="images/hybrid_icon.png" alt="App">
-									<span id="badge-app-text">App ?</span> 
-								</div>
-								<div class="badge-pill">
-									<img src="images/ma_icon.png" alt="MASS">
-									<span id="badge-mass-text">MASS ?</span> 
-								</div>
-							</div>
-							<div id="tz-display" class="badge-pill">
-								🕒 TZ: Loading...
-							</div>
-							<button class="btn-secondary" onclick="toggleTheme()">🌓 Theme</button>
-
-						</div>
-					</div>
-
-				</div>
-			</section>
-
-			<section id="app-preferences" class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
-				<div class="two-column-header">
-					<div class="card-header">
-						<h3 class="card-heading">⚙️ Application Preferences</h3>
-						<span class="card-sub-heading">Configure UI layouts and background automation rules.</span>
-					</div>
-				</div>
-			
-				<div class="card-grid">
 				
-					<div class="inner-panel" >
-						<div>
-							<div class="inner-panel-heading">Search Menu Layout</div>
-							<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
-							<div id="sortable-list" class="sortable-list"></div>
-						</div>
-						<button class="btn-primary" onclick="saveSearchOrder()" style="--btn-bg-clr: var(--card-border-accent-clr);">💾 Save Layout Order</button>
-					</div>
-
-					<div class="inner-panel" >
-						<div>
-							<div class="inner-panel-heading">Background Automation</div>
-							<div class="inner-panel-sub-heading">Configure automated behaviors and sync rules.</div>
-							<div class="pref-grid">
-								<label class="pref-label"><input type="checkbox" id="pref_autoResume" class="pref-checkbox"> Auto-Resume Presets on Power On</label>
-								<label class="pref-label"><input type="checkbox" id="pref_autoRestart" class="pref-checkbox"> Auto-Reload DLNA & AirPlay on Connection Error</label>
-								<label class="pref-label"><input type="checkbox" id="pref_autoSync" class="pref-checkbox"> Auto-Sync Slave Volume on Grouping</label>
-								<label class="pref-label"><input type="checkbox" id="pref_mobileAutoSortSpeakers" class="pref-checkbox"> Auto-Sort Active Speakers (Mobile Only)</label>
-								<label class="pref-label"><input type="checkbox" id="pref_scheduledSpeakerAudit" class="pref-checkbox"> Enable 4:00 AM Speaker Audit</label>
-
-								<div>
-									<label class="pref-label">
-										<input type="checkbox" id="pref_scheduledRestart" class="pref-checkbox" onchange="handleScheduledRestartToggle()">
-										Enable 5:00 AM System Restart
-									</label>
-									<label class="pref-label pref-sub-label">
-										<input type="checkbox" id="pref_includeReboot" class="pref-checkbox" disabled> Include All Speaker Reboots
-									</label>						
-								</div>
-								<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta.</label>
-							</div>
-						</div>
-						<button class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
-					</div>
-				</div>
-			</section> 
-
-			<section id="system-services" class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
-				<div class="card-header">
-					<h3 class="card-heading">⚙️ System Services</h3>
-					<div class="card-sub-heading">Manage container instances and hardware injections.</div>
-				</div>
-				
-				<div class="card-grid">
-					<div class="inner-panel" >
-						<div class="inner-panel-heading">SoundTouch Hybrid Application</div>
-						<div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
-
-							<div class="warning-box-wrapper">
-								<div class="warning-box">
-									<label>
-										<input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
-										Force Pre-Flight NVRAM
-									</label>
-									<select id="forceSpeakerSelect" disabled>
-										<option value="all">All Speakers</option>
-									</select>
-								</div>
-
-								<div class="warning-box">
-									<label>
-										<input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
-										Force Speaker Reboot
-									</label>
-									<select id="forceRebootSelect" disabled>
-										<option value="all">All Speakers</option>
-									</select>
+					<div class="card-rows">
+						<div class="card-grid">
+							<div class="inner-panel" >
+								<h3 class="inner-panel-heading">📖 Guides and Help</h3>
+								<div class="theme-and-guides">
+									<button class="btn-secondary" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
+									<button class="btn-secondary" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
 								</div>
 							</div>
-							<button class="btn-primary"  onclick="restartHybrid(this)" style="--btn-bg-clr: var(--card-border-accent-clr)";>
-								<img src="images/hybrid_icon.png" alt="Icon">
-								Restart SoundTouch Hybrid
-							</button>
-						<button class="btn-primary" style="--btn-bg-clr: #3498db;" onclick="triggerManualAudit()">
-							🔍 Run Speaker Audit
-						</button>
-					</div>						
-					<div class="inner-panel" >
-						<div>
-							<div class="inner-panel-heading">Music Assistant Server</div>
-							<div class="inner-panel-sub-heading">
-								Send a non-destructive network ping, aggressively reload protocols (temporarily stops music), or restart the container.
+							<div class="inner-panel" >
+								<h3 class="inner-panel-heading">ℹ️ System Inforamtion</h3>
+								<div class="badge-wrapper">
+									<div class="app-version-wrapper">
+										<div class="badge-pill">
+											<img src="images/hybrid_icon.png" alt="App">
+											<span id="badge-app-text">App ?</span> 
+										</div>
+										<div class="badge-pill">
+											<img src="images/ma_icon.png" alt="MASS">
+											<span id="badge-mass-text">MASS ?</span> 
+										</div>
+									</div>
+									<div id="tz-display" class="badge-pill">
+										🕒 TZ: Loading...
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="inner-panel" >
+							<div>
+								<div class="inner-panel-heading">Search Menu Layout</div>
+								<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
+							</div>
+							<div id="sortable-list" class="sortable-list">
+
+							</div>
+							<div class="btn-in-columns">
+								<button class="btn-primary" onclick="saveSearchOrder()" style="--btn-bg-clr: var(--card-border-accent-clr);">💾 Save Layout Order</button>
+								<button class="btn-primary" style="--btn-bg-clr: #1abc9c;" onclick="refreshProvidersFromMass()">🔄 Refresh from MASS</button>
 							</div>
 						</div>
 
-						<button class="btn-primary" onclick="rescanMass(this)" style="--btn-bg-clr: #f39c12;">
-							🔄 Soft Rescan (Keep-Alive)
-						</button>
-						
-						<button class="btn-primary" onclick="aggressiveReloadMass(this)" style="--btn-bg-clr: #d35400;">
-							🚨 Aggressive Reload (DLNA & AirPlay)
-						</button>
-						
-						<button class="btn-primary" onclick="restartMass(this)" style="--btn-bg-clr:#e74c3c;">
-							<img src="images/ma_icon.png" alt="MA"> Restart MASS Container
-						</button>
-					</div>
-				</div>
-			</section>
-
-			<section id="server-log" class="tool-cards card" style="--card-border-accent-clr: #e74c3c;">
-				<div class="card-header toggable"  onclick="toggleLogWindow()">
-					<div class="card-heading-wrapper">
-						<h3 class="card-heading">🖥️ Live Server Logs</h3>
-						<span id="log-chevron">▼</span>
-					</div>
-					<div class="card-sub-heading">Captures the last 350 console events from the Node.js server.</div>
-				</div>			
-				<div id="log-container" class="inner-collapse-container">
-					<textarea id="live-log-viewer" class="console-preview" readonly></textarea>
-					
-					<div class="log-controls">
-						<button class="btn-secondary" onclick="fetchLogs()">🔄 Refresh</button>
-						
-						<label>
-							<input type="checkbox" class="pref-checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()"> 
-							Auto-Update
-						</label>
-						
-						<label>
-							<input type="checkbox" class="pref-checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()"> 
-							Verbose Debug
-						</label>
-						
-						<button class="btn-primary" style="--btn-bg-clr:#3498db;" onclick="downloadLogs()">💾 Download .txt</button>
-					</div>
-				</div>
-			</section>
-							
-			<section id="stereo-pairing" class="tool-cards card" style="--card-border-accent-clr: #f39c12;">
-				<div class="card-header" onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
-					<div class="card-heading-wrapper">
-						<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
-						<span id="log-chevron">▼</span>
-					</div>
-<!-- 					<div class="warning-box">
-						Beta: Need Testers I only have 1 ST10 so need testers to provide feedback on what works/broken/behaviors/downstream impacts et.
-					</div> -->
-					<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
-				</div>				
-				<div id="stereoPairingCollapse" class="inner-collapse-container">
-					<h4 class="container-heading">Active Combinations</h4>
-					<div class="active-pairs-wrapper">
-						<ul id="activeStereoPairsList">
-							<li class="no-active-pair-li-element">No active pairings found.</li>
-						</ul>
-						<span id="stereoPairCount">0 Pairs</span>
-					</div>
-
-					<hr class="separation-line">
-
-					<h4 class="container-heading">Create New Pair</h4>
-					<div class="pairing-setup-wrapper">
-						<div class="pairing-setup-column">
-							<label for="leftSpeakerSelect">LEFT CHANNEL</label>
-							<select id="leftSpeakerSelect">
-								<option value="" disabled selected>Select ST10...</option>
-							</select>
+						<div class="inner-panel" >
+							<div>
+								<div class="inner-panel-heading">Background Automation</div>
+								<div class="inner-panel-sub-heading">Configure automated behaviors and sync rules.</div>
+								
+								<label class="pref-label">
+									<input type="checkbox" id="pref_darkMode" class="pref-checkbox" onchange="toggleThemeFromPref(this)"> 🌓 Dark Mode
+								</label>
+								<hr class="separation-line">
+								<div class="pref-grid">
+									<!-- Frist column -->
+									<div class="pref-grid-column">
+										<label class="pref-label"><input type="checkbox" id="pref_autoResume" class="pref-checkbox"> Auto-Resume Presets on Power On</label>
+										<label class="pref-label"><input type="checkbox" id="pref_autoRestart" class="pref-checkbox"> Auto-Reload DLNA & AirPlay on Connection Error</label>
+										<label class="pref-label"><input type="checkbox" id="pref_autoSync" class="pref-checkbox"> Auto-Sync Slave Volume on Grouping</label>
+										<label class="pref-label"><input type="checkbox" id="pref_mobileAutoSortSpeakers" class="pref-checkbox"> Auto-Sort Active Speakers (Mobile Only)</label>
+									</div>
+									<!-- Second column -->
+									<div class="pref-grid-column">
+										<label class="pref-label">
+											<input type="checkbox" id="pref_scheduledSpeakerAudit" class="pref-checkbox" onchange="handleAuditToggle()">
+											Enable Speaker Audit at
+											<select id="pref_scheduledAuditHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:2px 4px; border-radius:4px; font-size:0.9em; width:auto;" disabled></select>
+										</label>
+										<div>
+											<label class="pref-label">
+												<input type="checkbox" id="pref_scheduledRestart" class="pref-checkbox" onchange="handleScheduledRestartToggle()">
+												Enable System Restart at
+												<select id="pref_scheduledRestartHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:2px 4px; border-radius:4px; font-size:0.9em; width:auto;" disabled></select>
+											</label>
+											<label class="pref-label pref-sub-label">
+												<input type="checkbox" id="pref_includeReboot" class="pref-checkbox" disabled> Include All Speaker Reboots
+											</label>						
+										</div>
+									</div>
+									<!-- Third column -->
+									<div class="pref-grid-column">
+										<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta</label>
+										<label class="pref-label" style="opacity: 0.4; pointer-events: none;"><input type="checkbox" id="pref_doubleTapPresets" class="pref-checkbox" disabled> Enable Double Tap Extended Presets</label>
+										<label class="pref-label" style="opacity: 0.4; pointer-events: none;"><input type="checkbox" id="pref_remoteControlHijack" class="pref-checkbox" disabled> Enable Remote Control Hijack</label>
+									</div>
+								</div>
+								<hr class="separation-line">
+							</div>
+							<div class="btn-in-columns">
+								<button class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
+							</div>
 						</div>
-						<div class="pairing-setup-column">
-							<label for="rightSpeakerSelect">RIGHT CHANNEL</label>
-							<select id="rightSpeakerSelect">
-								<option value="" disabled selected>Select ST10...</option>
-							</select>
-						</div>
-						<div class="pairing-setup-column">
-							<label for="pairNameInput">PAIR NAME</label>
-							<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo">
-						</div>
-						<button id="saveStereoPairBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)">
-							💾 Save Pair
-						</button>
+					</div>
+				</section> 
 
-					</div>
-				</div>
-			</section>
 
-			<section id="Wi-Fi-Setting" class="tool-cards card" style="--card-border-accent-clr: #1abc9c;">
-				<div class="card-header"  onclick="toggleWifiWindow()">
-					<div class="card-heading-wrapper">
-						<h3 class="card-heading">📶 Wi-Fi Provisioning</h3>
-						<span id="wifi-chevron">▼</span>
-					</div>
-					<div class="card-sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
-				</div>				
-				<div id="wifi-container" class="inner-collapse-container">
-					<div class="warning-box">
-						<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
-					</div>
-					<div class="stream-grid">
-						<div>
-							<label>NETWORK NAME (SSID)</label>
-							<input type="text" id="wifi-ssid" placeholder="My Home Wi-Fi">
+								
+				<section id="stereo-pairing" class="tool-cards card" data-accordion="stereo-pairing" style="--card-border-accent-clr: #f39c12;">
+					<div class="card-header toggable" onclick="toggleAccordion('stereo-pairing')">
+						<div class="card-heading-wrapper">
+							<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
+							<span id="stereoPairCount" class="tool-info-badge">0 Pairs</span>
+							<span id="log-chevron" class="chevron">▼</span>
 						</div>
-						<div>
-							<label>PASSWORD</label>
-							<input type="text" id="wifi-pass" placeholder="My Wi-Fi Password">
-						</div>
+						<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
 					</div>				
-					<div class="stream-controls">
-						<div>
-							<label>Target:</label>
-							<select id="wifi-target"></select>
+					<div id="stereoPairingCollapse" class="inner-collapse-container">
+						<h4 class="container-heading">Active Combinations</h4>
+						<div class="active-pairs-wrapper">
+							<ul id="activeStereoPairsList">
+								<li class="no-active-pair-li-element">No active pairings found.</li>
+							</ul>
 						</div>
-						<button class="btn-primary" onclick="pushWifi(this)" style="--btn-bg-clr: var(--card-border-accent-clr)">📡 PUSH WI-FI</button>
+
+						<hr class="separation-line">
+
+						<h4 class="container-heading">Create New Pair</h4>
+						<div class="pairing-setup-wrapper">
+							<div class="pairing-setup-column">
+								<label for="leftSpeakerSelect">LEFT CHANNEL</label>
+								<select id="leftSpeakerSelect">
+									<option value="" disabled selected>Select ST10...</option>
+								</select>
+							</div>
+							<div class="pairing-setup-column">
+								<label for="rightSpeakerSelect">RIGHT CHANNEL</label>
+								<select id="rightSpeakerSelect">
+									<option value="" disabled selected>Select ST10...</option>
+								</select>
+							</div>
+							<div class="pairing-setup-column">
+								<label for="pairNameInput">PAIR NAME</label>
+								<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo">
+							</div>
+							<button id="saveStereoPairBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)">
+								💾 Save Pair
+							</button>
+
+						</div>
 					</div>
-				</div>
-			</section>
-		</main>
+				</section>
+
+				<!-- ⏰ Scheduled Play Card -->
+				<section class="card" data-accordion="scheduled-play" style="--card-border-accent-clr: var(--accent-teal);">
+					<div class="card-header toggable" onclick="toggleAccordion('scheduled-play')">
+						<div class="card-heading-wrapper">
+							<h3 class="card-heading">⏰ Scheduled Play</h3>
+							<span id="scheduledPlayCount" class="tool-info-badge">0 Schedules</span>
+							<span id="log-chevron" class="chevron">▼</span>
+						</div>
+						<div class="card-sub-heading">Automatically trigger a speaker preset at a set time every day.</div>
+					</div>
+					
+					<div id="scheduledPlaysCollapse" class="inner-collapse-container">
+						<ul id="scheduledPlaysList" style="list-style: none; padding: 0; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+							<li id="scheduledPlaysEmpty" style="padding: 10px; background: var(--input-bg); color: var(--text-secondary); font-style: italic;">No scheduled plays configured.</li>
+						</ul>
+
+						<div style="display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap;">
+							<div style="flex-grow: 1; min-width: 150px;">
+								<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">SPEAKER</label>
+								<select id="newPlaySpeaker" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+									<option value="" disabled selected>Select speaker...</option>
+								</select>
+							</div>
+							<div>
+								<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">PRESET</label>
+								<select id="newPlayPreset" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+								</select>
+							</div>
+							<div>
+								<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">TIME</label>
+								<div style="display:flex; gap:5px; align-items:center;">
+									<select id="newPlayHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+										<option value="" disabled selected>HH</option>
+									</select>
+									<select id="newPlayMinute" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+										<option value="" disabled selected>MM</option>
+									</select>
+								</div>
+							</div>
+							<div>
+								<button id="addScheduledPlayBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)" onclick="addScheduledPlay()">
+									➕ Add
+								</button>
+							</div>
+						</div>
+					</div>
+				</section>
+
+			</main>
+		</div>
+		<div id="tab-services" data-tab-name="services" class="tools-subpage" style="display:none; --card: var(--card-green-tint);">
+			<main class="tools">
+				<section id="system-services" class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
+					<div class="card-header">
+						<h3 class="card-heading">⚙️ System Services</h3>
+						<div class="card-sub-heading">Manage container instances and hardware injections.</div>
+					</div>
+					
+					<div class="card-grid">
+						<div class="inner-panel" >
+							<div class="inner-panel-heading">SoundTouch Hybrid Application</div>
+							<div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
+
+								<div class="warning-box-wrapper">
+									<div class="warning-box">
+										<label>
+											<input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+											Force Pre-Flight NVRAM
+										</label>
+										<select id="forceSpeakerSelect" disabled>
+											<option value="all">All Speakers</option>
+										</select>
+									</div>
+
+									<div class="warning-box">
+										<label>
+											<input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+											Force Speaker Reboot
+										</label>
+										<select id="forceRebootSelect" disabled>
+											<option value="all">All Speakers</option>
+										</select>
+									</div>
+								</div>
+								<button class="btn-primary"  onclick="restartHybrid(this)" style="--btn-bg-clr: var(--card-border-accent-clr)";>
+									<img src="images/hybrid_icon.png" alt="Icon">
+									Restart SoundTouch Hybrid
+								</button>
+							<button class="btn-primary" style="--btn-bg-clr: #3498db;" onclick="triggerManualAudit()">
+								🔍 Run Speaker Audit
+							</button>
+						</div>						
+						<div class="inner-panel" >
+							<div>
+								<div class="inner-panel-heading">Music Assistant Server</div>
+								<div class="inner-panel-sub-heading">
+									Send a non-destructive network ping, aggressively reload protocols (temporarily stops music), or restart the container.
+								</div>
+							</div>
+
+							<button class="btn-primary" onclick="rescanMass(this)" style="--btn-bg-clr: #f39c12;">
+								🔄 Soft Rescan (Keep-Alive)
+							</button>
+							
+							<button class="btn-primary" onclick="aggressiveReloadMass(this)" style="--btn-bg-clr: #d35400;">
+								🚨 Aggressive Reload (DLNA & AirPlay)
+							</button>
+							
+							<button class="btn-primary" onclick="restartMass(this)" style="--btn-bg-clr:#e74c3c;">
+								<img src="images/ma_icon.png" alt="MA"> Restart MASS Container
+							</button>
+						</div>
+					</div>
+				</section>
+
+				<section id="server-log" class="tool-cards card" data-accordion="server-log" style="--card-border-accent-clr: #e74c3c;">
+					<div class="card-header toggable"  onclick="toggleAccordion('server-log')">
+						<div class="card-heading-wrapper">
+							<h3 class="card-heading">🖥️ Live Server Logs</h3>
+							<span id="log-chevron" class="chevron">▼</span>
+						</div>
+						<div class="card-sub-heading">Captures the last 350 console events from the Node.js server.</div>
+					</div>			
+					<div id="log-container" class="inner-collapse-container">
+						<textarea id="live-log-viewer" class="console-preview" readonly></textarea>
+						
+						<div class="log-controls">
+							<button class="btn-secondary" onclick="fetchLogs()">🔄 Refresh</button>
+							
+							<label>
+								<input type="checkbox" class="pref-checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()"> 
+								Auto-Update
+							</label>
+							
+							<label>
+								<input type="checkbox" class="pref-checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()"> 
+								Verbose Debug
+							</label>
+							
+							<button class="btn-primary" style="--btn-bg-clr:#3498db;" onclick="downloadLogs()">💾 Download .txt</button>
+						</div>
+					</div>
+				</section>
+				<section id="Wi-Fi-Setting" class="tool-cards card" data-accordion="Wi-Fi-Setting" style="--card-border-accent-clr: #1abc9c;">
+					<div class="card-header toggable"  onclick="toggleAccordion('Wi-Fi-Setting')">
+						<div class="card-heading-wrapper">
+							<h3 class="card-heading">📶 Wi-Fi Provisioning</h3>
+							<span id="wifi-chevron" class="chevron">▼</span>
+						</div>
+						<div class="card-sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
+					</div>				
+					<div id="wifi-container" class="inner-collapse-container">
+						<div class="warning-box">
+							<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
+						</div>
+						<div class="stream-grid">
+							<div>
+								<label>NETWORK NAME (SSID)</label>
+								<input type="text" id="wifi-ssid" placeholder="My Home Wi-Fi">
+							</div>
+							<div>
+								<label>PASSWORD</label>
+								<input type="text" id="wifi-pass" placeholder="My Wi-Fi Password">
+							</div>
+						</div>				
+						<div class="stream-controls">
+							<div>
+								<label>Target:</label>
+								<select id="wifi-target"></select>
+							</div>
+							<button class="btn-primary" onclick="pushWifi(this)" style="--btn-bg-clr: var(--card-border-accent-clr)">📡 PUSH WI-FI</button>
+						</div>
+					</div>
+				</section>
+			</main>
+		</div>
 	</div>
 
 
@@ -397,30 +484,99 @@
 		</div>
 	</div>
 
+
+
 	<script>
 		const SERVER_URL = window.location.protocol + "//" + window.location.host;
 
-		// Handles programmatic unchecking and UI state rendering safely
-		function handleScheduledRestartToggle() {
-			const parentCheck = document.getElementById('pref_scheduledRestart');
-			const childCheck = document.getElementById('pref_includeReboot');
+		function switchToolsTab(tabName) {
+		    document.querySelectorAll('[data-tab-name]').forEach(panel => {
+		        panel.style.display = panel.getAttribute("data-tab-name") === `${tabName}` ? 'block' : 'none';
+		    });
+		    document.querySelectorAll('[data-tab-btn]').forEach(btn => {
+		        btn.classList.toggle('active', btn.getAttribute('data-tab-btn') === tabName);
+		    });
+		}
 
-			if (parentCheck && childCheck) {
-				childCheck.disabled = !parentCheck.checked;
-				if (!parentCheck.checked) {
-					childCheck.checked = false;
-				}
-			}
+
+
+		function hourOptions(selectedHour) {
+		    return Array.from({ length: 24 }, (_, h) => {
+		        const label = h.toString().padStart(2, '0') + ':00';
+		        return `<option value="${h}"${h === selectedHour ? ' selected' : ''}>${label}</option>`;
+		    }).join('');
+		}
+
+		function populatePlayTimeSelect() {
+		    const hourSel = document.getElementById('newPlayHour');
+		    const minSel  = document.getElementById('newPlayMinute');
+		    if (!hourSel || !minSel) return;
+		    const hourOpts = ['<option value="" disabled selected>HH</option>'];
+		    for (let h = 0; h < 24; h++) {
+		        hourOpts.push(`<option value="${h}">${h.toString().padStart(2, '0')}</option>`);
+		    }
+		    hourSel.innerHTML = hourOpts.join('');
+		    const minOpts = ['<option value="" disabled selected>MM</option>'];
+		    for (let m = 0; m < 60; m += 5) {
+		        minOpts.push(`<option value="${m}">${m.toString().padStart(2, '0')}</option>`);
+		    }
+		    minSel.innerHTML = minOpts.join('');
+		}
+
+		function populateHourSelects() {
+		    const auditSel   = document.getElementById('pref_scheduledAuditHour');
+		    const restartSel = document.getElementById('pref_scheduledRestartHour');
+		    const ah = fullSettingsPayload.scheduledAuditHour   ?? 2;
+		    const rh = fullSettingsPayload.scheduledRestartHour ?? 3;
+		    if (auditSel)   auditSel.innerHTML   = hourOptions(ah);
+		    if (restartSel) restartSel.innerHTML = hourOptions(rh);
+		}
+
+		// Handles programmatic unchecking and UI state rendering safely
+		function handleAuditToggle() {
+		    const check = document.getElementById('pref_scheduledSpeakerAudit');
+		    const sel   = document.getElementById('pref_scheduledAuditHour');
+		    if (check && sel) sel.disabled = !check.checked;
+		}
+
+		function handleScheduledRestartToggle() {
+		    const parentCheck = document.getElementById('pref_scheduledRestart');
+		    const childCheck  = document.getElementById('pref_includeReboot');
+		    const restartSel  = document.getElementById('pref_scheduledRestartHour');
+
+		    if (parentCheck && childCheck) {
+		        childCheck.disabled = !parentCheck.checked;
+		        if (!parentCheck.checked) childCheck.checked = false;
+		    }
+		    if (parentCheck && restartSel) restartSel.disabled = !parentCheck.checked;
 		}
 
 		// --- GLOBAL SETTINGS LOGIC ---
 		let currentSearchOrder = [];
-		let fullSettingsPayload = {}; // Hold the full JSON so we don't overwrite checkboxes
-		const SOURCE_NAMES = {
-			'spotify': 'Spotify',
-			'radio': 'Radio',
-			'nas': 'Local NAS',
-			'global': 'Global'
+		let fullSettingsPayload = {};
+
+		// Known local icons — these always win over MASS-provided icons
+		const KNOWN_LOCAL_ICONS = {
+		    'global':           null,
+		    'spotify':          '/images/spotify_icon.png',
+		    'tunein':           '/images/TuneIn_icon.png',
+		    'filesystem_local': '/images/nas_icon.png',
+		    'file':             '/images/nas_icon.png'
+		};
+
+		// Radio providers whose domain name doesn't contain the word "radio"
+		// Update this list as new radio-only providers are discovered in MASS
+		const RADIO_PROVIDER_DOMAINS = new Set(['tunein', 'siriusxm', 'somafm']);
+
+		function getSourceType(domain) {
+		    if (domain === 'global') return 'global';
+		    return (RADIO_PROVIDER_DOMAINS.has(domain) || domain.includes('radio')) ? 'radio' : 'music';
+		}
+
+		// Legacy key remapping (old synthetic keys → real MASS domain keys)
+		const LEGACY_KEY_MAP = {
+		    'radio': 'tunein',
+		    'nas':   'filesystem_local'
 		};
 
 		// 1. Fetch from Server
@@ -430,9 +586,19 @@
 				if (res.ok) {
 					fullSettingsPayload = await res.json();
 
-					// Load Menu Order
-					currentSearchOrder = fullSettingsPayload.searchMenuOrder || ['global', 'radio', 'nas', 'spotify'];
-					renderSortableList();
+		            // Load Menu Order — migrate legacy string array if server hasn't done it yet
+		            let raw = fullSettingsPayload.searchMenuOrder || [];
+		            if (raw.length > 0 && typeof raw[0] === 'string') {
+		                raw = raw.map(legacyKey => ({
+		                    key:        LEGACY_KEY_MAP[legacyKey] || legacyKey,
+		                    name:       { global: 'Global', radio: 'TuneIn Radio', nas: 'Local NAS', spotify: 'Spotify' }[legacyKey] || legacyKey,
+		                    icon:       KNOWN_LOCAL_ICONS[LEGACY_KEY_MAP[legacyKey] || legacyKey] || null,
+		                    enabled:    true,
+		                    sourceType: legacyKey === 'radio' ? 'radio' : legacyKey === 'global' ? 'global' : 'music'
+		                }));
+		            }
+		            currentSearchOrder = raw;
+		            renderSortableList();
 
 					// Load Checkboxes
 					document.getElementById('pref_autoResume').checked = fullSettingsPayload.autoResumePreset === true;
@@ -446,7 +612,16 @@
 					subReboot.disabled = !fullSettingsPayload.scheduledRestart;
 					document.getElementById('pref_bypassCloudEmulation').checked = fullSettingsPayload.bypassCloudEmulation === true;
 
-				}
+		            // Hour selects — populate after fullSettingsPayload is set
+		            populateHourSelects();
+		            const auditSel   = document.getElementById('pref_scheduledAuditHour');
+		            const restartSel = document.getElementById('pref_scheduledRestartHour');
+		            if (auditSel)   auditSel.disabled   = !fullSettingsPayload.scheduledSpeakerAudit;
+		            if (restartSel) restartSel.disabled = !fullSettingsPayload.scheduledRestart;
+
+		            // Re-render scheduled plays now that settings are loaded
+		            renderScheduledPlays();
+		        }
 			} catch (e) {
 				console.error("Failed to load settings from server", e);
 			}
@@ -455,26 +630,39 @@
 		// Draw the drag-and-drop list
 		function renderSortableList() {
 			const container = document.getElementById('sortable-list');
-			container.style.flexDirection = 'row';
-			container.style.flexWrap = 'wrap';
 
-			container.innerHTML = currentSearchOrder.map((key, index) => `
-			<div class="sortable-list-item">
-				<span">${SOURCE_NAMES[key]}</span>
-				<div>
-					<button class="btn-sm" onclick="moveItem(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.2"' : ''}>◀</button>
-					<button class="btn-sm" onclick="moveItem(${index}, 1)" ${index === currentSearchOrder.length - 1 ? 'disabled style="opacity:0.2"' : ''}>▶</button>
+		    container.innerHTML = currentSearchOrder.map((entry, index) => {
+		        const isGlobal = entry.key === 'global';
+		        const isHidden = !entry.enabled;
+		        const iconHtml = entry.key === 'global'
+		            ? `<span>🌍</span>`
+		            : `<img src="${entry.icon || '/images/ma_icon.png'}" onerror="this.src='/images/ma_icon.png'">`;
+
+		        return `
+			<div class="sortable-list-item ${isHidden ? 'hidden' : ''}">
+			    ${!isGlobal ? `<button class="hide-icon" onclick="toggleHideEntry(${index})" title="${isHidden ? 'Show on library page' : 'Hide from library page'}">${isHidden ? '👁' : '✕'}</button>` : ''}
+				<div class="source-icon">${iconHtml}</div>
+				<span class="sortable-list-title" title="${entry.name}">${entry.name}</span>
+				<div class="sortable-list-btn-wrapper">
+					<button class="btn-sm ${index === 0 ? 'hidden" disabled' : '"'} onclick="moveItem(${index}, -1)" >◀</button>
+					<button class="btn-sm ${index === currentSearchOrder.length - 1 ? 'hidden" disabled' : '"'} onclick="moveItem(${index}, 1)" >▶</button>
 				</div>
 			</div>
-			`).join('');
+			`}).join('');
 		}
 
 		function moveItem(index, direction) {
 			const newIndex = index + direction;
+		    if (newIndex < 0 || newIndex >= currentSearchOrder.length) return;
 			const temp = currentSearchOrder[index];
 			currentSearchOrder[index] = currentSearchOrder[newIndex];
 			currentSearchOrder[newIndex] = temp;
 			renderSortableList(); 
+		}
+
+		function toggleHideEntry(index) {
+		    currentSearchOrder[index].enabled = !currentSearchOrder[index].enabled;
+		    renderSortableList();
 		}
 
 		// 2. Save Menu Order
@@ -483,16 +671,93 @@
 			await pushSettingsToServer("✅ Menu order synchronized across all devices!");
 		}
 
+		// 3. Refresh provider tabs from Music Assistant
+		async function refreshProvidersFromMass() {
+		    const btn = event.currentTarget;
+		    const orig = btn.innerHTML;
+		    btn.innerHTML = '⏳ Fetching...';
+		    btn.disabled = true;
+
+		    try {
+		        const res = await fetch('/api/manager/providers');
+		        if (!res.ok) throw new Error('Server error');
+		        const massProviders = await res.json();
+
+		        const added = [];
+		        const updated = [];
+		        const removed = [];
+
+		        // Find entries in current list that are no longer in MASS (excluding global)
+		        currentSearchOrder.forEach(entry => {
+		            if (entry.key === 'global') return;
+		            const stillExists = massProviders.some(p => p.domain === entry.key);
+		            if (!stillExists) removed.push(entry.name);
+		        });
+
+		        // Remove deleted providers
+		        currentSearchOrder = currentSearchOrder.filter(entry => {
+		            if (entry.key === 'global') return true;
+		            return massProviders.some(p => p.domain === entry.key);
+		        });
+
+		        // Add new or update existing
+		        massProviders.forEach(p => {
+		            const existingIndex = currentSearchOrder.findIndex(e => e.key === p.domain);
+		            const localIcon = KNOWN_LOCAL_ICONS[p.domain] || null;
+		            const resolvedIcon = localIcon || p.icon || null;
+
+		            if (existingIndex >= 0) {
+		                // Update name and icon only — preserve enabled state and position
+		                const prev = currentSearchOrder[existingIndex];
+		                if (prev.name !== p.name || prev.icon !== resolvedIcon) {
+		                    currentSearchOrder[existingIndex].name = p.name;
+		                    currentSearchOrder[existingIndex].icon = resolvedIcon;
+		                    updated.push(p.name);
+		                }
+		            } else {
+		                // New provider — append to far right
+		                currentSearchOrder.push({
+		                    key:        p.domain,
+		                    name:       p.name,
+		                    icon:       resolvedIcon,
+		                    enabled:    true,
+		                    sourceType: getSourceType(p.domain)
+		                });
+		                added.push(p.name);
+		            }
+		        });
+
+		        renderSortableList();
+
+		        // Build summary
+		        const parts = [];
+		        if (added.length)   parts.push(`✅ Added: ${added.join(', ')}`);
+		        if (updated.length) parts.push(`🔄 Updated: ${updated.join(', ')}`);
+		        if (removed.length) parts.push(`🗑️ Removed: ${removed.join(', ')}`);
+		        const summary = parts.length ? parts.join('\n') : 'No changes — your tab list is already up to date.';
+
+		        alert(`MASS Provider Sync Complete\n\n${summary}\n\nClick "💾 Save Layout" to apply these changes.`);
+
+		    } catch (e) {
+		        alert('❌ Could not reach Music Assistant. Check that MASS is running and try again.');
+		    }
+
+		    btn.innerHTML = orig;
+		    btn.disabled = false;
+		}
+
 		// 3. Save Checkboxes
 		async function savePreferences() {
-			fullSettingsPayload.autoResumePreset = document.getElementById('pref_autoResume').checked;
-			fullSettingsPayload.autoRestartMass = document.getElementById('pref_autoRestart').checked;
-			fullSettingsPayload.autoSyncVolume = document.getElementById('pref_autoSync').checked;
-			fullSettingsPayload.mobileAutoSortSpeakers = document.getElementById('pref_mobileAutoSortSpeakers').checked;
-			fullSettingsPayload.scheduledSpeakerAudit = document.getElementById('pref_scheduledSpeakerAudit').checked;
-			fullSettingsPayload.scheduledRestart = document.getElementById('pref_scheduledRestart').checked;
-			fullSettingsPayload.includeReboot = document.getElementById('pref_includeReboot').checked;
-			fullSettingsPayload.bypassCloudEmulation = document.getElementById('pref_bypassCloudEmulation').checked;
+		    fullSettingsPayload.autoResumePreset = document.getElementById('pref_autoResume').checked;
+		    fullSettingsPayload.autoRestartMass = document.getElementById('pref_autoRestart').checked;
+		    fullSettingsPayload.autoSyncVolume = document.getElementById('pref_autoSync').checked;
+		    fullSettingsPayload.mobileAutoSortSpeakers = document.getElementById('pref_mobileAutoSortSpeakers').checked;
+		    fullSettingsPayload.scheduledSpeakerAudit  = document.getElementById('pref_scheduledSpeakerAudit').checked;
+		    fullSettingsPayload.scheduledAuditHour    = parseInt(document.getElementById('pref_scheduledAuditHour').value, 10);
+		    fullSettingsPayload.scheduledRestart      = document.getElementById('pref_scheduledRestart').checked;
+		    fullSettingsPayload.scheduledRestartHour  = parseInt(document.getElementById('pref_scheduledRestartHour').value, 10);
+		    fullSettingsPayload.includeReboot         = document.getElementById('pref_includeReboot').checked;
+		    fullSettingsPayload.bypassCloudEmulation  = document.getElementById('pref_bypassCloudEmulation').checked;
 			await pushSettingsToServer("✅ Preferences saved successfully!");
 		}
 
@@ -532,15 +797,19 @@
 
 		// Load config and sync backend states when tools page opens
 		window.addEventListener('DOMContentLoaded', () => {
-			loadConfig();
-			syncDebugToggle();
-			//fetchLogs(); only needed if log view defaults to open
+		    loadConfig();
+		    syncDebugToggle();
+		    populatePlayTimeSelect();
+		    // Init Dark Mode checkbox from localStorage
+		    const darkCheck = document.getElementById('pref_darkMode');
+		    if (darkCheck) darkCheck.checked = (localStorage.getItem('theme') !== 'light');
+		    //fetchLogs(); only needed if log view defaults to open
 		});
 
-		function toggleTheme() {
-			document.body.classList.toggle('light-mode');
-			const isLight = document.body.classList.contains('light-mode');
-			localStorage.setItem('theme', isLight ? 'light' : 'dark');
+		function toggleThemeFromPref(checkbox) {
+		    const isDark = checkbox.checked;
+		    document.body.classList.toggle('light-mode', !isDark);
+		    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 		}
 
 		if (localStorage.getItem('theme') === 'light')
@@ -600,27 +869,6 @@
 		}
 		let liveLogTimer = null;
 
-		function toggleLogWindow() {
-			const container = document.getElementById('log-container');
-			const chevron = document.getElementById('log-chevron');
-
-			if (container.style.display === 'none') {
-				// Open the window
-				container.style.display = 'flex';
-				chevron.innerText = '▲';
-				fetchLogs(); // Fetch immediately on open
-
-				// Start interval if checkbox is checked
-				if (document.getElementById('auto-refresh-toggle').checked) {
-					liveLogTimer = setInterval(fetchLogs, 2000);
-				}
-			} else {
-				// Close the window & stop fetching to save resources
-				container.style.display = 'none';
-				chevron.innerText = '▼';
-				clearInterval(liveLogTimer);
-			}
-		}
 
 		function toggleAutoRefresh() {
 			const isChecked = document.getElementById('auto-refresh-toggle').checked;
@@ -649,17 +897,153 @@
 			}
 		}
 
-		function toggleWifiWindow() {
-			const container = document.getElementById('wifi-container');
-			const chevron = document.getElementById('wifi-chevron');
-			if (container.style.display === 'none') {
-				container.style.display = 'block';
-				chevron.innerText = '▲';
+
+		function toggleAccordion(triggerTarget) {
+			const accordion = document.querySelector(`[data-accordion="${triggerTarget}"]`);	
+
+
+			if (accordion.classList.contains('open')) {
+				accordion.classList.remove('open');
+
+				if (accordion.id === "server-log") {
+					clearInterval(liveLogTimer);
+				}
 			} else {
-				container.style.display = 'none';
-				chevron.innerText = '▼';
+				accordion.classList.add('open');
+				if (accordion.id === "server-log") {
+					fetchLogs(); // Fetch immediately on open
+
+					// Start interval if checkbox is checked
+					if (document.getElementById('auto-refresh-toggle').checked) {
+						liveLogTimer = setInterval(fetchLogs, 2000);
+					}
+				}
 			}
 		}
+
+
+		// =====================================================================
+		// SCHEDULED PLAY — CRUD
+		// =====================================================================
+		let scheduledPlaysDevices = [];
+
+		function initScheduledPlays(devices) {
+		    scheduledPlaysDevices = Array.isArray(devices) ? devices.filter(d => d.online) : [];
+		    renderScheduledPlays();
+		    updateNewPlaySpeakerOptions();
+		}
+
+		function renderScheduledPlays() {
+		    const list   = document.getElementById('scheduledPlaysList');
+		    const empty  = document.getElementById('scheduledPlaysEmpty');
+		    const badge  = document.getElementById('scheduledPlayCount');
+		    const plays  = Array.isArray(fullSettingsPayload.scheduledPlays) ? fullSettingsPayload.scheduledPlays : [];
+		    const usedIps = new Set(plays.map(p => p.speakerIp));
+
+		    if (badge) badge.textContent = `${plays.length} Schedule${plays.length !== 1 ? 's' : ''}`;
+		    if (!list) return;
+
+		    // Clear existing rows (keep the empty placeholder node)
+		    [...list.querySelectorAll('li.sp-row')].forEach(el => el.remove());
+
+		    if (plays.length === 0) {
+		        if (empty) empty.style.display = '';
+		        return;
+		    }
+		    if (empty) empty.style.display = 'none';
+
+		    plays.forEach((play, idx) => {
+		        const li = document.createElement('li');
+		        li.className = 'sp-row';
+		        li.style.cssText = 'display:flex; align-items:center; gap:10px; padding:10px; background:var(--input-bg); border-bottom:1px solid var(--border); flex-wrap:wrap;';
+
+		        // Speaker label
+		        const dev = scheduledPlaysDevices.find(d => d.ip === play.speakerIp);
+		        const spLabel = dev ? `${dev.name} (${play.speakerIp})` : play.speakerIp;
+
+		        const h = play.hour ?? 0;
+		        const m = play.minute ?? 0;
+		        const ampm = h < 12 ? 'AM' : 'PM';
+		        const h12  = h % 12 || 12;
+		        const timeLabel = `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+
+		        li.innerHTML = `
+		            <span style="color:var(--text); font-weight:bold; white-space:nowrap;">${timeLabel} — Preset ${play.preset} — ${spLabel}</span>
+		            <span style="flex-grow:1;"></span>
+		            <button onclick="removeScheduledPlay(${idx})" style="background:var(--danger); color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">✕</button>
+		        `;
+		        list.appendChild(li);
+		    });
+
+		    updateNewPlaySpeakerOptions();
+		}
+
+		function updateNewPlaySpeakerOptions() {
+		    const sel    = document.getElementById('newPlaySpeaker');
+		    const addBtn = document.getElementById('addScheduledPlayBtn');
+		    if (!sel) return;
+
+		    const plays   = Array.isArray(fullSettingsPayload.scheduledPlays) ? fullSettingsPayload.scheduledPlays : [];
+		    const usedIps = new Set(plays.map(p => p.speakerIp));
+
+		    const available = scheduledPlaysDevices.filter(d => !usedIps.has(d.ip));
+		    sel.innerHTML = '<option value="" disabled selected>Select speaker...</option>' +
+		        scheduledPlaysDevices.map(d => {
+		            const used = usedIps.has(d.ip);
+		            return `<option value="${d.ip}" ${used ? 'disabled style="color:var(--text-secondary);"' : ''}>${d.name} (${d.ip})${used ? ' — Scheduled' : ''}</option>`;
+		        }).join('');
+
+		    if (addBtn) addBtn.disabled = available.length === 0;
+		}
+
+		async function addScheduledPlay() {
+		    const hourSel    = document.getElementById('newPlayHour');
+		    const minSel     = document.getElementById('newPlayMinute');
+		    const speakerSel = document.getElementById('newPlaySpeaker');
+		    const presetSel  = document.getElementById('newPlayPreset');
+
+		    const hVal   = hourSel?.value;
+		    const mVal   = minSel?.value;
+		    const ip     = speakerSel?.value;
+		    const preset = parseInt(presetSel?.value || '1', 10);
+
+		    if (hVal === '' || hVal == null || mVal === '' || mVal == null || !ip) return alert('Please select a time and a speaker.');
+
+		    const h = parseInt(hVal, 10);
+		    const m = parseInt(mVal, 10);
+
+		    if (!fullSettingsPayload.scheduledPlays) fullSettingsPayload.scheduledPlays = [];
+		    fullSettingsPayload.scheduledPlays.push({ speakerIp: ip, preset, hour: h, minute: m });
+
+		    // Reset add-row
+		    hourSel.selectedIndex = 0;
+		    minSel.selectedIndex  = 0;
+		    speakerSel.value = '';
+
+		    renderScheduledPlays();
+		    await saveScheduledPlays();
+		}
+
+		async function removeScheduledPlay(index) {
+		    if (!Array.isArray(fullSettingsPayload.scheduledPlays)) return;
+		    fullSettingsPayload.scheduledPlays.splice(index, 1);
+		    renderScheduledPlays();
+		    await saveScheduledPlays();
+		}
+
+async function saveScheduledPlays(silent = false) {
+		    if (silent) {
+		        // Fire-and-forget without alert
+		        fetch('/api/admin/settings', {
+		            method: 'POST',
+		            headers: { 'Content-Type': 'application/json' },
+		            body: JSON.stringify(fullSettingsPayload)
+		        }).catch(e => console.error('[ScheduledPlay] Save failed:', e.message));
+		    } else {
+		        await pushSettingsToServer('✅ Scheduled plays saved.');
+		    }
+		}
+		// =====================================================================
 
 		async function loadTools() {
 			try {

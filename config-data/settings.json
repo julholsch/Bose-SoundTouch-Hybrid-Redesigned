@@ -1,16 +1,35 @@
 {
-    "autoResumePreset": true,
-    "autoRestartMass": true,
+    "autoResumePreset": false,
+    "autoRestartMass": false,
     "autoSyncVolume": false,
-    "mobileAutoSortSpeakers": true,
-    "scheduledSpeakerAudit": true,
-    "scheduledRestart": true,
-    "includeReboot": true,
+    "mobileAutoSortSpeakers": false,
+    "scheduledSpeakerAudit": false,
+    "scheduledRestart": false,
+    "includeReboot": false,
     "searchMenuOrder": [
-        "global",
-        "spotify",
-        "nas",
-        "radio"
+        {
+            "key": "global",
+            "name": "Global",
+            "icon": null,
+            "enabled": true,
+            "sourceType": "global"
+        },
+        {
+            "key": "spotify",
+            "name": "Spotify [Julholsch]",
+            "icon": "/images/spotify_icon.png",
+            "enabled": true,
+            "sourceType": "music"
+        },
+        {
+            "key": "filesystem_local",
+            "name": "Filesystem (local disk)",
+            "icon": "/images/nas_icon.png",
+            "enabled": true,
+            "sourceType": "music"
+        }
     ],
-    "bypassCloudEmulation": false
+    "bypassCloudEmulation": false,
+    "scheduledAuditHour": 2,
+    "scheduledRestartHour": 3
 }

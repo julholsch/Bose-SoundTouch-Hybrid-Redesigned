@@ -228,19 +228,20 @@ input:disabled + label {
   visibility: hidden;
 
   height: 0px;
-
+  
+  margin-top: -10px;
   transition: all .2s ease-in-out;
 
   cursor: default;
+  interpolate-size: allow-keywords;
 
   &.opend {
     visibility: visible;
-
-    height: 320px;
-
+    
     transition: all .2s ease-in-out;
-
+    margin-top: 0;
     cursor: text;
+    height: max-content;
   }
 }
 
@@ -1016,6 +1017,54 @@ input[type=range]:active {
 
 .hidden {
   display: none !important;
+}
+
+/* --- MASS ERROR BANNER --- */
+
+.banner {
+  position: relative;
+  z-index: 10000;
+
+  display: none;
+
+  text-align: center;
+
+  color: #fff;
+
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.banner-update {
+  padding: 12px;
+
+  font-family: sans-serif;
+
+  background: #0056b3;
+}
+
+.banner-link {
+  margin: 0 20px;
+
+  font-weight: bold;
+
+  text-decoration: underline;
+
+  color: #fff;
+}
+
+.banner-button {
+  padding: 5px 15px;
+
+  border: 1px solid rgba(255,255,255,0.5);
+
+  border-radius: 4px;
+
+  font-weight: bold;
+
+  color: white;
+  background: rgba(0,0,0,0.3);
+
+  cursor: pointer;
 }
 
 /* --- MASS ERROR BANNER --- */

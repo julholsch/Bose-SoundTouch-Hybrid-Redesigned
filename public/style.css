@@ -47,6 +47,10 @@ input[type=range] {
   --radio: #e67e22;
 
   /* Orange */
+  --accent-blue: #3498db;
+  --accent-orange: #f39c12;
+  --accent-purple: #9b59b6;
+  --accent-teal: #1abc9c;
   --border: #333;
   --nav-hover: #333;
   --pending: #f1c40f;
@@ -126,7 +130,115 @@ body {
 }
 
 /* =========================================
-   2. SHARED COMPONENTS
+   2. SHARED LAYOUT & UTILITY CLASSES
+   ========================================= */
+
+.header-brand {
+  display: flex;
+
+  align-items: center;
+  gap: 12px;
+
+  min-width: 250px;
+
+  font-size: 1.1em;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  color: var(--title-color);
+}
+
+.header-brand img {
+  width: auto;
+
+  height: 32px;
+}
+
+.header-brand-stack {
+  display: flex;
+
+  flex-direction: column;
+  justify-content: center;
+
+  margin-right: 30px;
+}
+
+.header-badge-row {
+  display: flex;
+
+  flex-direction: row;
+  gap: 8px;
+
+  margin-top: 2px;
+  margin-left: 70px;
+}
+
+.header-actions {
+  display: flex;
+
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-accent {
+  border-left: 4px solid var(--accent);
+}
+
+.card-accent-orange {
+  border-left: 3px solid var(--accent-orange);
+}
+
+.card-accent-purple {
+  border-left: 3px solid var(--accent-purple);
+}
+
+.card-accent-teal {
+  border-left: 3px solid var(--accent-teal);
+}
+
+.card-accent-danger {
+  border-left: 3px solid var(--danger);
+}
+
+.btn-action {
+  width: 100%;
+
+  border: none;
+
+  margin-top: 15px;
+
+  color: white;
+  background: var(--accent-blue);
+}
+
+.btn-action.btn-blue {
+  background: var(--accent-blue);
+}
+
+.btn-action.btn-orange {
+  background: var(--accent-orange);
+}
+
+.btn-action.btn-purple {
+  background: var(--accent-purple);
+}
+
+.btn-action.btn-teal {
+  background: var(--accent-teal);
+}
+
+.btn-action.btn-danger {
+  background: var(--danger);
+}
+
+.btn-action:hover {
+  filter: brightness(1.05);
+}
+
+/* =========================================
+   3. SHARED COMPONENTS
    ========================================= */
 
 button,
@@ -850,7 +962,6 @@ h3 {
 }
 
 /* Library / Admin / Other Grids */
-/* Library / Admin / Other Grids */
 
 #lib-favorites,
 #recents-results,
@@ -1154,6 +1265,19 @@ h3 {
 .nav-btn.active {
   color: white;
   background: #444;
+}
+
+.tools-page .tools-subpage {
+  display: block;
+}
+
+.tools-page .manager-main-tabs {
+  flex-wrap: wrap;
+}
+
+.tools-page .manager-main-tabs .nav-btn {
+  flex: 1 1 220px;
+  justify-content: center;
 }
 
 .search-header {
@@ -1727,6 +1851,30 @@ Uses Variables for Theme Support #admin-grid textarea {
     text-align: center;
   }
 
+  .header-actions {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .app-header button.btn-help {
+    width: 100%;
+
+    padding: 10px;
+
+    margin-top: 0;
+  }
+
+  .header-brand-stack {
+    margin-right: 0 !important;
+  }
+
+  .header-badge-row {
+    justify-content: center;
+
+    margin-left: 0 !important;
+  }
+
+
   .nav-center-group,
   .nav-menu {
     display: flex !important;
@@ -1736,6 +1884,10 @@ Uses Variables for Theme Support #admin-grid textarea {
     gap: 8px;
 
     width: 100%;
+  }
+
+  .nav-hide-mobile {
+    display: none !important;
   }
 
   .global-link,
@@ -2367,6 +2519,52 @@ input:disabled + label {
 
 /* --- MASS ERROR BANNER --- */
 
+.banner {
+  position: relative;
+  z-index: 10000;
+
+  display: none;
+
+  text-align: center;
+
+  color: #fff;
+
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.banner-update {
+  padding: 12px;
+
+  font-family: sans-serif;
+
+  background: #0056b3;
+}
+
+.banner-link {
+  margin: 0 20px;
+
+  font-weight: bold;
+
+  text-decoration: underline;
+
+  color: #fff;
+}
+
+.banner-button {
+  padding: 5px 15px;
+
+  border: 1px solid rgba(255,255,255,0.5);
+
+  border-radius: 4px;
+
+  font-weight: bold;
+
+  color: white;
+  background: rgba(0,0,0,0.3);
+
+  cursor: pointer;
+}
+
 #mass-error-banner {
   position: fixed;
   top: 20px;
@@ -2471,6 +2669,15 @@ input:disabled + label {
   background: transparent;
 
   cursor: pointer;
+}
+
+#mass-error-banner .btn-dismiss.banner-button--success {
+  border: none;
+
+  font-weight: bold;
+
+  color: #000;
+  background: #2ecc71;
 }
 
 #mass-error-banner .btn-restart {
@@ -2751,6 +2958,11 @@ input:disabled + label {
   height: 10px;
 
   opacity: 0.8;
+}
+
+.tz-badge {
+  font-family: monospace;
+  font-size: 0.9em;
 }
 
 /* Red Trash Can for Favorites */

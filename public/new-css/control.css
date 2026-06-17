@@ -134,6 +134,25 @@ button,
   -webkit-tap-highlight-color: transparent;
 }
 
+button {
+  display: inline-flex;
+
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  
+  transition: scale .1s ease-out;
+
+  cursor: pointer;
+  scale: 1;
+
+  &:active:not(:disabled) {
+    transition: all .15s ease-out;
+    scale: .95;
+  }
+}
+
 input[type="text"],
 select,
 textarea {
@@ -150,12 +169,18 @@ textarea {
   background: var(--input-bg);
 }
 
-input[type="text"]:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--accent);
+input[type="text"],
+select,
+textarea,
+button {
+  &:active,
+  &:focus {
+    border-color: var(--accent);
 
-  outline: none;
+    color: var(--text);
+
+    outline: 2px solid var(--accent);
+  }
 }
 
 /* 7. DISABLED INPUTS (Global Safety) */
@@ -249,7 +274,7 @@ input:disabled + label {
   gap: 5px;
 }
 
-.global-link {
+button.global-link {
   padding: 6px 14px;
 
   border: 1px solid transparent;
@@ -476,34 +501,7 @@ input:disabled + label {
   gap: 15px;
 }
 
-button {
-  display: inline-flex;
 
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-
-  max-width: 100%;
-  padding: 8px 16px;
-
-  border: 1px solid var(--btn-border);
-
-  border-radius: 4px;
-  font-size: 0.9em;
-
-  color: var(--btn-text);
-  background: var(--btn-bg);
-
-  transition: scale .1s ease-out;
-
-  cursor: pointer;
-  scale: 1;
-
-  &:active:not(:disabled) {
-    transition: all .15s ease-out;
-    scale: .95;
-  }
-}
 
 .btn-primary {
   display: flex;
@@ -596,7 +594,6 @@ button {
   &.join {
     color: var(--text-secondary);
     background: var(--btn-bg);
-    width: ;
 
     &:hover {
       border-color: #999;
@@ -754,6 +751,54 @@ input[type=range]:active {
   justify-content: center;
 
   width: 100%;
+}
+
+/* --- MASS ERROR BANNER --- */
+
+.banner {
+  position: relative;
+  z-index: 10000;
+
+  display: none;
+
+  text-align: center;
+
+  color: #fff;
+
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.banner-update {
+  padding: 12px;
+
+  font-family: sans-serif;
+
+  background: #0056b3;
+}
+
+.banner-link {
+  margin: 0 20px;
+
+  font-weight: bold;
+
+  text-decoration: underline;
+
+  color: #fff;
+}
+
+.banner-button {
+  padding: 5px 15px;
+
+  border: 1px solid rgba(255,255,255,0.5);
+
+  border-radius: 4px;
+
+  font-weight: bold;
+
+  color: white;
+  background: rgba(0,0,0,0.3);
+
+  cursor: pointer;
 }
 
 /* --- MASS ERROR BANNER --- */
@@ -1092,46 +1137,54 @@ input[type=range]:active {
 }
 
 .speaker-controls-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+
+  flex-direction: column;
+  gap: 10px;
 }
 
 .speaker-controls {
   display: grid;
+
   grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
   gap: 8px;
 }
 
 .speaker-controls-label {
-    font-size: 0.9em;
+  margin-bottom: -5px;
+  font-size: 0.9em;
 
-    color: var(--text-secondary);
-    margin-bottom: -5px;
+  color: var(--text-secondary);
 }
 
 /* Target the select element specifically using your data attribute */
+
 select[data-master-select] {
   /* Strips away the native browser styling (including the default arrow) */
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  
+
   /* Crucial resets so the browser doesn't warp your layout */
-  background: var(--btn-bg);
+  box-sizing: border-box;
+  width: 100%;
+
+  height: 100%;
+  padding: 0 12px;
+
   border: 1px solid var(--btn-border);
+
   border-radius: 6px;
   margin: 0;
-  padding: 0 12px;
-  width: 100%;
-  outline: none;
   font-family: inherit;
-  box-sizing: border-box;
-  font-weight: bold;
-  
-  color: var(--btn-text);
   font-size: 0.85em;
-  height: 100%;
+
+  font-weight: bold;
+
+  color: var(--btn-text);
+  background: var(--btn-bg);
+
+  outline: none;
 
   &:hover {
     border-color: #888;
@@ -1140,36 +1193,50 @@ select[data-master-select] {
   }
 
   &:active,
-  &:focus  {
+  &:focus {
     border-color: var(--accent);
-    outline: 2px solid var(--accent);
+
     color: var(--text);
-  }
 
-    
+    outline: 2px solid var(--accent);
+  }
 }
+
 .custom-dropdown-wrapper {
-  grid-column: span 5;
   position: relative;
-    display: block;
-
   z-index: 0;
+  display: block;
+  grid-column: span 5;
+
   &::after {
-      content: "▼";
-      position: absolute;
-      top: 50%;
-      right: 15px;
-      z-index: 1;
-      transform: translateY(-50%);
-      /* Makes sure clicks on the arrow still open the select dropdown beneath it */
-      pointer-events: none; 
+    content: "▼";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    z-index: 1;
+    transform: translateY(-50%) rotateZ(0deg);
+    transition: all .2s ease-in-out;
+    pointer-events: none;
+  }
+
+  /* Wenn der Wrapper ein fokussiertes Master-Select enthält... 
+  &:has(select[data-master-select]:focus) {
+    &::after {
+      transform: translateY(-50%) rotateZ(180deg);
+    }
+  }*/
+  &:has(select[data-master-select]:open) {
+    &::after {
+      /* Wichtig: Das translateY(-50%) muss erhalten bleiben! */
+      transform: translateY(-50%) rotateZ(180deg);
+    }
   }
 }
-
 
 /* Remove the default arrow specifically for Internet Explorer/Edge legacy if needed */
+
 select[data-master-select]::-ms-expand {
-    display: none;
+  display: none;
 }
 
 .master-badge {

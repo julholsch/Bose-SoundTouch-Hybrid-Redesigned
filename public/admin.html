@@ -409,6 +409,13 @@
         alert("✅ Telnet Reboot Command sent!\n\nThe network providers will aggressively reload in 90 seconds.");
     }
 
+
+
+
+
+
+    
+
     async function toggleSource(ip, btn) {
         // 1. OPTIMISTIC UI: Switching source ALWAYS wakes the speaker up natively.
         const pwrBtn = document.getElementById(`pwr-${ip}`);
@@ -444,7 +451,6 @@
             const devices = await statusRes.json();
 
             const allOptions = devices.filter(d => d.online).map(d => `<option value="${d.ip}">${d.name} (${d.ip})</option>`).join('');
-            const usbOption = `<option value="203.0.113.1">🔌 USB Cable / Initial Wi-Fi Setup (203.0.113.1)</option>`;
 
             // ---> BOOT STEREO UI WITH SHARED DATA
             initStereoUI(devices);
