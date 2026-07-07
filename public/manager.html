@@ -46,9 +46,12 @@
         <div class="top-bar">
             <div class="speaker-selector-container">
                 <span class="speaker-label" id="play-on-label">Play On:</span>
-                <select id="global-speaker" onchange="handleSpeakerChange()">
-                    <option value="">Loading...</option>
-                </select>
+                <div class="custom-dropdown-wrapper">
+                    
+                    <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
             </div>
         
             <div class="nav-tabs manager-main-tabs">
@@ -81,9 +84,12 @@
         <div id="tab-library" data-tab="library">
             <div class="section-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <span style="white-space:nowrap;">Physical Presets</span>
-                <select id="preset-view-filter" class="mini-select" onchange="loadLibrary()">
-                    <option value="">Global (Default)</option>
-                </select>
+                <div class="custom-dropdown-wrapper preset-view-filter-wrapper">
+
+                    <select id="preset-view-filter" class="mini-select" onchange="loadLibrary()">
+                        <option value="">Global (Default)</option>
+                    </select>
+                </div>
             </div>
             <div id="lib-presets" class="grid">Loading...</div>
             
@@ -101,10 +107,11 @@
                     <div class="filter-pill fav-pill" onclick="setFavFilter('radio')">Radio</div>
                     <div class="filter-pill fav-pill" onclick="setFavFilter('podcast')">Podcasts</div>
                     <div class="filter-pill fav-pill" onclick="setFavFilter('audiobook')">Audiobooks</div>
-                    
-                    <select id="fav-provider-filter" class="mini-select" style="max-width: 140px; background-color: var(--bg);" onchange="loadLibrary()">
-                        <option value="all">All Providers</option>
-                    </select>
+                    <div class="custom-dropdown-wrapper">
+                        <select id="fav-provider-filter" class="mini-select" onchange="loadLibrary()">
+                            <option value="all">All Providers</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -140,9 +147,11 @@
                     <div class="filter-pill" id="filter-podcast" onclick="setFilter('podcast')" style="display:none">Podcasts</div>
                     <div class="filter-pill" id="filter-audiobook" onclick="setFilter('audiobook')" style="display:none">Audiobooks</div>
                     <div class="filter-pill" onclick="setFilter('all')">All</div>
-                    <select id="provider-filter" class="mini-select" style="margin-left:auto; display:none; max-width:160px; background-color:var(--card);" onchange="doSearch()">
-                        <option value="all">All Providers</option>
-                    </select>		
+                    <div class="custom-dropdown-wrapper">
+                        <select id="provider-filter" class="mini-select" onchange="doSearch()">
+                            <option value="all">All Providers</option>
+                        </select>		
+                    </div>
                 </div>
                 <div class="search-bar">
                     <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
@@ -813,7 +822,7 @@
           });
 
           if (providerSelect) {
-              providerSelect.style.display = (sourceType === 'global') ? 'inline-block' : 'none';
+              providerSelect.style.display = (sourceType === 'global') ? 'flex' : 'none';
               if (sourceType !== 'global')
                   providerSelect.value = 'all';
           }

@@ -592,7 +592,7 @@
                     </div>
                     ${isGroupMaster || isGroupMember ? `` : '<p class="speaker-controls-label">Join Zone</p>'}
                     <div class="speaker-controls">
-                        <div class="custom-dropdown-wrapper">
+                        <div class="custom-dropdown-wrapper" data-master-select-wrapper="${d.ip}" style="">
                             
                             <select class="master-select" data-master-select="${d.ip}">
                                 
@@ -930,6 +930,8 @@ async function populateJoinZoneDropdown(ip) {
 
             masterSelect.innerHTML = optionsHtml;
 
+            document.querySelector(`[data-master-select-wrapper="${ip}"]`).style.setProperty(`--master-option-count`, `${masterSelect.options.length}`);
+ 
             // Explicitly force the selected property value on the element
             if (connectedMasterIp) {
                 masterSelect.value = connectedMasterIp;

@@ -369,36 +369,44 @@ router.get("/getZone", async (req, res) => {
             });
         }
 
-        // 3. Master-MAC auslesen (Prüfung auf flache Struktur ODER unter $)
+        // 3. Master-MAC auslesen (Prüfung auf flache Struktur ODER unter $) -> ZWINGEND UPPERCASE
         const rawMaster = zData.zone.master || (zData.zone.$ ? zData.zone.$.master : null);
-        const masterMac = rawMaster ? rawMaster.toString().trim().toLowerCase() : null;
+        const masterMac = rawMaster ? rawMaster.toString().trim().toUpperCase() : null;
 
-        // 4. Eigene MAC ermitteln, um die Rolle zu bestimmen
+        // 4. Eigene MAC ermitteln, um die Rolle zu bestimmen -> ZWINGEND UPPERCASE
         let myMac = MAC_CACHE[ip];
         if (!myMac) {
             const iRes = await axios.get(`http://${ip}:8090/info`);
             const id = await parser.parseStringPromise(iRes.data);
             const rawMyMac = id.info.deviceID || id.info.$.deviceID;
-            myMac = rawMyMac ? rawMyMac.toString().trim().toLowerCase() : null;
+            myMac = rawMyMac ? rawMyMac.toString().trim().toUpperCase() : null;
             if (myMac) MAC_CACHE[ip] = myMac;
         } else {
-            myMac = myMac.toString().trim().toLowerCase();
+            myMac = myMac.toString().trim().toUpperCase();
         }
 
         // Wenn die eigene MAC identisch mit der Master-MAC der Zone ist, ist es der Master
         const isMaster = myMac === masterMac;
 
-        // 5. Mitglieder-Liste parsen (Muster aus /zone_volume)
+        // 5. Mitglieder-Liste parsen und Duplikate eliminieren
         const members = [];
+        const seenMacs = new Set(); // Verhindert doppelte Einträge im Array
+
         if (zData.zone.member) {
             // Wenn es nur ein Member gibt, ist es ein Objekt. Bei mehreren ein Array.
             const memberData = Array.isArray(zData.zone.member) ? zData.zone.member : [zData.zone.member];
 
             memberData.forEach((m) => {
-                members.push({
-                    ip: m.ipaddress || (m.$ ? m.$.ipaddress : null),
-                    mac: m._ ? m._.toString().trim().toLowerCase() : null, // xml2js packt den reinen Textinhalt des Tags in Unterstrich (_)
-                });
+                const rawMac = m._ ? m._.toString().trim().toUpperCase() : null;
+                
+                // Nur hinzufügen, wenn eine MAC existiert und diese noch nicht verarbeitet wurde
+                if (rawMac && !seenMacs.has(rawMac)) {
+                    seenMacs.add(rawMac);
+                    members.push({
+                        ip: m.ipaddress || (m.$ ? m.$.ipaddress : null),
+                        mac: rawMac,
+                    });
+                }
             });
         }
 
@@ -440,7 +448,8 @@ router.post("/addZoneSlave", async (req, res) => {
         }
 
         const masterState = await deviceState.get(chosenMaster);
-        const masterMac = masterState?.mac;
+        // Zur Sicherheit auch hier direkt in Uppercase umwandeln, falls im State noch alte Daten liegen
+        const masterMac = masterState?.mac ? masterState.mac.toString().trim().toUpperCase() : null;
 
         // Wenn wir keine MAC haben (z.B. weil das Gerät offline/im Timeout ist), brechen wir ab
         if (!masterMac) {
@@ -452,7 +461,6 @@ router.post("/addZoneSlave", async (req, res) => {
 
         // =================================================================================
         // 🔊 AUTO-SYNC SLAVE VOLUME TO MASTER
-        // Reads user preferences. If enabled, fetches Master volume and applies it to Slave.
         // =================================================================================
         try {
             const fs = require("fs");
@@ -478,13 +486,17 @@ router.post("/addZoneSlave", async (req, res) => {
         }
         // =================================================================================
 
-        // 2. Eigene MAC des Slaves ermitteln
+        // 2. Eigene MAC des Slaves ermitteln -> ZWINGEND UPPERCASE
         let slaveMac = MAC_CACHE[slaveIp];
         if (!slaveMac) {
             const i = await axios.get(`http://${slaveIp}:8090/info`);
             const p = new xml2js.Parser({explicitArray: false});
             const id = await p.parseStringPromise(i.data);
-            slaveMac = id.info.deviceID || id.info.$.deviceID;
+            const rawSlaveMac = id.info.deviceID || id.info.$.deviceID;
+            slaveMac = rawSlaveMac ? rawSlaveMac.toString().trim().toUpperCase() : null;
+            if (slaveMac) MAC_CACHE[slaveIp] = slaveMac;
+        } else {
+            slaveMac = slaveMac.toString().trim().toUpperCase();
         }
 
         // Slave aufwecken/ansprechen
@@ -492,7 +504,7 @@ router.post("/addZoneSlave", async (req, res) => {
         await sleep(PRESS_DELAY);
         await sendBoseXml(slaveIp, "key", `<key state="release" sender="Gabbo">POWER</key>`);
 
-        // Zonen-Payload bauen
+        // Zonen-Payload bauen (Garantiert saubere Uppercase-Strings für die Hardware)
         const groupXml = `<zone master="${masterMac}"><member ipaddress="${slaveIp}">${slaveMac}</member></zone>`;
         const zoneEndpoint = isMasterAlreadyInZone ? "addZoneSlave" : "setZone";
 

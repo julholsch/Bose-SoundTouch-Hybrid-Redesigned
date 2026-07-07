@@ -117,6 +117,7 @@ body {
 
   color: var(--text);
   background: var(--bg);
+  overflow-y: scroll;
 
   * {
     font-family: -apple-system,

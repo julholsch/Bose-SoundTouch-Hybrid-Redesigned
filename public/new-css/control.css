@@ -1174,34 +1174,38 @@ input[type=range]:active {
 /* Target the select element specifically using your data attribute */
 
 .custom-dropdown-wrapper {
-  position: relative;
 
   :open::picker(select) {
+    margin-top: 5px;
+    --master-option-height: 40px;
+    height: calc(calc(var(--master-option-height) + 10) * var(--master-option-count)) ;
+    max-height: 250px;
     opacity: 1;
     
-    margin-top: 5px;
+    overflow-y: auto;
   }
 
   @starting-style {
     :open::picker(select) {
-      opacity: 0;
-      
       margin-top: 0;
+      height: 0;
+      overflow-y: hidden;
+      opacity: 0;
     }
   }
 
   ::picker(select) {
-
     appearance: base-select;
-    opacity: 0;
     border-radius: 12px;
     border: 2px solid #888;
     margin-top: 0;
+    height: 0;
+    opacity: 0;
+    overflow-y: hidden;
     background: var(--card);
     backdrop-filter: blur(5px);
     box-shadow: 0px 0px 5px 1px var(--bg);
     transition: all .2s ease-in-out allow-discrete;
-    overflow-y: hidden;
   }
 }
 
@@ -1302,9 +1306,6 @@ select[data-master-select] {
 
 
   }
-}
-selectedcontent .icon {
-  display: none;
 }
 .custom-dropdown-wrapper {
   position: relative;

@@ -277,71 +277,71 @@ function makeBannerDraggable() {
 }
 
 // --- GLOBAL SYSTEM ACTIONS ---
-window.triggerGlobalAllOff = async function () {
-  if (!confirm("Turn off ALL speakers?")) return;
+window.triggerGlobalAllOff = async function() {
+    if(!confirm("Turn off ALL speakers?")) return;
 
-  const btns = document.querySelectorAll(".btn-all-off");
-  btns.forEach((b) => (b.style.opacity = "0.5"));
+    const btns = document.querySelectorAll('.btn-all-off');
+    btns.forEach(b => b.style.opacity = '0.5');
 
-  try {
-    // 1. Fetch current states to know who is currently ON
-    const res = await fetch("/api/status");
-    const devices = await res.json();
+    try {
+        // 1. Fetch current states to know who is currently ON
+        const res = await fetch('/api/status');
+        const devices = await res.json();
 
-    // 2. OPTIMISTIC UI (Adapts to current page)
-    // -> If user is on control.html
-    if (typeof window.isPollingFrozen !== "undefined") {
-      window.isPollingFrozen = true;
+        // 2. OPTIMISTIC UI (Adapts to current page)
+        // -> If user is on control.html
+        if (typeof window.isPollingFrozen !== 'undefined') {
+            window.isPollingFrozen = true;
+        }
+        if (window.LockManager && window.currentDevices) {
+            window.currentDevices.forEach(d => {
+                if (!d.isStandby) window.LockManager.set(d.ip, 'POWER', 'OFF');
+            });
+        }
+        // -> If user is on admin.html
+        devices.forEach(d => {
+            const pwrBtn = document.getElementById(`pwr-${d.ip}`);
+            const modeBadge = document.getElementById(`mode-${d.ip}`);
+            if (pwrBtn && !d.isStandby) {
+                pwrBtn.className = 'pwr-off'; 
+                pwrBtn.innerText = 'OFF';
+                if (modeBadge) modeBadge.innerText = '(STANDBY)';
+            }
+        });
+
+        // 3. FILTER: Command only Masters and Standalone speakers
+        const onDevices = devices.filter(d => {
+            const isSlave = (d.zone && d.zone.master && d.zone.master !== d.mac);
+            return !d.isStandby && !isSlave;
+        });
+
+        // 4. Send individual POWER keys
+        for (const d of onDevices) {
+            await fetch('/api/key', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ ip: d.ip, key: 'POWER' }) 
+            });
+        }
+
+        // Wait 1.5s for hardware to process (Matches the individual toggle delay)
+        await new Promise(r => setTimeout(r, 1500));
+
+        // 5. Unfreeze and Quietly Refresh specific elements
+        if (typeof window.isPollingFrozen !== 'undefined') {
+            window.isPollingFrozen = false;
+        }
+
+        // Quietly fetch individual states instead of nuking the grid with loadAdmin()
+        if (typeof window.fetchDeviceState === 'function') {
+            devices.forEach(d => window.fetchDeviceState(d.ip));
+        } else if (typeof window.loadStatus === 'function') {
+            window.loadStatus();
+        }
+    } catch (e) {
+        console.error("Failed to power off speakers", e);
+    } finally {
+        btns.forEach(b => b.style.opacity = '1');
     }
-    if (window.LockManager && window.currentDevices) {
-      window.currentDevices.forEach((d) => {
-        if (!d.isStandby) window.LockManager.set(d.ip, "POWER", "OFF");
-      });
-    }
-    // -> If user is on admin.html
-    devices.forEach((d) => {
-      const pwrBtn = document.getElementById(`pwr-${d.ip}`);
-      const modeBadge = document.getElementById(`mode-${d.ip}`);
-      if (pwrBtn && !d.isStandby) {
-        pwrBtn.classList.add(`OFF`);
-        pwrBtn.classList.remove(`ON`);
-        if (modeBadge) modeBadge.innerText = "(STANDBY)";
-      }
-    });
-
-    // 3. FILTER: Command only Masters and Standalone speakers
-    const onDevices = devices.filter((d) => {
-      const isSlave = d.zone && d.zone.master && d.zone.master !== d.mac;
-      return !d.isStandby && !isSlave;
-    });
-
-    // 4. Send individual POWER keys
-    for (const d of onDevices) {
-      await fetch("/api/key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ip: d.ip, key: "POWER" }),
-      });
-    }
-
-    // Wait 1.5s for hardware to process (Matches the individual toggle delay)
-    await new Promise((r) => setTimeout(r, 1500));
-
-    // 5. Unfreeze and Quietly Refresh specific elements
-    if (typeof window.isPollingFrozen !== "undefined") {
-      window.isPollingFrozen = false;
-    }
-
-    // Quietly fetch individual states instead of nuking the grid with loadAdmin()
-    if (typeof window.fetchDeviceState === "function") {
-      devices.forEach((d) => window.fetchDeviceState(d.ip));
-    } else if (typeof window.loadStatus === "function") {
-      window.loadStatus();
-    }
-  } catch (e) {
-    console.error("Failed to power off speakers", e);
-  } finally {
-    btns.forEach((b) => (b.style.opacity = "1"));
-  }
 };
 
