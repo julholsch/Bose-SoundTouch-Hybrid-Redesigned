@@ -44,7 +44,7 @@
         </h2>
 
         <div class="top-bar">
-            <div class="speaker-selector-container">
+            <div class="">
                 <span class="speaker-label" id="play-on-label">Play On:</span>
                 <div class="custom-dropdown-wrapper">
                     
@@ -55,27 +55,27 @@
             </div>
         
             <div class="nav-tabs manager-main-tabs">
-                <button class="nav-btn active" data-tab-target="library" onclick="switchTab('library')">
+                <button class="nav-btn" data-tab-target="library" onclick="/* switchTab('library'), */ newSwitchTab('library')">
                     My Library
                     <img src="images/bose_icon.png">
                 </button>
                 
-                <button class="nav-btn" data-tab-target="nowplaying" onclick="switchTab('nowplaying')">
+                <button class="nav-btn" data-tab-target="nowplaying" onclick="/* switchTab('nowplaying'), */ newSwitchTab('nowplaying')">
                     Now Playing
                     <span style="font-size:1.2em;">🎵</span>
                 </button>
 
-                <button class="nav-btn" data-tab-target="recents" onclick="switchTab('recents')">
+                <button class="nav-btn" data-tab-target="recents" onclick="/* switchTab('recents'), */ newSwitchTab('recents')">
                     Recents
                     <img src="images/hybrid_icon.png">
                 </button>
                 
-                <button class="nav-btn" data-tab-target="search" onclick="switchTab('search')">
+                <button class="nav-btn" data-tab-target="search" onclick="/* switchTab('search'), */ newSwitchTab('search')">
                     Search 
                     <img src="images/ma_icon.png">
                 </button>
                 
-                <button class="nav-btn" data-tab-target="custom" onclick="switchTab('custom')">
+                <button class="nav-btn" data-tab-target="custom" onclick="/* switchTab('custom'), */ newSwitchTab('custom')">
                     Custom &#127760;
                 </button>
             </div>
@@ -99,7 +99,7 @@
                 </div>
                 
                 <div class="fav-controls">
-                    <div class="filter-pill fav-pill active" onclick="setFavFilter('all')">All</div>
+                    <div class="filter-pill fav-pill" onclick="setFavFilter('all')">All</div>
                     <div class="filter-pill fav-pill" onclick="setFavFilter('playlist')">Playlists</div>
                     <div class="filter-pill fav-pill" onclick="setFavFilter('artist')">Artists</div>
                     <div class="filter-pill fav-pill" onclick="setFavFilter('album')">Albums</div>
@@ -255,11 +255,16 @@
   // --- CONSTANTS & CONFIG ---
 
   // State management for the current view and search filters
+  
+  let filterValue = readUrlFilter("tab");
+  if (filterValue === null) {
+    filterValue = "library";
+  }
   let globalProviders = [];
   let state = {
       source: 'global',
       filter: 'playlist',
-      tab: 'library',
+      tab: filterValue,
       favFilter: 'all'
   };
   let selectedUuid = null;
@@ -308,12 +313,21 @@
       }
   }
 
+    window.addEventListener("popstate", () => {
+        // Aktuellen Tab aus der geänderten URL auslesen oder Fallback nutzen
+        const currentTab = readUrlFilter("tab") || "library";
+        
+        // UI umschalten, aber das Update der URL blockieren (da der Browser das schon tat)
+        newSwitchTab(currentTab, false);
+    });
+
   // --- INITIALIZATION ---
   window.onload = async function () {
       await loadUserPreferences(); // 1. Wait for server settings FIRST
       buildSearchMenu(); // 2. Draw the menu using those settings
-      loadProviders().then(() => loadLibrary());
+      loadProviders();
       fetchSpeakers();
+      newSwitchTab(filterValue);
   }
 
   async function loadProviders() {
@@ -471,7 +485,7 @@
           if (activeSpeaker) {
               select.value = activeSpeaker.id;
               saveSpeakerSelection();
-              switchTab('nowplaying');
+              newSwitchTab('nowplaying');
           } else {
               const saved = localStorage.getItem('bose_active_speaker');
               if (saved && Array.from(select.options).some(o => o.value === saved && !o.disabled)) {
@@ -503,6 +517,59 @@
       // If viewing the Now Playing tab, refresh immediately to show the new speaker's status.
       if (state.tab === 'nowplaying')
           loadNowPlaying();
+  }
+
+    function newSwitchTab(tabTarget, shouldUpdateUrl = true) {
+        state.tab = tabTarget;
+
+        ['library', 'nowplaying', 'recents', 'search', 'custom'].forEach(tab => {
+            document.querySelector(`[data-tab="${tab}"]`).style.display = 'none';
+        });
+        
+        document.querySelector(`[data-tab="${tabTarget}"]`).style.display = 'block';
+        
+        // Die URL wird nur aktualisiert, wenn wir aktiv klicken
+        if (shouldUpdateUrl) {
+            updateUrlFilter('tab', tabTarget);
+        }
+
+        // Update button active states
+        document.querySelectorAll(`[data-tab-target]`).forEach(button => {
+            if (button.dataset.tabTarget === tabTarget) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+
+        // Update Label UI
+        const label = document.getElementById('play-on-label');
+        if (tabTarget === 'nowplaying') {
+            label.innerText = "Now Playing On:";
+            label.style.color = "var(--accent)";
+            startNpPolling();
+        } else {
+            label.innerText = "Play On:";
+            label.style.color = "";
+            stopNpPolling();
+        }
+
+        // Refresh Data for specific tabs
+        if (tabTarget === 'library') loadLibrary();
+        if (tabTarget === 'recents') loadRecents();
+        if (tabTarget === 'custom') loadCustomHistory();
+    }
+
+ function readUrlFilter(filterName) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterValue = urlParams.get(filterName);
+    return filterValue;
+ }
+
+  function updateUrlFilter(filterName, filterValue) {
+    const url = new URL(window.location.href);
+    url.searchParams.set(filterName, filterValue);
+    history.pushState({}, '', url.href);
   }
 
   // --- TAB NAVIGATION ---
