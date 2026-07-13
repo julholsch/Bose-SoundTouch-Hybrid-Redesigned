@@ -117,7 +117,7 @@
 
 
         document.getElementById('speaker-grid').innerHTML = devices.map(d => {
-            if (!d.online) return `
+            if (!d.online) return /*html*/ `
                 <div class="card">
                     <h3 class="card-heading">${d.name}</h3>
                     <div class="card-sub-heading">OFFLINE / UNREACHABLE</div>
@@ -127,7 +127,7 @@
             const hasClock = typeStr.includes("20") || typeStr.includes("30") || typeStr.includes("Portable");
             
             
-            return `
+            return /*html*/ `
                 <div class="card">
                     <div class="card-header speaker">
                         <h3 class="card-heading">${d.name}</h3>
@@ -145,7 +145,7 @@
                         </div>
                     </div>
                     <div class="inner-panel">
-                        <label class="control-row-label">Speaker Name</label>
+                        <label class="control-labels">Speaker Name</label>
                         <div class="control-row control-row-speaker-name">
                             <input class="rename-speaker" type="text" id="n-${d.ip}" value="${d.name}">
                             <button class="btn-secondary" onclick="ren('${d.ip}')">Save</button>
@@ -154,7 +154,7 @@
                     <div class="inner-panel">
                         <div class="control-row-slider">
                             <div class="slider-header">
-                                <label class="control-row-label">Bass</label>
+                                <label class="control-labels">Bass</label>
                                 <span id="bv-${d.ip}">(${d.bass})</span>
                             </div>
                             <div class="slider-container">
@@ -169,19 +169,19 @@
                             </div>
                         </div>
                         <div class="control-row">
-                            <label class="control-row-label">Auto-Off</label>
+                            <label class="control-labels">Auto-Off</label>
                             <button class="btn-secondary" id="ao-${d.ip}" onclick="tA('${d.ip}', this)">...</button>
                         </div>
                         <div class="control-row">
-                            <label class="control-row-label">Bluetooth</label>
+                            <label class="control-labels">Bluetooth</label>
                             <button class="btn-secondary" onclick="pBT('${d.ip}')">Pairing</button>
                         </div>	  
                         <div class="control-row ${hasClock ? '' : 'hidden'}">
-                            <label class="control-row-label">Clock</label>
+                            <label class="control-labels">Clock</label>
                             <button class="btn-secondary" id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
                         </div>
                         <div class="control-row">
-                            <label class="control-row-label">Source</label>
+                            <label class="control-labels">Source</label>
                             <button class="btn-secondary" id="src-${d.ip}" onclick="toggleSource('${d.ip}', this)">...</button>
                         </div>
                     </div>
@@ -565,7 +565,7 @@
             return spk ? (spk.originalName || spk.name) : ip;
         };
 
-        list.innerHTML = pairs.map(p => `
+        list.innerHTML = pairs.map(p => /*html*/`
             <li class="active-pairs-li-element">
                 <div>
                     <strong>${p.name}</strong><br>

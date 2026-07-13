@@ -15,16 +15,16 @@
             "sourceType": "global"
         },
         {
-            "key": "filesystem_local",
-            "name": "Filesystem (local disk)",
-            "icon": "/images/nas_icon.png",
+            "key": "spotify",
+            "name": "Spotify [Julholsch]",
+            "icon": "/images/spotify_icon.png",
             "enabled": true,
             "sourceType": "music"
         },
         {
-            "key": "spotify",
-            "name": "Joshua Spotify",
-            "icon": "/images/spotify_icon.png",
+            "key": "filesystem_local",
+            "name": "Filesystem (local disk)",
+            "icon": "/images/nas_icon.png",
             "enabled": true,
             "sourceType": "music"
         }

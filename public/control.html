@@ -561,7 +561,7 @@
         const dis = (val) => val ? 'disabled' : ''; // Utility for HTML attributes
         const cls = (val) => val ? 'btn-disabled' : ''; // Utility for CSS classes
 
-        return `
+        return /*html*/ `
             <div class="card" id="card-${d.ip}">
                 <div class="card-header speaker">
                     <h3 class="card-heading">
@@ -585,12 +585,12 @@
                         <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
                     </div>
 
-                    ${isGroupMaster || isGroupMember ? `<p class="speaker-controls-label">Join Zone</p>` : ''}
+                    ${isGroupMaster || isGroupMember ? `<p class="control-labels">Join Zone</p>` : ''}
                     <div class="speaker-controls">
                         ${isGroupMaster ? `<div class="master-badge">GROUP MASTER</div>` : ''}
                         ${isGroupMember ? `<div class="master-badge">GROUP MEMBER OF</div>` : ''}                       
                     </div>
-                    ${isGroupMaster || isGroupMember ? `` : '<p class="speaker-controls-label">Join Zone</p>'}
+                    ${isGroupMaster || isGroupMember ? `` : '<p class="control-labels">Join Zone</p>'}
                     <div class="speaker-controls">
                         <div class="custom-dropdown-wrapper" data-master-select-wrapper="${d.ip}" style="">
                             
@@ -601,7 +601,7 @@
                         <button data-master-button="${d.ip}" class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" onmousedown="joinMaster('${d.ip}')" ${dis(ui.joinDisabled)}>${syncText}</button>
                     </div>
                     
-                    <p class="speaker-controls-label">Presets</p>
+                    <p class="control-labels">Presets</p>
                     <div class="speaker-controls">
                         ${[1, 2, 3, 4, 5, 6].map(n => {
                             const isActive = (ui.presetNum === n);
@@ -609,7 +609,7 @@
                             return `<button class="btn-secondary btn-preset ${isActive ? 'active' : ''} ${cls(ui.presetDisabled)}" ${dis(ui.presetDisabled)} ${pClick}>${n}</button>`;
                         }).join('')}
                     </div>
-                    <p class="speaker-controls-label">Sources</p>
+                    <p class="control-labels">Sources</p>
                     <div class="speaker-controls">
                         <button class="btn-secondary" ${dis(ui.sourceAuxDisabled)} ${clickAux}>AUX</button>
                         <button class="btn-secondary" ${dis(ui.sourceBluetoothDisabled)} ${clickBluetooth}>Bluetooth</button>
@@ -631,7 +631,7 @@
                     <span id="vol-txt-${d.ip}" class="slider-text">${d.volume}</span>
                 </div>
 
-                ${isGroupMaster && d.zone && d.zone.member ? `
+                ${isGroupMaster && d.zone && d.zone.member ? /*html*/ `
                 <div class="group-label">GROUP VOLUME</div>
                 <div class="slider-container group-slider ${cls(ui.volDisabled)}">
                     <span class="slider-text">GRP</span>
@@ -648,7 +648,7 @@
                             
                     <span id="grp-txt-${d.ip}" class="slider-text">${groupMaxVolume}</span>
                 </div>` : ''}
-                ${d.stereoRole === 'LEFT' ? `
+                ${d.stereoRole === 'LEFT' ? /*html*/ `
                 <div class="group-label">L/R BALANCE</div>
                     <div class="slider-container ${cls(ui.volDisabled)}">
                         <span class="slider-text">BAL</span>

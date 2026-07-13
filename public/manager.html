@@ -10,7 +10,7 @@
 
     <link rel="icon" type="image/png" href="images/hybrid_icon.png"> 
 
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
     <link rel="stylesheet" href="new-css/manager.css">
 
     <link rel="manifest" href="manifest.json">
@@ -37,47 +37,49 @@
     </header>
 
     <main class="app-content">
-        <h2 class="libary-title">
-            SoundTouch Library 
-            <span>via</span> 
-            <img src="images/ma_logo.png" alt="MA">
-        </h2>
-
-        <div class="top-bar">
-            <div class="">
-                <span class="speaker-label" id="play-on-label">Play On:</span>
-                <div class="custom-dropdown-wrapper">
-                    
-                    <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
-                        <option value="">Loading...</option>
-                    </select>
+        <div class="app-content-header">
+            <h2 class="libary-title">
+                SoundTouch Library 
+                <span>via</span> 
+                <img src="images/ma_logo.png" alt="MA">
+            </h2>
+    
+            <div class="top-bar">
+                <div class="card speaker-select">
+                    <span class="speaker-label" id="play-on-label">Play On:</span>
+                    <div class="custom-dropdown-wrapper">
+                        
+                        <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-        
-            <div class="nav-tabs manager-main-tabs">
-                <button class="nav-btn" data-tab-target="library" onclick="/* switchTab('library'), */ newSwitchTab('library')">
-                    My Library
-                    <img src="images/bose_icon.png">
-                </button>
-                
-                <button class="nav-btn" data-tab-target="nowplaying" onclick="/* switchTab('nowplaying'), */ newSwitchTab('nowplaying')">
-                    Now Playing
-                    <span style="font-size:1.2em;">🎵</span>
-                </button>
-
-                <button class="nav-btn" data-tab-target="recents" onclick="/* switchTab('recents'), */ newSwitchTab('recents')">
-                    Recents
-                    <img src="images/hybrid_icon.png">
-                </button>
-                
-                <button class="nav-btn" data-tab-target="search" onclick="/* switchTab('search'), */ newSwitchTab('search')">
-                    Search 
-                    <img src="images/ma_icon.png">
-                </button>
-                
-                <button class="nav-btn" data-tab-target="custom" onclick="/* switchTab('custom'), */ newSwitchTab('custom')">
-                    Custom &#127760;
-                </button>
+            
+                <div class="nav-tabs manager-main-tabs">
+                    <button class="nav-btn" data-tab-target="library" onclick="/* switchTab('library'), */ newSwitchTab('library')">
+                        My Library
+                        <img src="images/bose_icon.png">
+                    </button>
+                    
+                    <button class="nav-btn" data-tab-target="nowplaying" onclick="/* switchTab('nowplaying'), */ newSwitchTab('nowplaying')">
+                        Now Playing
+                        <span style="font-size:1.2em;">🎵</span>
+                    </button>
+    
+                    <button class="nav-btn" data-tab-target="recents" onclick="/* switchTab('recents'), */ newSwitchTab('recents')">
+                        Recents
+                        <img src="images/hybrid_icon.png">
+                    </button>
+                    
+                    <button class="nav-btn" data-tab-target="search" onclick="/* switchTab('search'), */ newSwitchTab('search')">
+                        Search 
+                        <img src="images/ma_icon.png">
+                    </button>
+                    
+                    <button class="nav-btn" data-tab-target="custom" onclick="/* switchTab('custom'), */ newSwitchTab('custom')">
+                        Custom &#127760;
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -91,9 +93,9 @@
                     </select>
                 </div>
             </div>
-            <div id="lib-presets" class="grid">Loading...</div>
+            <div id="lib-presets" class="libary-grid">Loading...</div>
             
-            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 8px; border: 1px solid var(--border);">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
                 <div class="section-title" style="margin: 0; padding: 0; border: none; display: flex; align-items: baseline; gap: 6px; white-space: nowrap;">
                     <span>FAVORITES</span>
                 </div>
@@ -115,7 +117,7 @@
                 </div>
             </div>
 
-            <div id="lib-favorites" class="grid">Loading...</div>
+            <div id="lib-favorites" class="libary-grid">Loading...</div>
         </div>
 
         <div id="tab-nowplaying" data-tab="nowplaying" style="display:none">
@@ -132,7 +134,7 @@
 
         <div id="tab-recents" data-tab="recents" style="display:none">
             <div class="section-title">Recently Played from Music Assistant</div>
-            <div id="recents-results" class="grid">Loading...</div>
+            <div id="recents-results" class="libary-grid">Loading...</div>
         </div>
 
         <div id="tab-search" data-tab="search" style="display:none">
@@ -155,45 +157,49 @@
                 </div>
                 <div class="search-bar">
                     <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
-                    <select id="limit" onchange="doSearch()">
-                        <option value="25" selected>25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
+                    <div class="custom-dropdown-wrapper">
+                        <select class="mini-select" id="limit" onchange="doSearch()">
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                            <option value="200">200</option>
+                        </select>
+                    </div>
                     <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="doSearch()">Go</button>
                 </div>
             </div>
-            <div id="search-results" class="grid"></div>
+            <div id="search-results" class="libary-grid"></div>
         </div>
         
         <div id="tab-custom" data-tab="custom" style="display:none">
-            <div class="card" style="margin-bottom: 20px; border-left: 3px solid #2ecc71;">
-                <h3 style="margin-top:0;">&#127760; Stream Custom URL</h3>
-                <div class="sub-head" style="margin-bottom:15px;">Inject a radio stream or file directly to a speaker.</div>
+            <div class="card">
+                <h3 class="card-heading">&#127760; Stream Custom URL</h3>
+                <div class="card-sub-heading">Inject a radio stream or file directly to a speaker.</div>
                 
-                <div style="display:flex; flex-wrap:wrap; gap:15px; align-items:flex-end;">
-                    <div style="flex: 2; min-width: 200px;">
-                        <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">STREAM URL</label>
-                        <input type="text" id="stream-url" placeholder="http://stream.radioparadise.com/aac-320" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
+                <div class="radio-input-wrapper">
+                    <div>
+                        <label class="control-labels">STREAM URL</label>
+                        <input class="text-inputs" type="text" id="stream-url" placeholder="http://stream.radioparadise.com/aac-320">
                     </div>
-                    <div style="flex: 1; min-width: 150px;">
-                        <label style="display:block; font-size:0.75em; color:var(--text); opacity:0.8; margin-bottom:5px;">STATION NAME</label>
-                        <input type="text" id="stream-name" placeholder="Custom Station" style="width:100%; box-sizing:border-box; background:var(--bg-color); color:var(--text); border:1px solid #777; padding:8px; border-radius:4px;">
+                    <div>
+                        <label class="control-labels">STATION NAME</label>
+                        <input class="text-inputs" type="text" id="stream-name" placeholder="Custom Station">
                     </div>
-                    <div style="flex-shrink: 0; padding-bottom: 1px;">
+                    <div style="flex-shrink: 0;">
                         <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="playCustomStream()">▶ STREAM NOW</button>
                     </div>
                 </div>
             </div>
             
             <div class="section-title">Recent Unsaved Streams</div>
-            <div id="custom-history-results" class="grid">Loading...</div>
+            <div id="custom-history-results" class="libary-grid">Loading...</div>
         </div>
     </main>
 </div>
 <div id="modal" class="modal">
-  <div class="modal-content">
-    <h3 style="margin-top:0;">Save to Library</h3>
+  <div class="modal-card">
+    <h3>Save to Library</h3>
     
     <input type="hidden" id="edit-uuid">
     <input type="hidden" id="edit-uri">
@@ -203,42 +209,61 @@
 	<input type="hidden" id="edit-provider"> 
     
     <div class="form-group">
-      <label>Name</label>
+      <label class="control-labels">Name</label>
       <input type="text" id="edit-name">
     </div>
     
-    <div class="form-group">
-      <label>Assign to Slot</label>
-      <select id="edit-slot" onchange="toggleSpeakerDropdown(this.value)">
-          <option value="0">None (Favorite Only / Unassign)</option>
-          <option value="1">Preset 1</option><option value="2">Preset 2</option><option value="3">Preset 3</option>
-          <option value="4">Preset 4</option><option value="5">Preset 5</option><option value="6">Preset 6</option>
-      </select>
-    </div>
-    
-    <div class="form-group" id="group-edit-speaker">
-      <label id="label-edit-speaker">Target Speaker</label>
-      <select id="edit-speaker" class="mini-select" style="width: 100%;">
-          <option value="">Global (All Speakers)</option>
-      </select>
-    </div>
-    
-    <label style="margin-top:15px; display:block; margin-bottom:5px;">Playback Options</label>
-    
-    <div class="inner-panel" style="margin-bottom:20px;">
-        <div class="check-row" id="row-shuffle" style="margin-bottom:10px;">
-            <input type="checkbox" id="edit-shuffle"> 
-            <label style="display:inline; margin-left:8px;">Shuffle</label>
+    <label class="control-labels">Assign to Preset</label>
+    <div class="inner-panel">
+        <div class="form-group">
+            <label class="control-labels">Slot</label>
+            <div class="custom-dropdown-wrapper">
+                <select id="edit-slot" class="mini-select" onchange="toggleSpeakerDropdown(this.value)">
+                    <option value="0">None (Favorite Only / Unassign)</option>
+                    <option value="1">Preset 1</option>
+                    <option value="2">Preset 2</option>
+                    <option value="3">Preset 3</option>
+                    <option value="4">Preset 4</option>
+                    <option value="5">Preset 5</option>
+                    <option value="6">Preset 6</option>
+                </select>
+            </div>
         </div>
-        <div class="form-group" style="margin-bottom:0;">
-            <label>Repeat</label>
-            <select id="edit-repeat"><option value="off">Off</option><option value="all">Repeat All</option><option value="one">Repeat One</option></select>
+        
+        <div class="form-group" id="group-edit-speaker">
+          <label id="label-edit-speaker" class="control-labels">Speaker</label>
+          <div class="custom-dropdown-wrapper">
+              <select id="edit-speaker" class="mini-select" style="width: 100%;">
+                  <option value="">Global (All Speakers)</option>
+              </select>
+          </div>
+        </div>
+    </div>
+    
+    
+    <label class="control-labels">Playback Options</label>
+    <div class="inner-panel">
+        <div class="check-row" id="row-shuffle" style="margin-bottom:10px;">
+            <label class="checkbox-label">
+                <input type="checkbox" class="checkbox" id="edit-shuffle"> 
+                Shuffle
+            </label>
+        </div>
+        <div class="form-group">
+            <label class="control-labels">Repeat</label>
+            <div class="custom-dropdown-wrapper">
+                <select id="edit-repeat" class="mini-select">
+                    <option value="off">Off</option>
+                    <option value="all">Repeat All</option>
+                    <option value="one">Repeat One</option>
+                </select>
+            </div>
         </div>
     </div>
     
     <div style="display:flex; justify-content:flex-end; gap:10px">
-      <button class="btn-sm" onclick="closeModal()">Cancel</button>
-      <button class="primary" onclick="saveItem()">Save</button>
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" style="--btn-bg-clr: var(--accent);" onclick="saveItem()">Save</button>
     </div>
   </div>
 </div>
@@ -316,19 +341,19 @@
     window.addEventListener("popstate", () => {
         // Aktuellen Tab aus der geänderten URL auslesen oder Fallback nutzen
         const currentTab = readUrlFilter("tab") || "library";
-        
+        console.log("popstat");
         // UI umschalten, aber das Update der URL blockieren (da der Browser das schon tat)
         newSwitchTab(currentTab, false);
     });
 
-  // --- INITIALIZATION ---
-  window.onload = async function () {
-      await loadUserPreferences(); // 1. Wait for server settings FIRST
-      buildSearchMenu(); // 2. Draw the menu using those settings
-      loadProviders();
-      fetchSpeakers();
-      newSwitchTab(filterValue);
-  }
+    // --- INITIALIZATION ---
+    window.onload = async function () {
+        await loadUserPreferences(); // 1. Wait for server settings FIRST
+        buildSearchMenu(); // 2. Draw the menu using those settings
+        loadProviders();
+        fetchSpeakers();
+        newSwitchTab(filterValue, true, true);
+    }
 
   async function loadProviders() {
       const data = await api('/api/manager/providers');
@@ -486,6 +511,7 @@
               select.value = activeSpeaker.id;
               saveSpeakerSelection();
               newSwitchTab('nowplaying');
+
           } else {
               const saved = localStorage.getItem('bose_active_speaker');
               if (saved && Array.from(select.options).some(o => o.value === saved && !o.disabled)) {
@@ -519,7 +545,7 @@
           loadNowPlaying();
   }
 
-    function newSwitchTab(tabTarget, shouldUpdateUrl = true) {
+    function newSwitchTab(tabTarget, shouldUpdateUrl = true, replaceHistory = false) {
         state.tab = tabTarget;
 
         ['library', 'nowplaying', 'recents', 'search', 'custom'].forEach(tab => {
@@ -530,7 +556,12 @@
         
         // Die URL wird nur aktualisiert, wenn wir aktiv klicken
         if (shouldUpdateUrl) {
-            updateUrlFilter('tab', tabTarget);
+            if (!replaceHistory) {
+
+                updateUrlFilter('tab', tabTarget, false);
+            } else {
+                updateUrlFilter('tab', tabTarget, true)
+            }
         }
 
         // Update button active states
@@ -566,10 +597,15 @@
     return filterValue;
  }
 
-  function updateUrlFilter(filterName, filterValue) {
+  function updateUrlFilter(filterName, filterValue, replaceState = false) {
     const url = new URL(window.location.href);
     url.searchParams.set(filterName, filterValue);
-    history.pushState({}, '', url.href);
+    if (!replaceState) {
+        history.pushState({}, '', url.href);
+    } else {
+        history.replaceState({}, '', url.href);
+        
+    }
   }
 
   // --- TAB NAVIGATION ---
@@ -704,7 +740,7 @@
 
       if (device) {
           // --- ARTWORK ---
-          els.img.outerHTML = `
+          els.img.outerHTML = /*html*/`
             <div id="np-img" class="np-art ${device.artPlaceholder}" style="position:relative; overflow:hidden;">
                 ${device.art && device.art !== 'custom_url' ? `<img src="${device.art}" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:10;" onerror="this.style.display='none'">` : ''}
             </div>
@@ -794,20 +830,20 @@
   // Generates HTML Media Card (Library/Search/Recent/History).
   function renderCard(item, isLib, allowSave, hideBadge = false) {
       if (item.type === 'HEADER')
-          return `<div class="search-divider">${item.title}</div>`;
+          return /*html*/`<div class="search-divider">${item.title}</div>`;
 
       const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
       const uriEnc = encodeURIComponent(JSON.stringify(item));
-      const badge = (item.slot > 0 && !hideBadge) ? `<div class="preset-badge">${item.slot}</div>` : '';
+      const badge = (item.slot > 0 && !hideBadge) ? /*html*/`<div class="preset-badge">${item.slot}</div>` : '';
 
       // --- ARTWORK LOGIC (Unified Z-Index Sandwich) ---
       const fallbackClass = (item.type === 'custom_url' || item.type === 'radio') ? 'art-globe' : 'art-blank';
       let imgHtml = '';
 
       if (item.image && item.image !== 'custom_url') {
-          imgHtml = `
-          <div class="art ${fallbackClass}" style="position:relative; overflow:hidden;">
-             <img src="${item.image}" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:10;" onerror="this.style.display='none'">
+          imgHtml = /*html*/`
+          <div class="art ${fallbackClass}">
+             <img src="${item.image}" onerror="this.style.display='none'">
           </div>`;
       } else {
           imgHtml = `<div class="art ${fallbackClass}"></div>`;
@@ -816,38 +852,35 @@
       let btns = '';
 
 		// IF HISTORY (-1): Show instant Save and Delete
-      if (item.slot === -1) {
-          btns = `<button class="btn-sm" onclick="saveToLibraryDirect('${item.uuid}')">💾 Save to Library</button>
-                <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}', true)" title="Delete Stream" style="color: var(--danger); font-size: 0.8em; font-weight: bold;">✖</button>`;
-      }
+        if (item.slot === -1) {
+            btns = /*html*/`
+                <button class="btn-sm" onclick="saveToLibraryDirect('${item.uuid}')">💾 Save to Library</button>
+                <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}', true)" title="Remove">✖</button>
+            `;
+        }
       // IF NORMAL: Show Play, plus Edit/Save
       else {
-          btns = `<button class="btn-sm" onclick="playItemGlobal('${uriEnc}')">▶ Play</button>`;
+          btns = /*html*/`<button class="btn-sm" onclick="playItemGlobal('${uriEnc}')">▶ Play</button>`;
           if (isLib) {
-              if (item.slot > 0) {
-                  // Preset: Edit button + Uniform Red X
-                  btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">✎ Edit</button>
-            <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}')" title="Clear Preset" style="color: var(--danger); font-size: 0.8em; font-weight: bold;">✖</button>`;
-              } else {
-                  // Favorite: Edit button + Uniform Red X
-                  btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">✎ Edit</button>
-            <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}')" title="Delete Favorite" style="color: var(--danger); font-size: 0.8em; font-weight: bold;">✖</button>`;
-              }
+            btns += /*html*/` 
+                <button class="btn-sm" onclick="openModal(${safeItem})">✎ Edit</button>
+                <button class="btn-sm action-delete" onclick="deleteItem('${item.uuid}')" title="Remove">✖</button>
+            `;
           } else if (allowSave) {
               btns += ` <button class="btn-sm" onclick="openModal(${safeItem})">💾 Save</button>`;
           }
       }
 
-      return `
-      <div class="card">
-        ${badge}
-        ${imgHtml}
-        <div class="info">
-          <span class="title">${item.name}</span>
-          <span class="sub">${item.subtitle || item.type}</span>
-          <div class="actions">${btns}</div>
+      return /*html*/`
+        <div class="card">
+            ${badge}
+            ${imgHtml}
+            <div class="info">
+            <span class="title">${item.name}</span>
+            <span class="sub">${item.subtitle || item.type}</span>
+            <div class="actions">${btns}</div>
+            </div>
         </div>
-      </div>
     `;
   }
 
@@ -1214,7 +1247,8 @@
           const btnStyle = 'justify-content:space-between;';
           const clickAction = isDisabled ? '' : `onclick="confirmPlay('${d.ip}')"`;
 
-          return `<button class="${btnClass}" style="${btnStyle}" ${clickAction}>
+          return /*html*/ `
+          <button class="${btnClass}" style="${btnStyle}" ${clickAction}>
               ${d.name} <span style="font-size:0.8em; color:var(--text-secondary)">${subText}</span>
            </button>`;
       }).join('');
@@ -1295,7 +1329,7 @@
           ...item,
           slot: 0
       };
-
+      
       await api('/api/manager/save', {
           method: 'POST',
           body: JSON.stringify(data)

@@ -179,8 +179,13 @@ input:disabled + label {
   position: sticky;
   top: 10px;
   z-index: 999;
-
+  
+  pointer-events: none;
   padding: 0px 0 2px 0;
+
+  div {
+    pointer-events: auto;
+  }
 
   &::after {
     content: "";
@@ -672,7 +677,7 @@ button:disabled,
   color: var(--text-secondary);
 }
 
-.control-row-label {
+.control-labels {
   font-size: 0.9em;
 
   color: var(--text-secondary);
@@ -686,7 +691,7 @@ button:disabled,
 
   padding: 4px 0;
 
-  .control-row-label {
+  .control-labels {
     font-size: 0.9em;
 
     color: var(--text-secondary);
