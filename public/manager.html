@@ -27,6 +27,11 @@
                 <img src="images/hybrid_icon.png" alt="Logo">
                 Bose SoundTouch Hybrid
             </div>
+<!--             <h2 class="libary-title">
+                SoundTouch Library 
+                <span>via</span> 
+                <img src="images/ma_icon.png" alt="MA">
+            </h2> -->
             <div class="global-nav-menu">
                 <button class="global-link" onclick="window.location.href='control.html'">Remote</button>
                 <button class="global-link active" onclick="window.location.href='manager.html'">Library</button>
@@ -34,15 +39,7 @@
                 <button class="global-link" onclick="window.location.href='tools.html'">System</button>
             </div>
         </div>
-    </header>
-
-    <main class="app-content">
         <div class="app-content-header">
-            <h2 class="libary-title">
-                SoundTouch Library 
-                <span>via</span> 
-                <img src="images/ma_logo.png" alt="MA">
-            </h2>
     
             <div class="top-bar">
                 <div class="card speaker-select">
@@ -82,42 +79,54 @@
                 </div>
             </div>
         </div>
+    </header>
+
+    <main class="app-content">
 
         <div id="tab-library" data-tab="library">
-            <div class="section-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <span style="white-space:nowrap;">Physical Presets</span>
-                <div class="custom-dropdown-wrapper preset-view-filter-wrapper">
-
-                    <select id="preset-view-filter" class="mini-select" onchange="loadLibrary()">
-                        <option value="">Global (Default)</option>
-                    </select>
-                </div>
-            </div>
-            <div id="lib-presets" class="libary-grid">Loading...</div>
-            
-            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 10px; background: var(--card); border-radius: 12px; border: 1px solid var(--border);">
-                <div class="section-title" style="margin: 0; padding: 0; border: none; display: flex; align-items: baseline; gap: 6px; white-space: nowrap;">
-                    <span>FAVORITES</span>
-                </div>
-                
-                <div class="fav-controls">
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('all')">All</div>
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('playlist')">Playlists</div>
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('artist')">Artists</div>
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('album')">Albums</div>
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('track')">Tracks</div>
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('radio')">Radio</div>
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('podcast')">Podcasts</div>
-                    <div class="filter-pill fav-pill" onclick="setFavFilter('audiobook')">Audiobooks</div>
+            <section class="libary-section">
+                <div class="section-title-wrapper">
+                    <h3 class="section-title">Physical Presets</h3>
                     <div class="custom-dropdown-wrapper">
-                        <select id="fav-provider-filter" class="mini-select" onchange="loadLibrary()">
-                            <option value="all">All Providers</option>
+    
+                        <select id="preset-view-filter" class="mini-select" onchange="loadLibrary()">
+                            <option value="">Global (Default)</option>
                         </select>
                     </div>
                 </div>
-            </div>
+                <div id="lib-presets" class="libary-grid">Loading...</div>
+            </section>
+            
 
-            <div id="lib-favorites" class="libary-grid">Loading...</div>
+            <section class="libary-section">
+
+                <div class="section-title-wrapper">
+                    <h3 class="section-title">FAVORITES</h3>
+                </div>
+                
+                <div class="search-header">
+                    
+                    <div class="filter-pill-wrapper">
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('all')">All</div>
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('playlist')">Playlists</div>
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('artist')">Artists</div>
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('album')">Albums</div>
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('track')">Tracks</div>
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('radio')">Radio</div>
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('podcast')">Podcasts</div>
+                        <div class="filter-pill fav-pill" onclick="setFavFilter('audiobook')">Audiobooks</div>
+                        <div class="custom-dropdown-wrapper">
+                            <select id="fav-provider-filter" class="mini-select" onchange="loadLibrary()">
+                                <option value="all">All Providers</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+    
+                <div id="lib-favorites" class="libary-grid">Loading...</div>
+            </section>
+
+            
         </div>
 
         <div id="tab-nowplaying" data-tab="nowplaying" style="display:none">
@@ -140,7 +149,7 @@
         <div id="tab-search" data-tab="search" style="display:none">
             <div class="search-header">
                 <div class="source-row" id="dynamic-source-row"></div>
-                <div class="filter-row" id="filter-row">
+                <div class="filter-pill-wrapper" id="filter-row">
                     <div class="filter-pill active" onclick="setFilter('playlist')">Playlists</div>
                     <div class="filter-pill" onclick="setFilter('artist')">Artists</div>
                     <div class="filter-pill" onclick="setFilter('album')">Albums</div>
@@ -243,7 +252,7 @@
     
     <label class="control-labels">Playback Options</label>
     <div class="inner-panel">
-        <div class="check-row" id="row-shuffle" style="margin-bottom:10px;">
+        <div class="check-row" id="row-shuffle">
             <label class="checkbox-label">
                 <input type="checkbox" class="checkbox" id="edit-shuffle"> 
                 Shuffle
@@ -270,9 +279,9 @@
 
 <div id="speaker-modal" class="modal">
     <div class="modal-content" style="width: 300px; text-align: center;">
-        <h3 style="margin-top:0;">Play on Speaker</h3>
+        <h3>Play on Speaker</h3>
         <div id="speaker-list" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
-        <button class="btn" style="margin-top:15px; width:100%; border:1px solid #444;" onclick="closeSpeakerModal()">Cancel</button>
+        <button class="btn-secondary" onclick="closeSpeakerModal()">Cancel</button>
     </div>
 </div>
 

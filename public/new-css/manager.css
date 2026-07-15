@@ -198,7 +198,7 @@ input:disabled + label {
   position: relative;
 }
 
-.app-content-header {
+/* .app-content-header {
   position: sticky;
   top: 3dvh;
   z-index: 900;
@@ -208,16 +208,6 @@ input:disabled + label {
     pointer-events: auto;
   }
 
-/*   &::before {
-    z-index: -2;
-    content: "";
-    position: absolute;
-
-    width: 100%;
-
-    height: calc(100%);
-    backdrop-filter: blur(10px);
-  } */
 
   &::after {
     content: "";
@@ -231,7 +221,6 @@ input:disabled + label {
 
     backdrop-filter: blur(10px);
 
-    /* Create the gradient fade */
     -webkit-mask-image: linear-gradient(
       0deg,rgba(0, 0, 0, 0) 0%,
       rgba(0, 0, 0, 0.44) 17%,
@@ -246,13 +235,10 @@ input:disabled + label {
     );
   }
   
-}
+} */
 
 .custom-dropdown-wrapper {
-  /* position: relative;
-  z-index: 0;
-  display: block;
-  grid-column: span 5; */
+
 
   :open::picker(select) {
     margin-top: 5px;
@@ -299,7 +285,8 @@ input:disabled + label {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  width: 100%;
+  overflow: none;
+  width: 150px;
 
   height: 100%;
   padding: 4px 12px;
@@ -397,12 +384,22 @@ option {
   flex-direction: row;
 }
 
+.section-title-wrapper {
+  display: flex;
+  margin: 30px 0 10px 0;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  width: 100%;
+  gap: 15px;
+}
+
 .section-title {
   padding-bottom: 5px;
 
-  border-bottom: 1px solid #333;
-  margin: 30px 0 10px 0;
   font-size: 0.85em;
+  align-items: baseline;
+  padding: 0;
 
   letter-spacing: 1px;
 
@@ -412,23 +409,7 @@ option {
 }
 
 
-.search-divider {
-  display: block;
 
-  padding-bottom: 5px;
-
-  border-bottom: 1px solid #444;
-  margin-top: 25px;
-  margin-bottom: 10px;
-  font-size: 1.1em;
-
-  font-weight: bold;
-
-  text-transform: uppercase;
-
-  color: var(--accent);
-  grid-column: 1 / -1;
-}
 
 .fav-controls {
   display: flex;
@@ -436,10 +417,28 @@ option {
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
-  flex-grow: 1;
   gap: 6px;
+  flex-grow: 1;
 
   /* Flush right on Desktop */
+}
+
+.filter-row {
+  display: flex;
+
+  gap: 8px;
+}
+
+.filter-pill-wrapper {
+    display: flex;
+
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  flex-grow: 1;
+
+
 }
 
 .filter-pill {
@@ -476,6 +475,39 @@ option {
   gap: 10px;
   flex-direction: row;
   align-items: stretch;
+}
+
+.search-header {
+  z-index: 900;
+  padding: 15px;
+  border: 1px solid var(--border);
+  backdrop-filter: blur(5px);
+
+  border-radius: 20px;
+  
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  background: var(--card);
+}
+
+.search-divider {
+  display: block;
+
+  padding-bottom: 5px;
+
+  border-bottom: 1px solid #444;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+
+  font-weight: bold;
+
+  text-transform: uppercase;
+
+  color: var(--accent);
+  grid-column: 1 / -1;
 }
 
 .checkbox-label {
@@ -561,7 +593,9 @@ input.text-inputs{
   position: sticky;
   top: 10px;
   z-index: 999;
-
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 0px 0 2px 0;
 
   pointer-events: none;
@@ -606,12 +640,11 @@ input.text-inputs{
   box-sizing: unset;
 
   height: 50px;
-  padding: 15px 25px;
+  padding: 5px 25px;
 
   border: 1px solid var(--border);
 
   border-radius: 12px;
-  margin-bottom: 20px;
 
   background: var(--card);
 
@@ -915,9 +948,8 @@ button.global-link {
 
 .libary-grid {
   display: grid;
-
   /* minmax(260px) guarantees exactly 4 cards per row on standard desktop screens */
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   gap: 15px;
 }
 
@@ -945,6 +977,11 @@ button.global-link {
   object-fit: cover;
 }
 
+.libary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .art {
   width: 60px;
@@ -974,16 +1011,16 @@ button.global-link {
 }
 
 
-#lib-presets {
+/* #lib-presets {
   display: grid;
 
-  /* Restores the perfect centered 3x2 layout for your 6 physical presets */
+  /* Restores the perfect centered 3x2 layout for your 6 physical presets
   justify-content: center;
   grid-template-columns: repeat(3, 280px);
   gap: 15px;
 
   margin-bottom: 25px;
-}
+} */
 
 .title {
   font-size: 14px;
@@ -1032,17 +1069,7 @@ button.global-link {
 }
 
 
-.search-header {
-  z-index: 900;
-  padding: 15px;
-  border: 1px solid var(--border);
-  backdrop-filter: blur(5px);
 
-  border-radius: 12px;
-  margin-bottom: 20px;
-
-  background: var(--card);
-}
 
 .tools-subpage {
   display: block;
@@ -1399,10 +1426,11 @@ button:disabled,
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    width: 500px;
     gap: 12px;
+    height: 100%;
 
     font-size: 1.4em;
-    margin-bottom: 20px;
     color: var(--title-color);
 
     span {
@@ -1656,10 +1684,8 @@ button:disabled,
 
 .source-row {
   display: flex;
-
   gap: 10px;
-
-  margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
 .source-btn {
@@ -1733,13 +1759,6 @@ button:disabled,
   background: #3498db;
 }
 
-.filter-row {
-  display: flex;
-
-  gap: 8px;
-
-  margin-bottom: 10px;
-}
 
 /* --- MASS ERROR BANNER --- */
 
@@ -2020,5 +2039,10 @@ button:disabled,
 
       margin-top: 5px;
     }
+  }
+
+  .filter-pill-wrapper {
+    flex-wrap: wrap;
+    overflow-x: auto;
   }
 }
