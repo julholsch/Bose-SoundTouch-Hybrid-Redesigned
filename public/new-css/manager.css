@@ -746,7 +746,7 @@ button.global-link {
 
   border: 1px solid var(--border);
   backdrop-filter: blur(5px);
-
+  transition: all .2s ease-in-out;
   border-radius: 16px;
 
   background: var(--card);
@@ -1209,6 +1209,14 @@ button {
   &:active:not(:disabled) {
     transition: all .15s ease-out;
     scale: .95;
+  }
+
+  &:disabled {
+    opacity: .5;
+    border-color: transparent;
+    cursor: not-allowed;
+    pointer-events: auto !important;
+    
   }
 }
 

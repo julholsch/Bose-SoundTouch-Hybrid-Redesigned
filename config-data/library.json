@@ -103,5 +103,20 @@
       "shuffle": false,
       "repeat": "off"
     }
+  },
+  {
+    "uuid": "9f16d6c8",
+    "slot": 1,
+    "speakerIp": "192.168.178.33",
+    "name": "PonyvilleFM - The original",
+    "subtitle": "Local NAS",
+    "uri": "library://radio/1",
+    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
+    "type": "radio",
+    "provider": "builtin",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
   }
 ]

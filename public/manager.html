@@ -315,6 +315,7 @@
   // State management for the current view and search filters
   
   let filterValue = readUrlFilter("tab");
+  let selectedSpeaker = readUrlFilter("speaker");
   if (filterValue === null) {
     filterValue = "library";
   }
@@ -323,6 +324,7 @@
       source: 'global',
       filter: 'playlist',
       tab: filterValue,
+      speaker: selectedSpeaker,
       favFilter: 'all'
   };
   let selectedUuid = null;
@@ -374,9 +376,11 @@
     window.addEventListener("popstate", () => {
         // Aktuellen Tab aus der geänderten URL auslesen oder Fallback nutzen
         const currentTab = readUrlFilter("tab") || "library";
+        const currentSpeaker = readUrlFilter("speaker");
         console.log("popstat");
         // UI umschalten, aber das Update der URL blockieren (da der Browser das schon tat)
         newSwitchTab(currentTab, false);
+        selectSpeakerByFilter(currentSpeaker);
     });
 
     // --- INITIALIZATION ---
@@ -433,143 +437,170 @@
       }
   }
 
-  // --- API WRAPPER ---
-  // Simplifies fetch calls and error handling across the application.
-  // This reduces code duplication significantly.
-  async function api(url, options = {}) {
-      try {
-          const res = await fetch(url, {
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              ...options
-          });
-          return await res.json();
-      } catch (e) {
-          console.error("API Error:", e);
-          return {
-              error: e.message
-          };
-      }
-  }
+// --- API WRAPPER ---
+// Simplifies fetch calls and error handling across the application.
+// This reduces code duplication significantly.
+    async function api(url, options = {}) {
+        try {
+            const res = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                ...options
+            });
+            return await res.json();
+        } catch (e) {
+            console.error("API Error:", e);
+            return {
+                error: e.message
+            };
+        }
+    }
 
-  // --- CORE LOGIC: SPEAKER SELECTION ---
-  // Fetches speakers from Mass and Status endpoints.
-  // Sorts based on backend confign order (speakers.json).
-  // Implements logic to Auto-Select a playing speaker (Priority A/B/C).
-  // --- CORE LOGIC: SPEAKER SELECTION ---
-  async function fetchSpeakers() {
-      const select = document.getElementById('global-speaker');
-      try {
-          const [maPlayers, stDevices] = await Promise.all([
-                      api('/api/manager/players'),
-                      api('/api/status')
-                  ]);
+// --- CORE LOGIC: SPEAKER SELECTION ---
+// Fetches speakers from Mass and Status endpoints.
+// Sorts based on backend confign order (speakers.json).
+// Implements logic to Auto-Select a playing speaker (Priority A/B/C).
+// --- CORE LOGIC: SPEAKER SELECTION ---
+    async function fetchSpeakers() {
+        const select = document.getElementById('global-speaker');
+        try {
+            const [maPlayers, stDevices] = await Promise.all([
+                        api('/api/manager/players'),
+                        api('/api/status')
+                    ]);
 
-          if (!stDevices || !stDevices.length) {
-              select.innerHTML = '<option value="">No Speakers</option>';
-              return;
-          }
+            if (!stDevices || !stDevices.length) {
+                select.innerHTML = '<option value="">No Speakers</option>';
+                return;
+            }
 
-          // 1. OUTER JOIN: Uses stDevices (speakers.json) as the master list.
-          const options = stDevices.map(d => {
-              const p = maPlayers ? maPlayers.find(mp => mp.ip === d.ip) : null;
+            // 1. OUTER JOIN: Uses stDevices (speakers.json) as the master list.
+            const options = stDevices.map(d => {
+                const p = maPlayers ? maPlayers.find(mp => mp.ip === d.ip) : null;
 
-              const isPlaying = (d.playStatus === 'PLAY_STATE' || d.playStatus === 'BUFFERING_STATE');
-              const isOffline = !d.online;
-              const isMissingFromMass = !p;
+                const isPlaying = (d.playStatus === 'PLAY_STATE' || d.playStatus === 'BUFFERING_STATE');
+                const isOffline = !d.online;
+                const isMissingFromMass = !p;
 
-              let icon = '';
-              let colorClass = '';
+                let icon = '';
+                let colorClass = '';
 
-              // Determine Icons & Classes
-              if (isOffline) {
-                  icon = ' 🔴';
-                  colorClass = 'class="status-offline"';
-              } else if (isMissingFromMass) {
-                  icon = ' 🔇';
-                  colorClass = 'class="status-missing"';
-              } else if (isPlaying) {
-                  icon = ' 🎵';
-              }
+                // Determine Icons & Classes
+                if (isOffline) {
+                    icon = ' 🔴';
+                    colorClass = 'class="status-offline"';
+                } else if (isMissingFromMass) {
+                    icon = ' 🔇';
+                    colorClass = 'class="status-missing"';
+                } else if (isPlaying) {
+                    icon = ' 🎵';
+                }
 
-              const finalLabel = `${d.name}${icon}`;
+                const finalLabel = `${d.name}${icon}`;
 
-              // --- THE FILTERS ---
-              const isStereoRight = (d.stereoRole === 'RIGHT');
-              let playDisabledAttr = '';
-              if (isOffline || isMissingFromMass) {
-                  playDisabledAttr = `disabled ${colorClass}`;
-              } else if (isStereoRight) {
-                  playDisabledAttr = `disabled style="color: var(--text-secondary); font-style: italic;"`;
-              }
+                // --- THE FILTERS ---
+                const isStereoRight = (d.stereoRole === 'RIGHT');
+                let playDisabledAttr = '';
+                if (isOffline || isMissingFromMass) {
+                    playDisabledAttr = `disabled ${colorClass}`;
+                } else if (isStereoRight) {
+                    playDisabledAttr = `disabled style="color: var(--text-secondary); font-style: italic;"`;
+                }
 
-              const playValue = p ? p.id : '';
-              const editStyleAttr = colorClass ? `${colorClass}` : '';
+                const playValue = p ? p.id : '';
+                const editStyleAttr = colorClass ? `${colorClass}` : '';
 
-              return {
-                  htmlId: `<option value="${playValue}" data-ip="${d.ip}" data-playing="${isPlaying}" ${playDisabledAttr}>${finalLabel}</option>`,
-                  htmlIp: `<option value="${d.ip}" ${editStyleAttr}>${finalLabel}</option>`,
-                  isPlaying: isPlaying,
-                  id: playValue,
-                  isPlayable: (!isOffline && !isMissingFromMass && !isStereoRight)
-              };
-          });
+                return {
+                    htmlId: `<option value="${playValue}" data-ip="${d.ip}" data-mac="${d.mac}" data-playing="${isPlaying}" ${playDisabledAttr}>${finalLabel}</option>`,
+                    htmlIp: `<option value="${d.ip}" ${editStyleAttr}>${finalLabel}</option>`,
+                    isPlaying: isPlaying,
+                    id: playValue,
+                    mac: d.mac,
+                    isPlayable: (!isOffline && !isMissingFromMass && !isStereoRight)
+                };
+            });
 
-          select.innerHTML = options.length ? options.map(o => o.htmlId).join('') : '<option value="">No Configured Speakers Found</option>';
+            select.innerHTML = options.length ? options.map(o => o.htmlId).join('') : '<option value="">No Configured Speakers Found</option>';
 
-          const ipOptionsHtml = options.map(o => o.htmlIp).join('');
+            const ipOptionsHtml = options.map(o => o.htmlIp).join('');
 
-          const viewFilter = document.getElementById('preset-view-filter');
-          if (viewFilter) {
-              const currentVal = viewFilter.value;
-              viewFilter.innerHTML = `<option value="">Global (Default)</option>${ipOptionsHtml}`;
-              if (currentVal)
-                  viewFilter.value = currentVal;
-          }
+            const viewFilter = document.getElementById('preset-view-filter');
+            if (viewFilter) {
+                const currentVal = viewFilter.value;
+                viewFilter.innerHTML = `<option value="">Global (Default)</option>${ipOptionsHtml}`;
+                if (currentVal)
+                    viewFilter.value = currentVal;
+            }
 
-          const editFilter = document.getElementById('edit-speaker');
-          if (editFilter) {
-              const currentEditVal = editFilter.value;
-              editFilter.innerHTML = `<option value="">Global (All Speakers)</option>${ipOptionsHtml}`;
-              if (currentEditVal)
-                  editFilter.value = currentEditVal;
-          }
+            const editFilter = document.getElementById('edit-speaker');
+            if (editFilter) {
+                const currentEditVal = editFilter.value;
+                editFilter.innerHTML = `<option value="">Global (All Speakers)</option>${ipOptionsHtml}`;
+                if (currentEditVal)
+                    editFilter.value = currentEditVal;
+            }
 
-          // 2. AUTO-SELECT LOGIC
-          const playableOptions = options.filter(o => o.isPlayable);
-          const activeSpeaker = playableOptions.find(o => o.isPlaying);
+            // 2. AUTO-SELECT LOGIC
+            const playableOptions = options.filter(o => o.isPlayable);
+            const activeSpeaker = playableOptions.find(o => o.isPlaying);
 
-          if (activeSpeaker) {
-              select.value = activeSpeaker.id;
-              saveSpeakerSelection();
+            // Wir suchen genau das Objekt, bei dem die MAC mit state.speaker übereinstimmt
+            const matchedSpeaker = playableOptions.find(o => o.mac === state.speaker);
 
-          } else {
-              const saved = localStorage.getItem('bose_active_speaker');
-              if (saved && Array.from(select.options).some(o => o.value === saved && !o.disabled)) {
-                  select.value = saved;
-              } else {
-                  const firstValid = Array.from(select.options).find(o => !o.disabled && o.value !== "");
-                  if (firstValid) {
-                      select.value = firstValid.value;
-                      saveSpeakerSelection();
-                  }
-              }
-          }
+
+            console.log(state.speaker);
+            console.log(matchedSpeaker);
+
+            // ICH JULIUS Versuche hier auf die mac adress zu prüfen NICHTS VERÄNDERN BITTE!!
+            if (state.speaker != null && matchedSpeaker) {
+                select.value = matchedSpeaker.id;
+                saveSpeakerSelection();
+            } else {
+                // Dieser teil exsetierte schon vorher
+                if (activeSpeaker) {
+                    select.value = activeSpeaker.id;
+                    saveSpeakerSelection();
+
+                } else {
+                    const saved = localStorage.getItem('bose_active_speaker');
+                    if (saved && Array.from(select.options).some(o => o.value === saved && !o.disabled)) {
+                        select.value = saved;
+                    } else {
+                        const firstValid = Array.from(select.options).find(o => !o.disabled && o.value !== "");
+                        if (firstValid) {
+                            select.value = firstValid.value;
+                            saveSpeakerSelection();
+                        }
+                    }
+                }
+            }
 
 
         loadNowPlaying();
 
-      } catch (e) {
-          select.innerHTML = '<option>Error Loading</option>';
-      }
-  }
+        } catch (e) {
+            select.innerHTML = '<option>Error Loading</option>';
+        }
+    }
+    function saveSpeakerSelection() {
+        const select = document.getElementById('global-speaker');
+        
+        // Erst den normalen Value für den localStorage speichern
+        localStorage.setItem('bose_active_speaker', select.value);
+        
+        // Prüfen ob überhaupt eine Option ausgewählt ist und ein Wert existiert
+        if (select.selectedIndex !== -1 && select.value) {
+            // Über selectedOptions[0] greifen wir direkt auf die aktive Option zu
+            const macAddress = select.selectedOptions[0].dataset.mac;
+            
+            // Jetzt schreiben wir die gefundene MAC in den URL Filter
+            updateUrlFilter("speaker", macAddress, replaceState = true);
+        }
+    }
 
-  function saveSpeakerSelection() {
-      localStorage.setItem('bose_active_speaker', document.getElementById('global-speaker').value);
-  }
 
-  // Called when user manually changes the dropdown.
+    // Called when user manually changes the dropdown.
     function handleSpeakerChange() {
         saveSpeakerSelection();
         // If viewing the Now Playing tab, refresh immediately to show the new speaker's status.
@@ -1052,11 +1083,27 @@
 
       // Generate Preset Cards (Slots 1-6) based on selected scope
       const presets = [1, 2, 3, 4, 5, 6].map(slot => {
-          const item = library.find(i => i.slot === slot && (i.speakerIp || '') === viewScope);
-          if (item)
-              return renderCard(item, true, true);
-          // Updated empty slot styling to use a class instead of inline dim styles
-          return `<div class="card empty-slot">Slot ${slot} Empty (${viewScope === '' ? 'Global' : 'Hybrid'})</div>`;
+            const item = library.find(i => i.slot === slot && (i.speakerIp || '') === viewScope);
+            if (item)
+                return renderCard(item, true, true);
+            // Updated empty slot styling to use a class instead of inline dim styles
+            //  return `<div class="card">Slot ${slot} Empty (${viewScope === '' ? 'Global' : 'Hybrid'})</div>`; */
+            return /*html*/`
+                <div class="card">
+                    <div class="preset-badge">${slot}</div>
+                    <div class="art">
+                    </div>
+                    <div class="info">
+                    <span class="title">Preset</span>
+                    <span class="sub">Empty Preset</span>
+                    <div class="actions">
+                        <button class="btn-sm" disabled>▶ Play</button>
+                        <button class="btn-sm" disabled>✎ Edit</button>
+                        <button class="btn-sm action-delete" disabled>✖</button>
+                    </div>
+                    </div>
+                </div>
+            `;
       }).join('');
 
       // --- FAVORITES FILTERING & DYNAMIC DROPDOWN ---
