@@ -25,7 +25,9 @@
         <div class="header-inner-panel">
             <div class="app-logo">
                 <img src="images/hybrid_icon.png" alt="Logo">
-                Bose SoundTouch Hybrid
+                <span>
+                    Bose SoundTouch Hybrid
+                </span>
             </div>
 <!--             <h2 class="libary-title">
                 SoundTouch Library 
@@ -42,15 +44,7 @@
         <div class="app-content-header">
     
             <div class="top-bar">
-                <div class="card speaker-select">
-                    <span class="speaker-label" id="play-on-label">Play On:</span>
-                    <div class="custom-dropdown-wrapper">
-                        
-                        <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
-                            <option value="">Loading...</option>
-                        </select>
-                    </div>
-                </div>
+
             
                 <div class="nav-tabs manager-main-tabs">
                     <button class="nav-btn" data-tab-target="library" onclick="/* switchTab('library'), */ newSwitchTab('library')">
@@ -58,10 +52,10 @@
                         <img src="images/bose_icon.png">
                     </button>
                     
-                    <button class="nav-btn" data-tab-target="nowplaying" onclick="/* switchTab('nowplaying'), */ newSwitchTab('nowplaying')">
+<!--                     <button class="nav-btn" data-tab-target="nowplaying" onclick="/* switchTab('nowplaying'), */ newSwitchTab('nowplaying')">
                         Now Playing
                         <span style="font-size:1.2em;">🎵</span>
-                    </button>
+                    </button> -->
     
                     <button class="nav-btn" data-tab-target="recents" onclick="/* switchTab('recents'), */ newSwitchTab('recents')">
                         Recents
@@ -129,18 +123,6 @@
             
         </div>
 
-        <div id="tab-nowplaying" data-tab="nowplaying" style="display:none">
-            <div class="np-view">
-                <div class="np-card">
-                    <img id="np-img" src="" class="np-art" style="display:none;" onerror="this.style.display='none'">
-                    <div id="np-track" class="np-track">Loading...</div>
-                    <div id="np-artist" class="np-artist">---</div>
-                    <div id="np-album" class="np-album">---</div>
-                    <div id="np-status" class="np-status-badge">CONNECTING</div>
-                </div>
-            </div>
-        </div>
-
         <div id="tab-recents" data-tab="recents" style="display:none">
             <div class="section-title">Recently Played from Music Assistant</div>
             <div id="recents-results" class="libary-grid">Loading...</div>
@@ -204,8 +186,34 @@
             <div class="section-title">Recent Unsaved Streams</div>
             <div id="custom-history-results" class="libary-grid">Loading...</div>
         </div>
+
+
     </main>
+    <div class="np-view">
+        <div class="np-card">
+            <img id="np-img" src="" class="np-art" style="display:none;" onerror="this.style.display='none'">
+            <div class="np-infos">
+                <div id="np-track" class="np-track">Loading...</div>
+                <div id="np-artist" class="np-artist">---</div>
+                <div id="np-album" class="np-album">---</div>
+                <div id="np-timer" class="np-timer"></div>
+            </div>
+            <div id="np-status" class="np-status-badge">CONNECTING</div>
+            <div class="speaker-select">
+                <!-- <span class="speaker-label" id="play-on-label">Play On:</span> -->
+                <div class="custom-dropdown-wrapper">
+                    
+                    <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    
+    </div>
 </div>
+<!--     <div class="noplaying-bar"> -->
+<!--     </div> -->
 <div id="modal" class="modal">
   <div class="modal-card">
     <h3>Save to Library</h3>
@@ -519,7 +527,6 @@
           if (activeSpeaker) {
               select.value = activeSpeaker.id;
               saveSpeakerSelection();
-              newSwitchTab('nowplaying');
 
           } else {
               const saved = localStorage.getItem('bose_active_speaker');
@@ -534,8 +541,8 @@
               }
           }
 
-          if (state.tab === 'nowplaying')
-              loadNowPlaying();
+
+        loadNowPlaying();
 
       } catch (e) {
           select.innerHTML = '<option>Error Loading</option>';
@@ -547,17 +554,16 @@
   }
 
   // Called when user manually changes the dropdown.
-  function handleSpeakerChange() {
-      saveSpeakerSelection();
-      // If viewing the Now Playing tab, refresh immediately to show the new speaker's status.
-      if (state.tab === 'nowplaying')
-          loadNowPlaying();
-  }
+    function handleSpeakerChange() {
+        saveSpeakerSelection();
+        // If viewing the Now Playing tab, refresh immediately to show the new speaker's status.
+        loadNowPlaying();
+    }
 
     function newSwitchTab(tabTarget, shouldUpdateUrl = true, replaceHistory = false) {
         state.tab = tabTarget;
 
-        ['library', 'nowplaying', 'recents', 'search', 'custom'].forEach(tab => {
+        ['library', 'recents', 'search', 'custom'].forEach(tab => {
             document.querySelector(`[data-tab="${tab}"]`).style.display = 'none';
         });
         
@@ -582,7 +588,7 @@
             }
         });
 
-        // Update Label UI
+/*         // Update Label UI
         const label = document.getElementById('play-on-label');
         if (tabTarget === 'nowplaying') {
             label.innerText = "Now Playing On:";
@@ -592,7 +598,7 @@
             label.innerText = "Play On:";
             label.style.color = "";
             stopNpPolling();
-        }
+        } */
 
         // Refresh Data for specific tabs
         if (tabTarget === 'library') loadLibrary();
@@ -744,7 +750,8 @@
           track: document.getElementById('np-track'),
           artist: document.getElementById('np-artist'),
           album: document.getElementById('np-album'),
-          status: document.getElementById('np-status')
+          status: document.getElementById('np-status'),
+          timer: document.getElementById('np-timer')
       };
 
       if (device) {
@@ -789,7 +796,8 @@
                   timerHtml = `<span class="np-timer">${formatTime(currentPos)} / ${formatTime(device.duration)}</span>`;
               }
 
-              els.status.innerHTML = `<span style="color:${color}">${label}</span>${timerHtml}`;
+              els.status.innerHTML = `<span style="color:${color}">${label}</span>`;
+              els.timer.innerHTML = `${timerHtml}`;
           }
       } else {
           els.img.outerHTML = `<div id="np-img" class="np-art art-blank"></div>`;

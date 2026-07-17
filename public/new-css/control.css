@@ -982,22 +982,21 @@ input[type=range]:active {
   .header-inner-panel {
     overflow: hidden;
 
-    flex-direction: column;
+    flex-direction: row;
     gap: 15px;
 
     height: auto;
     padding: 15px;
+    flex-wrap: nowrap;
 
     text-align: center;
   }
 
   .app-logo {
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
-
-    width: 100%;
+    width: min-content;
 
     white-space: wrap;
   }
@@ -1008,8 +1007,6 @@ input[type=range]:active {
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
-
-    width: 100%;
   }
 
   .global-link {
@@ -1017,12 +1014,11 @@ input[type=range]:active {
 
     padding: 10px;
 
-    border: 1px solid var(--btn-border);
-
+    border: 1px solid transparent;
     text-align: center;
 
     color: var(--btn-text);
-    background: var(--btn-bg);
+    background: var(--btn-border);
 
     &.active {
       border-color: var(--accent);
@@ -1031,6 +1027,10 @@ input[type=range]:active {
       background: var(--accent);
     }
   }
+  .app-logo span {
+    display: none;
+  }
+  
 
   .stream-grid {
     grid-template-columns: 1fr;

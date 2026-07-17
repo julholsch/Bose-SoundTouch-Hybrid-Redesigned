@@ -1723,7 +1723,7 @@ button:disabled,
 ========================================= 
 */
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .modal-content.pdf-mode {
     width: 100%;
 
@@ -1744,34 +1744,31 @@ button:disabled,
   .header-inner-panel {
     overflow: hidden;
 
-    flex-direction: column;
+    flex-direction: row;
     gap: 15px;
 
-    height: auto !important;
+    height: auto;
     padding: 15px;
+    flex-wrap: nowrap;
 
     text-align: center;
   }
 
   .app-logo {
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
-
-    width: 100%;
+    width: min-content;
 
     white-space: wrap;
   }
 
   .global-nav-menu {
-    display: flex !important;
+    display: flex;
 
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
-
-    width: 100%;
   }
 
   .global-link {
@@ -1779,12 +1776,11 @@ button:disabled,
 
     padding: 10px;
 
-    border: 1px solid var(--btn-border);
-
+    border: 1px solid transparent;
     text-align: center;
 
     color: var(--btn-text);
-    background: var(--btn-bg);
+    background: var(--btn-border);
 
     &.active {
       border-color: var(--accent);
@@ -1792,6 +1788,9 @@ button:disabled,
       color: black;
       background: var(--accent);
     }
+  }
+  .app-logo span {
+    display: none;
   }
 
   .stream-grid {
