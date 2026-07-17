@@ -522,6 +522,7 @@
             // EXCLUSION: Stereo Left channels are NOT standard multi-room masters
             const isGroupMaster = d.zone && d.zone.master === d.mac && d.stereoRole !== 'LEFT';
             const isGroupMember = d.zone && d.zone.master && !isGroupMaster;
+            d.isGroupMaster = isGroupMaster;
             let statusText = ui.isStandby ? 'STANDBY' : 'ON';
             if (isGroupMaster)
                 statusText = 'MASTER';
@@ -562,7 +563,7 @@
 
         const dis = (val) => val ? 'disabled' : ''; // Utility for HTML attributes
         const cls = (val) => val ? 'btn-disabled' : ''; // Utility for CSS classes
-
+            
         return /*html*/ `
             <div class="card" id="card-${d.ip}">
                 <div class="card-header speaker">
@@ -570,7 +571,7 @@
                         ${d.name} 
                         <img src="images/bose_icon.png" alt="Bose">
                     </h3>
-                    <span class="status ${isGroupMaster || isGroupMember ? 'master' : ''}">${statusText}</span>
+                    <span class="status ${isGroupMaster ? 'master' : ''}">${statusText}</span>
                 </div>
                 <div class="playing-info ${ui.volDisabled ? 'transitioning-info' : ''}">
                     ${artHtml}
@@ -595,12 +596,11 @@
                     ${isGroupMaster || isGroupMember ? `` : '<p class="control-labels">Join Zone</p>'}
                     <div class="speaker-controls">
                         <div class="custom-dropdown-wrapper" data-master-select-wrapper="${d.ip}" style="">
-                            
-                            <select class="master-select" data-master-select="${d.ip}">
+                            <select class="master-select" ${isGroupMaster ? `disabled` : ``} data-master-select="${d.ip}">
                                 
                             </select>
                         </div>
-                        <button data-master-button="${d.ip}" class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" onmousedown="joinMaster('${d.ip}')" ${dis(ui.joinDisabled)}>${syncText}</button>
+                        <button data-master-button="${d.ip}"  ${isGroupMaster ? `disabled` : ``}  class="btn-secondary join ${ui.joinClass} ${cls(ui.joinDisabled)}" onmousedown="joinMaster('${d.ip}')" ${dis(ui.joinDisabled)}>${syncText}</button>
                     </div>
                     
                     <p class="control-labels">Presets</p>
@@ -682,8 +682,13 @@
             lastRenderedHTML = newHTML;
 
             // 3. ERST JETZT, wenn ALLE Karten im DOM existieren, die Dropdowns befüllen
+            // Ganz unten in deiner renderSpeakers Funktion, wo die Dropdowns befüllt werden:
             sortedList.forEach(device => {
-                populateJoinZoneDropdown(device.ip);
+
+                const shouldDisable = device.isGroupMaster;
+
+                // Wir übergeben das Ergebnis als zweiten Parameter
+                populateJoinZoneDropdown(device.ip, shouldDisable);
             });
         }
 
@@ -835,7 +840,7 @@
         });
     }
 
-async function populateJoinZoneDropdown(ip) {
+async function populateJoinZoneDropdown(ip, shouldDisable) { // Passt das zweite Argument an
     try {
         // 1. Fetch all registered speakers from the status endpoint
         const statusRes = await fetch('/api/status');
@@ -916,7 +921,8 @@ async function populateJoinZoneDropdown(ip) {
             masterSelect.disabled = true;
             masterSelect.innerHTML = '<option value="" disabled selected>No Speaker Available</option>';
         } else {
-            masterSelect.disabled = false;
+            // HIER WAR DER FEHLER: Nutzt jetzt die übergebene Variable statt blind false zu setzen
+            masterSelect.disabled = shouldDisable;
 
             let optionsHtml = `<button> <selectedcontent></selectedcontent></button>`;
 
@@ -944,6 +950,8 @@ async function populateJoinZoneDropdown(ip) {
         console.error("Critical error while populating the dropdown:", error);
     }
 }
+
+
     function joinMaster(slaveIp) {
         // 1. Das zugehörige Dropdown-Element über die Slave-IP finden
         const masterSelect = document.querySelector(`[data-master-select="${slaveIp}"]`);

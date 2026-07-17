@@ -294,6 +294,22 @@
 </div>
 
 <script>
+
+    const bottomNav = document.querySelector('.np-view');
+
+    if (bottomNav) {
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                // Holt die exakte Höhe inklusive Padding und Border
+                const height = entry.borderBoxSize[0].blockSize;
+                
+                // Setzt die CSS-Variable dynamisch auf das Root-Element
+                document.documentElement.style.setProperty('--np-view-heigth', `${height}px`);
+            }
+        });
+
+        resizeObserver.observe(bottomNav);
+    }
   // --- CONSTANTS & CONFIG ---
 
   // State management for the current view and search filters
