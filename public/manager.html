@@ -294,7 +294,7 @@
 </div>
 
 <script>
-
+    
     const bottomNav = document.querySelector('.np-view');
 
     if (bottomNav) {
@@ -390,6 +390,8 @@
         loadProviders();
         fetchSpeakers();
         newSwitchTab(filterValue, true, true);
+        
+        startNpPolling();
     }
 
   async function loadProviders() {
@@ -513,7 +515,7 @@
 
                 return {
                     htmlId: `<option value="${playValue}" data-ip="${d.ip}" data-mac="${d.mac}" data-playing="${isPlaying}" ${playDisabledAttr}>${finalLabel}</option>`,
-                    htmlIp: `<option value="${d.ip}" ${editStyleAttr}>${finalLabel}</option>`,
+                    htmlIp: `<option value="${d.ip}" data-id="${playValue}" data-ip="${d.ip}" data-mac="${d.mac}" ${editStyleAttr}>${finalLabel}</option>`,
                     isPlaying: isPlaying,
                     id: playValue,
                     mac: d.mac,
@@ -528,7 +530,7 @@
             const viewFilter = document.getElementById('preset-view-filter');
             if (viewFilter) {
                 const currentVal = viewFilter.value;
-                viewFilter.innerHTML = `<option value="">Global (Default)</option>${ipOptionsHtml}`;
+                viewFilter.innerHTML = `<option value="global">Global (Default)</option>${ipOptionsHtml}`;
                 if (currentVal)
                     viewFilter.value = currentVal;
             }
@@ -634,7 +636,7 @@
                 button.classList.remove('active');
             }
         });
-
+        
 /*         // Update Label UI
         const label = document.getElementById('play-on-label');
         if (tabTarget === 'nowplaying') {
@@ -858,41 +860,69 @@
 
   // --- ACTIONS ---
 
-  function playItemGlobal(itemEncoded) {
-      const item = JSON.parse(decodeURIComponent(itemEncoded));
-      const select = document.getElementById('global-speaker');
-      const speakerId = select.value;
-      const speakerName = select.selectedOptions[0].text;
+    async function playItemGlobal(itemEncoded, isPreset = false) {
+        const item = JSON.parse(decodeURIComponent(itemEncoded));
+        var speakerId;
+        var speakerName;
+        var speakerIp;
+        console.log(isPreset);
+        const selectFromPreset = document.getElementById('preset-view-filter');
+        const selectFromGlobal = document.getElementById('global-speaker');
+        console.log(selectFromPreset.selectedOptions[0].value);
 
-      // NEW: Extract the exact IP address directly from the dropdown option!
-      const speakerIp = select.selectedOptions[0].getAttribute('data-ip');
+        if (isPreset === true && selectFromPreset.selectedOptions[0].value != "global") {
+            speakerId = selectFromPreset.selectedOptions[0].dataset.id;
+            console.log(speakerId);
+            speakerName = selectFromPreset.selectedOptions[0].text;
+            speakerIp = selectFromPreset.selectedOptions[0].getAttribute("data-ip");
+            localStorage.setItem('bose_active_speaker', speakerId);
+            selectFromGlobal.value = selectFromPreset.selectedOptions[0].dataset.id;
+            loadNowPlaying()
+            // Prüfen ob überhaupt eine Option ausgewählt ist und ein Wert existiert
+            if (selectFromPreset.selectedIndex !== -1 && speakerId) {
+                // Über selectedOptions[0] greifen wir direkt auf die aktive Option zu
+                const macAddress = selectFromPreset.selectedOptions[0].dataset.mac;
+                
+                // Jetzt schreiben wir die gefundene MAC in den URL Filter
+                updateUrlFilter("speaker", macAddress, replaceState = true);
+                
+            }
+        } else {
+            speakerId = selectFromGlobal.value;
+            console.log(speakerId);
+            speakerName = selectFromGlobal.selectedOptions[0].text;
+            speakerIp = selectFromGlobal.selectedOptions[0].getAttribute("data-ip");
+        }
 
-      if (!speakerId) {
-          alert("Please select a speaker from the top menu first.");
-          return;
-      }
+        // NEW: Extract the exact IP address directly from the dropdown option!
+        
+        console.log(speakerId);
+        if (!speakerId) {
+            alert("Please select a speaker from the top menu first.");
+            return;
+        }
 
-      const settings = item.settings || {
-          shuffle: false,
-          repeat: 'off'
-      };
-      if (!confirm(`Are you sure you want to play "${item.name}" on ${speakerName}?`))
-          return;
+        const settings = item.settings || {
+            shuffle: false,
+            repeat: 'off'
+        };
+        if (!confirm(`Are you sure you want to play "${item.name}" on ${speakerName}?`))
+            return;
 
-      api('/api/manager/play_now', {
-          method: 'POST',
-          body: JSON.stringify({
-              uri: item.uri,
-              name: item.name,
-              settings: settings,
-              player_id: speakerId,
-              ip: speakerIp
-          })
-      });
-  }
+        api('/api/manager/play_now', {
+            method: 'POST',
+            body: JSON.stringify({
+                uri: item.uri,
+                name: item.name,
+                settings: settings,
+                player_id: speakerId,
+                ip: speakerIp
+            })
+        });
+    }
 
   // Generates HTML Media Card (Library/Search/Recent/History).
-  function renderCard(item, isLib, allowSave, hideBadge = false) {
+  function renderCard(item, isLib, allowSave, hideBadge = false, isPreset = false) {
       if (item.type === 'HEADER')
           return /*html*/`<div class="search-divider">${item.title}</div>`;
 
@@ -924,7 +954,7 @@
         }
       // IF NORMAL: Show Play, plus Edit/Save
       else {
-          btns = /*html*/`<button class="btn-sm" onclick="playItemGlobal('${uriEnc}')">▶ Play</button>`;
+          btns = /*html*/`<button class="btn-sm" onclick="playItemGlobal('${uriEnc}', ${isPreset})">▶ Play</button>`;
           if (isLib) {
             btns += /*html*/` 
                 <button class="btn-sm" onclick="openModal(${safeItem})">✎ Edit</button>
@@ -1040,7 +1070,7 @@
           box.innerHTML = '<div style="padding:20px; color:#aaa">No results found (Strict Filter is ON).</div>';
       } else {
           const allowSave = (state.source !== 'spotify');
-          box.innerHTML = data.map(i => renderCard(i, false, allowSave)).join('');
+          box.innerHTML = data.map(i => renderCard(i, false, allowSave, false)).join('');
       }
   }
 
@@ -1052,7 +1082,7 @@
 
       const data = await api('/api/manager/recents');
       if (Array.isArray(data)) {
-          box.innerHTML = data.map(i => renderCard(i, false, true)).join('');
+          box.innerHTML = data.map(i => renderCard(i, false, true, false)).join('');
       } else {
           box.innerHTML = `Error loading recents`;
       }
@@ -1085,7 +1115,7 @@
       const presets = [1, 2, 3, 4, 5, 6].map(slot => {
             const item = library.find(i => i.slot === slot && (i.speakerIp || '') === viewScope);
             if (item)
-                return renderCard(item, true, true);
+                return renderCard(item, true, true, false, true);
             // Updated empty slot styling to use a class instead of inline dim styles
             //  return `<div class="card">Slot ${slot} Empty (${viewScope === '' ? 'Global' : 'Hybrid'})</div>`; */
             return /*html*/`

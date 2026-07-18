@@ -118,5 +118,50 @@
       "shuffle": false,
       "repeat": "off"
     }
+  },
+  {
+    "uuid": "7d879568",
+    "slot": 0,
+    "speakerIp": "",
+    "name": "Sirtaki",
+    "subtitle": "Links Eröm - Rächs Eröm • Bläck Fööss • Local NAS",
+    "uri": "library://track/16390",
+    "image": "/api/manager/proxy_image?mode=raw&path=Downtify-Downloads%2FBl%C3%A4ck%20F%C3%B6%C3%B6ss%20-%20Sirtaki.mp3&provider=filesystem_local--mL3j3WA4",
+    "type": "track",
+    "provider": "filesystem_local",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "160c0aa3",
+    "slot": 1,
+    "speakerIp": "192.168.178.30",
+    "name": "Sirtaki",
+    "subtitle": "Links Eröm - Rächs Eröm • Bläck Fööss • Local NAS",
+    "uri": "library://track/16390",
+    "image": "/api/manager/proxy_image?mode=raw&path=Downtify-Downloads%2FBl%C3%A4ck%20F%C3%B6%C3%B6ss%20-%20Sirtaki.mp3&provider=filesystem_local--mL3j3WA4",
+    "type": "track",
+    "provider": "filesystem_local",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "0d908dda",
+    "slot": 2,
+    "speakerIp": "192.168.178.30",
+    "name": "PonyvilleFM - The original",
+    "subtitle": "Local NAS",
+    "uri": "library://radio/1",
+    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
+    "type": "radio",
+    "provider": "builtin",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
   }
 ]
