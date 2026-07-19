@@ -191,7 +191,7 @@
     </main>
     <div class="np-view">
         <div class="np-card">
-            <img id="np-img" src="" class="np-art" style="display:none;" onerror="this.style.display='none'">
+            <div id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
             <div class="np-infos">
                 <div id="np-track" class="np-track">Loading...</div>
                 <div id="np-artist" class="np-artist">---</div>
@@ -235,7 +235,7 @@
         <div class="form-group">
             <label class="control-labels">Slot</label>
             <div class="custom-dropdown-wrapper">
-                <select id="edit-slot" class="mini-select" onchange="toggleSpeakerDropdown(this.value)">
+                <select id="edit-slot" class="mini-select full-with" onchange="toggleSpeakerDropdown(this.value)">
                     <option value="0">None (Favorite Only / Unassign)</option>
                     <option value="1">Preset 1</option>
                     <option value="2">Preset 2</option>
@@ -250,7 +250,7 @@
         <div class="form-group" id="group-edit-speaker">
           <label id="label-edit-speaker" class="control-labels">Speaker</label>
           <div class="custom-dropdown-wrapper">
-              <select id="edit-speaker" class="mini-select" style="width: 100%;">
+              <select id="edit-speaker" class="mini-select full-with">
                   <option value="">Global (All Speakers)</option>
               </select>
           </div>
@@ -269,7 +269,7 @@
         <div class="form-group">
             <label class="control-labels">Repeat</label>
             <div class="custom-dropdown-wrapper">
-                <select id="edit-repeat" class="mini-select">
+                <select id="edit-repeat" class="mini-select full-with">
                     <option value="off">Off</option>
                     <option value="all">Repeat All</option>
                     <option value="one">Repeat One</option>
@@ -278,19 +278,11 @@
         </div>
     </div>
     
-    <div style="display:flex; justify-content:flex-end; gap:10px">
+    <div class="btn-in-columns">
       <button class="btn-secondary" onclick="closeModal()">Cancel</button>
       <button class="btn-primary" style="--btn-bg-clr: var(--accent);" onclick="saveItem()">Save</button>
     </div>
   </div>
-</div>
-
-<div id="speaker-modal" class="modal">
-    <div class="modal-content" style="width: 300px; text-align: center;">
-        <h3>Play on Speaker</h3>
-        <div id="speaker-list" style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"></div>
-        <button class="btn-secondary" onclick="closeSpeakerModal()">Cancel</button>
-    </div>
 </div>
 
 <script>
@@ -636,18 +628,6 @@
                 button.classList.remove('active');
             }
         });
-        
-/*         // Update Label UI
-        const label = document.getElementById('play-on-label');
-        if (tabTarget === 'nowplaying') {
-            label.innerText = "Now Playing On:";
-            label.style.color = "var(--accent)";
-            startNpPolling();
-        } else {
-            label.innerText = "Play On:";
-            label.style.color = "";
-            stopNpPolling();
-        } */
 
         // Refresh Data for specific tabs
         if (tabTarget === 'library') loadLibrary();
@@ -794,7 +774,7 @@
 
   // Updates the Now Playing card with Art, Metadata, and Status Badge.
   function updateNpUI(device) {
-      const els = {
+      const nowPlaying = {
           img: document.getElementById('np-img'),
           track: document.getElementById('np-track'),
           artist: document.getElementById('np-artist'),
@@ -805,22 +785,22 @@
 
       if (device) {
           // --- ARTWORK ---
-          els.img.outerHTML = /*html*/`
-            <div id="np-img" class="np-art ${device.artPlaceholder}" style="position:relative; overflow:hidden;">
-                ${device.art && device.art !== 'custom_url' ? `<img src="${device.art}" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:10;" onerror="this.style.display='none'">` : ''}
+          nowPlaying.img.outerHTML = /*html*/`
+            <div id="np-img" class="np-art ${device.artPlaceholder}">
+                ${device.art && device.art !== 'custom_url' ? `<img src="${device.art}">` : ''}
             </div>
           `;
-          els.img = document.getElementById('np-img');
-          els.img.style.display = 'flex';
+          nowPlaying.img = document.getElementById('np-img');
+          nowPlaying.img.style.display = 'flex';
 
           // --- METADATA ---
-          els.track.innerText = device.track || "Ready";
-          els.artist.innerText = device.artist || "";
-          els.album.innerText = device.album || "";
+          nowPlaying.track.innerText = device.track || "Ready";
+          nowPlaying.artist.innerText = device.artist || "---";
+          nowPlaying.album.innerText = device.album || "---";
 
           // --- STATUS & SMOOTH TIMER ---
           if (device.isStandby) {
-              els.status.innerHTML = `<span style="color:var(--text-secondary)">STANDBY</span>`;
+              nowPlaying.status.innerHTML = `<span style="color:var(--text-secondary)">STANDBY</span>`;
           } else {
               const isPlaying = (device.playStatus === 'PLAY_STATE' || device.playStatus === 'BUFFERING_STATE');
               const color = isPlaying ? "var(--accent)" : (device.playStatus === 'PAUSE_STATE' ? "var(--pending)" : "var(--text-primary)");
@@ -845,16 +825,16 @@
                   timerHtml = `<span class="np-timer">${formatTime(currentPos)} / ${formatTime(device.duration)}</span>`;
               }
 
-              els.status.innerHTML = `<span style="color:${color}">${label}</span>`;
-              els.timer.innerHTML = `${timerHtml}`;
+              nowPlaying.status.innerHTML = `<span style="color:${color}">${label}</span>`;
+              nowPlaying.timer.innerHTML = `${timerHtml}`;
           }
       } else {
-          els.img.outerHTML = `<div id="np-img" class="np-art art-blank"></div>`;
-          els.img = document.getElementById('np-img');
-          els.img.style.display = 'block';
-          els.track.innerText = "Ready";
-          els.artist.innerText = "";
-          els.status.innerText = "STANDBY / OFFLINE";
+          nowPlaying.img.outerHTML = `<div id="np-img" class="np-art art-blank"></div>`;
+          nowPlaying.img = document.getElementById('np-img');
+          nowPlaying.img.style.display = 'block';
+          nowPlaying.track.innerText = "Ready";
+          nowPlaying.artist.innerText = "---";
+          nowPlaying.status.innerText = "STANDBY / OFFLINE";
       }
   }
 
@@ -1312,69 +1292,6 @@
       }
   }
 
-  // --- SPEAKER LIST MODAL (Secondary) ---
-  // Used when clicking "Play" from the search results to confirm target speaker.
-
-  async function playItem(uuid) {
-      openSpeakerModal(uuid);
-  }
-
-  function openSpeakerModal(uuid) {
-      selectedUuid = uuid;
-      renderSpeakerList();
-      document.getElementById('speaker-modal').style.display = 'flex';
-  }
-
-  function closeSpeakerModal() {
-      document.getElementById('speaker-modal').style.display = 'none';
-  }
-
-  async function renderSpeakerList() {
-      const [devices, maPlayers] = await Promise.all([
-                  api('/api/status'),
-                  api('/api/manager/players')
-              ]);
-      if (!Array.isArray(devices))
-          return;
-
-      const list = document.getElementById('speaker-list');
-      list.innerHTML = devices.map(d => {
-          // Check if MASS can see it
-          const p = maPlayers ? maPlayers.find(mp => mp.ip === d.ip) : null;
-
-          const isOffline = !d.online;
-          const isMissingFromMass = !p;
-          const isDisabled = isOffline || isMissingFromMass;
-
-          let subText = d.isStandby ? 'OFF' : 'ON';
-          if (isOffline)
-              subText = 'OFFLINE';
-          else if (isMissingFromMass)
-              subText = 'NO MASS';
-
-          // Gray out the button and disable clicks if unplayable using the new CSS class
-          const btnClass = isDisabled ? 'btn btn-unreachable' : 'btn';
-          const btnStyle = 'justify-content:space-between;';
-          const clickAction = isDisabled ? '' : `onclick="confirmPlay('${d.ip}')"`;
-
-          return /*html*/ `
-          <button class="${btnClass}" style="${btnStyle}" ${clickAction}>
-              ${d.name} <span style="font-size:0.8em; color:var(--text-secondary)">${subText}</span>
-           </button>`;
-      }).join('');
-  }
-
-  async function confirmPlay(ip) {
-      document.getElementById('speaker-modal').style.display = 'none';
-      await api('/api/manager/play', {
-          method: 'POST',
-          body: JSON.stringify({
-              uuid: selectedUuid,
-              ip
-          })
-      });
-      alert(`Playing on ${ip}...`);
-  }
 
   async function playCustomStream() {
       const urlInput = document.getElementById('stream-url');
