@@ -59,7 +59,7 @@
             document.body.classList.remove('light-mode');
     }
     applyTheme();
-    // Listens for storage changes (e.g., from other tabs) to sync theme instantly.
+    // Listens for storage changes to sync theme instantly.
     window.addEventListener('storage', (e) => {
         if (e.key === 'theme')
             applyTheme();

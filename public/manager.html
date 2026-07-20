@@ -20,7 +20,6 @@
 
 <body>
 <div class="app-container">
-
     <header class="app-header">
         <div class="header-inner-panel">
             <div class="app-logo">
@@ -29,11 +28,6 @@
                     Bose SoundTouch Hybrid
                 </span>
             </div>
-<!--             <h2 class="libary-title">
-                SoundTouch Library 
-                <span>via</span> 
-                <img src="images/ma_icon.png" alt="MA">
-            </h2> -->
             <div class="global-nav-menu">
                 <button class="global-link" onclick="window.location.href='control.html'">Remote</button>
                 <button class="global-link active" onclick="window.location.href='manager.html'">Library</button>
@@ -42,32 +36,24 @@
             </div>
         </div>
         <div class="app-content-header">
-    
             <div class="top-bar">
-
-            
                 <div class="nav-tabs manager-main-tabs">
-                    <button class="nav-btn" data-tab-target="library" onclick="/* switchTab('library'), */ newSwitchTab('library')">
+                    <button class="nav-btn" data-tab-target="library" onclick="newSwitchTab('library')">
                         My Library
                         <img src="images/bose_icon.png">
                     </button>
-                    
-<!--                     <button class="nav-btn" data-tab-target="nowplaying" onclick="/* switchTab('nowplaying'), */ newSwitchTab('nowplaying')">
-                        Now Playing
-                        <span style="font-size:1.2em;">🎵</span>
-                    </button> -->
     
-                    <button class="nav-btn" data-tab-target="recents" onclick="/* switchTab('recents'), */ newSwitchTab('recents')">
+                    <button class="nav-btn" data-tab-target="recents" onclick="newSwitchTab('recents')">
                         Recents
                         <img src="images/hybrid_icon.png">
                     </button>
                     
-                    <button class="nav-btn" data-tab-target="search" onclick="/* switchTab('search'), */ newSwitchTab('search')">
+                    <button class="nav-btn" data-tab-target="search" onclick="newSwitchTab('search')">
                         Search 
                         <img src="images/ma_icon.png">
                     </button>
                     
-                    <button class="nav-btn" data-tab-target="custom" onclick="/* switchTab('custom'), */ newSwitchTab('custom')">
+                    <button class="nav-btn" data-tab-target="custom" onclick="newSwitchTab('custom')">
                         Custom &#127760;
                     </button>
                 </div>
@@ -75,8 +61,7 @@
         </div>
     </header>
 
-    <main class="app-content">
-
+    <main class="app-content tab-wrapper">
         <div id="tab-library" data-tab="library">
             <section class="libary-section">
                 <div class="section-title-wrapper">
@@ -84,7 +69,7 @@
                     <div class="custom-dropdown-wrapper">
     
                         <select id="preset-view-filter" class="mini-select" onchange="loadLibrary()">
-                            <option value="">Global (Default)</option>
+                            <option value="global">Global (Default)</option>
                         </select>
                     </div>
                 </div>
@@ -118,89 +103,99 @@
                 </div>
     
                 <div id="lib-favorites" class="libary-grid">Loading...</div>
-            </section>
-
-            
+            </section>           
         </div>
 
         <div id="tab-recents" data-tab="recents" style="display:none">
-            <div class="section-title">Recently Played from Music Assistant</div>
+            <div class="section-title-wrapper">
+                <h3 class="section-title">Recently Played from Music Assistant</h3>
+            </div>
             <div id="recents-results" class="libary-grid">Loading...</div>
         </div>
 
         <div id="tab-search" data-tab="search" style="display:none">
-            <div class="search-header">
-                <div class="source-row" id="dynamic-source-row"></div>
-                <div class="filter-pill-wrapper" id="filter-row">
-                    <div class="filter-pill active" onclick="setFilter('playlist')">Playlists</div>
-                    <div class="filter-pill" onclick="setFilter('artist')">Artists</div>
-                    <div class="filter-pill" onclick="setFilter('album')">Albums</div>
-                    <div class="filter-pill" onclick="setFilter('track')">Tracks</div>
-                    <div class="filter-pill" id="filter-radio" onclick="setFilter('radio')" style="display:none">Radio</div>
-                    <div class="filter-pill" id="filter-podcast" onclick="setFilter('podcast')" style="display:none">Podcasts</div>
-                    <div class="filter-pill" id="filter-audiobook" onclick="setFilter('audiobook')" style="display:none">Audiobooks</div>
-                    <div class="filter-pill" onclick="setFilter('all')">All</div>
-                    <div class="custom-dropdown-wrapper">
-                        <select id="provider-filter" class="mini-select" onchange="doSearch()">
-                            <option value="all">All Providers</option>
-                        </select>		
+            <section class="libary-section">
+                <div class="search-header">
+                    <div class="source-row" id="dynamic-source-row"></div>
+                    <div class="filter-pill-wrapper" id="filter-row">
+                        <div class="filter-pill active" onclick="setFilter('playlist')">Playlists</div>
+                        <div class="filter-pill" onclick="setFilter('artist')">Artists</div>
+                        <div class="filter-pill" onclick="setFilter('album')">Albums</div>
+                        <div class="filter-pill" onclick="setFilter('track')">Tracks</div>
+                        <div class="filter-pill" id="filter-radio" onclick="setFilter('radio')" style="display:none">Radio</div>
+                        <div class="filter-pill" id="filter-podcast" onclick="setFilter('podcast')" style="display:none">Podcasts</div>
+                        <div class="filter-pill" id="filter-audiobook" onclick="setFilter('audiobook')" style="display:none">Audiobooks</div>
+                        <div class="filter-pill" onclick="setFilter('all')">All</div>
+                        <div class="custom-dropdown-wrapper">
+                            <select id="provider-filter" class="mini-select" onchange="doSearch()">
+                                <option value="all">All Providers</option>
+                            </select>		
+                        </div>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
+                        <div class="custom-dropdown-wrapper">
+                            <select class="mini-select" id="limit" onchange="doSearch()">
+                                <option value="25" selected>25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="150">150</option>
+                                <option value="200">200</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="doSearch()">Go</button>
                     </div>
                 </div>
-                <div class="search-bar">
-                    <input type="text" id="q" placeholder="Search..." onkeydown="if(event.key==='Enter') doSearch()">
-                    <div class="custom-dropdown-wrapper">
-                        <select class="mini-select" id="limit" onchange="doSearch()">
-                            <option value="25" selected>25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="150">150</option>
-                            <option value="200">200</option>
-                        </select>
-                    </div>
-                    <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="doSearch()">Go</button>
+            </section>
+            <section class="libary-section">
+                <div class="section-title-wrapper">
+                    <h3 class="section-title">Search Results</h3>
                 </div>
-            </div>
-            <div id="search-results" class="libary-grid"></div>
+                <div id="search-results" class="libary-grid"></div>
+            </section>
         </div>
         
         <div id="tab-custom" data-tab="custom" style="display:none">
+            <section class="libary-section">
             <div class="card">
                 <h3 class="card-heading">&#127760; Stream Custom URL</h3>
                 <div class="card-sub-heading">Inject a radio stream or file directly to a speaker.</div>
-                
-                <div class="radio-input-wrapper">
-                    <div>
-                        <label class="control-labels">STREAM URL</label>
-                        <input class="text-inputs" type="text" id="stream-url" placeholder="http://stream.radioparadise.com/aac-320">
-                    </div>
-                    <div>
-                        <label class="control-labels">STATION NAME</label>
-                        <input class="text-inputs" type="text" id="stream-name" placeholder="Custom Station">
-                    </div>
-                    <div style="flex-shrink: 0;">
-                        <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="playCustomStream()">▶ STREAM NOW</button>
+                    
+                    <div class="radio-input-wrapper">
+                        <div>
+                            <label class="control-labels">STREAM URL</label>
+                            <input class="text-inputs" type="text" id="stream-url" placeholder="http://stream.radioparadise.com/aac-320">
+                        </div>
+                        <div>
+                            <label class="control-labels">STATION NAME</label>
+                            <input class="text-inputs" type="text" id="stream-name" placeholder="Custom Station">
+                        </div>
+                        <div style="flex-shrink: 0;">
+                            <button class="btn-primary" style="--btn-bg-clr: var(--accent)" onclick="playCustomStream()">▶ STREAM NOW</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
             
-            <div class="section-title">Recent Unsaved Streams</div>
-            <div id="custom-history-results" class="libary-grid">Loading...</div>
+            <section class="libary-section">
+                <div class="section-title-wrapper">
+                    <h3 class="section-title">Recent Unsaved Streams</h3>
+                </div>
+                <div id="custom-history-results" class="libary-grid">Loading...</div>
+            </section>
         </div>
-
-
     </main>
-    <div class="np-view">
+    <footer class="np-view">
         <div class="np-card">
             <div id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
             <div class="np-infos">
                 <div id="np-track" class="np-track">Loading...</div>
-                <div id="np-artist" class="np-artist">---</div>
-                <div id="np-album" class="np-album">---</div>
+                <div id="np-artist" class="np-artist">Loading...</div>
+                <div id="np-album" class="np-album">Loading...</div>
                 <div id="np-timer" class="np-timer"></div>
             </div>
             <div id="np-status" class="np-status-badge">CONNECTING</div>
             <div class="speaker-select">
-                <!-- <span class="speaker-label" id="play-on-label">Play On:</span> -->
                 <div class="custom-dropdown-wrapper">
                     
                     <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
@@ -209,8 +204,7 @@
                 </div>
             </div>
         </div>
-    
-    </div>
+    </footer>
 </div>
 <!--     <div class="noplaying-bar"> -->
 <!--     </div> -->
@@ -381,8 +375,8 @@
         buildSearchMenu(); // 2. Draw the menu using those settings
         loadProviders();
         fetchSpeakers();
-        newSwitchTab(filterValue, true, true);
         
+        newSwitchTab(filterValue, true, true);
         startNpPolling();
     }
 
@@ -543,9 +537,6 @@
             const matchedSpeaker = playableOptions.find(o => o.mac === state.speaker);
 
 
-            console.log(state.speaker);
-            console.log(matchedSpeaker);
-
             // ICH JULIUS Versuche hier auf die mac adress zu prüfen NICHTS VERÄNDERN BITTE!!
             if (state.speaker != null && matchedSpeaker) {
                 select.value = matchedSpeaker.id;
@@ -604,11 +595,9 @@
     function newSwitchTab(tabTarget, shouldUpdateUrl = true, replaceHistory = false) {
         state.tab = tabTarget;
 
-        ['library', 'recents', 'search', 'custom'].forEach(tab => {
-            document.querySelector(`[data-tab="${tab}"]`).style.display = 'none';
+        document.querySelectorAll('[data-tab]').forEach(tab => {
+            tab.style.display = tab.getAttribute("data-tab") === `${tabTarget}` ? 'block' : 'none';
         });
-        
-        document.querySelector(`[data-tab="${tabTarget}"]`).style.display = 'block';
         
         // Die URL wird nur aktualisiert, wenn wir aktiv klicken
         if (shouldUpdateUrl) {
@@ -650,49 +639,6 @@
         history.replaceState({}, '', url.href);
         
     }
-  }
-
-  // --- TAB NAVIGATION ---
-  // Handles switching between Library, Now Playing, Recents,Search, and custom views.
-  function switchTab(tabTarget) {
-      state.tab = tabTarget;
-
-      // Hide all tabs
-      ['library', 'nowplaying', 'recents', 'search', 'custom'].forEach(tab => {
-          document.querySelector(`[data-tab="${tab}"]`).style.display = 'none';
-      });
-
-      // Show active tab
-      document.querySelector(`[data-tab="${tabTarget}"]`).style.display = 'block';
-
-      // Update button active states
-      document.querySelectorAll(`[data-tab-target]`).forEach(button => {
-          if (button.dataset.tabTarget === tabTarget) {
-            button.classList.add('active');
-          } else {
-            button.classList.remove('active');
-          }
-      });
-
-      // Update Label UI (Changes color to indicate Now Playing mode)
-      const label = document.getElementById('play-on-label');
-      if (tabTarget === 'nowplaying') {
-          label.innerText = "Now Playing On:";
-          label.style.color = "var(--accent)";
-          startNpPolling();
-      } else {
-          label.innerText = "Play On:";
-          label.style.color = "";
-          stopNpPolling();
-      }
-
-      // Refresh Data for specific tabs
-      if (tabTarget === 'library')
-          loadLibrary();
-      if (tabTarget === 'recents')
-          loadRecents();
-      if (tabTarget === 'custom')
-          loadCustomHistory();
   }
 
   // --- NOW PLAYING POLLING ---
@@ -795,8 +741,8 @@
 
           // --- METADATA ---
           nowPlaying.track.innerText = device.track || "Ready";
-          nowPlaying.artist.innerText = device.artist || "---";
-          nowPlaying.album.innerText = device.album || "---";
+          nowPlaying.artist.innerText = device.artist || "";
+          nowPlaying.album.innerText = device.album || "";
 
           // --- STATUS & SMOOTH TIMER ---
           if (device.isStandby) {
@@ -833,7 +779,7 @@
           nowPlaying.img = document.getElementById('np-img');
           nowPlaying.img.style.display = 'block';
           nowPlaying.track.innerText = "Ready";
-          nowPlaying.artist.innerText = "---";
+          nowPlaying.artist.innerText = "";
           nowPlaying.status.innerText = "STANDBY / OFFLINE";
       }
   }
@@ -910,6 +856,7 @@
       const uriEnc = encodeURIComponent(JSON.stringify(item));
       const badge = (item.slot > 0 && !hideBadge) ? /*html*/`<div class="preset-badge">${item.slot}</div>` : '';
 
+      console.log(item);
       // --- ARTWORK LOGIC (Unified Z-Index Sandwich) ---
       const fallbackClass = (item.type === 'custom_url' || item.type === 'radio') ? 'art-globe' : 'art-blank';
       let imgHtml = '';
@@ -1089,13 +1036,15 @@
           return (a.name || "").localeCompare(b.name || "");
       });
 
-      const viewScope = document.getElementById('preset-view-filter') ? document.getElementById('preset-view-filter').value : '';
+      let viewScope = document.getElementById('preset-view-filter') ? document.getElementById('preset-view-filter').value : 'global';
+
 
       // Generate Preset Cards (Slots 1-6) based on selected scope
       const presets = [1, 2, 3, 4, 5, 6].map(slot => {
-            const item = library.find(i => i.slot === slot && (i.speakerIp || '') === viewScope);
-            if (item)
+            const item = library.find(i => i.slot === slot && (i.speakerIp || 'global') === viewScope);
+            if (item) {
                 return renderCard(item, true, true, false, true);
+            }
             // Updated empty slot styling to use a class instead of inline dim styles
             //  return `<div class="card">Slot ${slot} Empty (${viewScope === '' ? 'Global' : 'Hybrid'})</div>`; */
             return /*html*/`

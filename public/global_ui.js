@@ -11,7 +11,7 @@ const updateBannerHTML = `
 window.dismissUpdateBanner = function (versionToDismiss) {
   document.getElementById("github-update-banner").style.display = "none";
   // Save to sessionStorage wipes when closed.
-  sessionStorage.setItem("dismissedUpdateVersion", versionToDismiss);
+  localStorage.setItem("dismissedUpdateVersion", versionToDismiss);
 };
 
 // Function to ping the backend and check for updates
@@ -24,7 +24,7 @@ async function checkForUpdates() {
 
     if (data.updateAvailable) {
       // Check the SESSION memory to see if we dismissed it during this active use
-      const skippedVersion = sessionStorage.getItem("dismissedUpdateVersion");
+      const skippedVersion = localStorage.getItem("dismissedUpdateVersion");
 
       if (skippedVersion !== data.latest) {
         const banner = document.getElementById("github-update-banner");
@@ -43,7 +43,7 @@ async function checkForUpdates() {
 }
 
 // --- UNIFIED MASS HEALTH MODAL HTML ---
-const maHealthBannerHTML = `
+const maHealthBannerHTML = /*html*/`
 <div id="mass-error-banner">
     <div class="banner-header">
         <span class="banner-title">🚨 Music Assistant Error</span>

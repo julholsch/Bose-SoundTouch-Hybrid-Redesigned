@@ -60,21 +60,6 @@
     }
   },
   {
-    "uuid": "c7a3d0ad",
-    "slot": 6,
-    "speakerIp": "",
-    "name": "PonyvilleFM - The original",
-    "subtitle": "Local NAS",
-    "uri": "library://radio/1",
-    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
-    "type": "radio",
-    "provider": "builtin",
-    "settings": {
-      "shuffle": false,
-      "repeat": "off"
-    }
-  },
-  {
     "uuid": "795eb0ac",
     "slot": 0,
     "speakerIp": "",
@@ -86,36 +71,6 @@
     "provider": "filesystem_local",
     "settings": {
       "shuffle": true,
-      "repeat": "off"
-    }
-  },
-  {
-    "uuid": "29c800bf",
-    "slot": 0,
-    "speakerIp": "",
-    "name": "PonyvilleFM - The original",
-    "subtitle": "Local NAS",
-    "uri": "library://radio/1",
-    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
-    "type": "radio",
-    "provider": "builtin",
-    "settings": {
-      "shuffle": false,
-      "repeat": "off"
-    }
-  },
-  {
-    "uuid": "9f16d6c8",
-    "slot": 1,
-    "speakerIp": "192.168.178.33",
-    "name": "PonyvilleFM - The original",
-    "subtitle": "Local NAS",
-    "uri": "library://radio/1",
-    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
-    "type": "radio",
-    "provider": "builtin",
-    "settings": {
-      "shuffle": false,
       "repeat": "off"
     }
   },
@@ -150,13 +105,73 @@
     }
   },
   {
-    "uuid": "0d908dda",
-    "slot": 2,
-    "speakerIp": "192.168.178.30",
+    "uuid": "86736fd0",
+    "slot": 0,
+    "speakerIp": "",
+    "name": "PonyvilleFM 2 - Our chill station",
+    "subtitle": "Local NAS",
+    "uri": "library://radio/2",
+    "image": "https://ponyvillefm.com/images/logos/pvfm2@2x.png",
+    "type": "radio",
+    "provider": "builtin",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "c983718d",
+    "slot": 0,
+    "speakerIp": "",
     "name": "PonyvilleFM - The original",
     "subtitle": "Local NAS",
     "uri": "library://radio/1",
-    "image": "/api/manager/proxy_image?uri=library%3A%2F%2Fradio%2F1",
+    "image": "https://ponyvillefm.com/images/logos/pvfm-short@2x.png",
+    "type": "radio",
+    "provider": "builtin",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "debd7edf",
+    "slot": 6,
+    "speakerIp": "",
+    "name": "PonyvilleFM - The original",
+    "subtitle": "Local NAS",
+    "uri": "library://radio/1",
+    "image": "https://ponyvillefm.com/images/logos/pvfm-short@2x.png",
+    "type": "radio",
+    "provider": "builtin",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "d822d6d6",
+    "slot": -1,
+    "speakerIp": "",
+    "name": "Radio Köln Rock",
+    "subtitle": "URL Stream",
+    "uri": "https://stream.lokalradio.nrw/445cmct?t=1784573492341",
+    "image": "",
+    "type": "radio",
+    "provider": "builtin",
+    "settings": {
+      "shuffle": false,
+      "repeat": "off"
+    }
+  },
+  {
+    "uuid": "87271f32",
+    "slot": 0,
+    "speakerIp": "",
+    "name": "Radio Köln Rock",
+    "subtitle": "URL Stream",
+    "uri": "https://stream.lokalradio.nrw/445cmct?t=1784573492341",
+    "image": "",
     "type": "radio",
     "provider": "builtin",
     "settings": {

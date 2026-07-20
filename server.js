@@ -296,7 +296,12 @@ if (!isReady) {
             const latestVersion = githubRes.data.tag_name;
             if (latestVersion !== CURRENT_VERSION) {
                 console.log(`\n[Boot] 🚀 SOUNDTOUCH HYBRID UPDATE AVAILABLE! Current: ${CURRENT_VERSION} | Latest: ${latestVersion}\n`);
-                UPDATE_CACHED_DATA = { updateAvailable: true, current: CURRENT_VERSION, latest: latestVersion, url: githubRes.data.html_url };
+                UPDATE_CACHED_DATA = { 
+                    updateAvailable: true, 
+                    current: CURRENT_VERSION, 
+                    latest: latestVersion, 
+                    url: githubRes.data.html_url 
+                };
             } else {
                 console.log(`\n[Boot] ✓ App is up to date (${CURRENT_VERSION})\n`);
             }
