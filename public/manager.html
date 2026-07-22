@@ -12,6 +12,7 @@
 
     <!-- <link rel="stylesheet" href="style.css"> -->
     <link rel="stylesheet" href="new-css/manager.css">
+    <link rel="stylesheet" href="new-css/global_ui.css">
 
     <link rel="manifest" href="manifest.json">
 
@@ -184,7 +185,9 @@
                 <div id="custom-history-results" class="libary-grid">Loading...</div>
             </section>
         </div>
+
     </main>
+<!-- 
     <footer class="np-view">
         <div class="np-card">
             <div id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
@@ -204,10 +207,8 @@
                 </div>
             </div>
         </div>
-    </footer>
+    </footer> -->
 </div>
-<!--     <div class="noplaying-bar"> -->
-<!--     </div> -->
 <div id="modal" class="modal">
   <div class="modal-card">
     <h3>Save to Library</h3>
@@ -314,24 +315,8 @@
       favFilter: 'all'
   };
   let selectedUuid = null;
-  let npInterval = null;
   let currentSearchOrder = []; // populated from settings on load
 
-  // --- THEME MANAGEMENT ---
-  // Applies the theme immediately to prevent flash of unstyled content
-  function applyTheme() {
-      const saved = localStorage.getItem('theme');
-      if (saved === 'light')
-          document.body.classList.add('light-mode');
-      else
-          document.body.classList.remove('light-mode');
-  }
-  applyTheme();
-  // Listens for theme changes in other tabs to sync immediately.
-  window.addEventListener('storage', (e) => {
-      if (e.key === 'theme')
-          applyTheme();
-  });
 
   // Legacy key remapping for any installs where migration hasn't run yet
   const LEGACY_KEY_MAP = { 'radio': 'tunein', 'nas': 'filesystem_local' };
@@ -414,8 +399,8 @@
 
       container.innerHTML = visibleTabs.map(entry => {
           const iconHtml = entry.key === 'global'
-              ? `<span style="font-size:1.2em;">🌍</span>`
-              : `<img src="${entry.icon || '/images/ma_icon.png'}" alt="${entry.name}" onerror="this.src='/images/ma_icon.png'" style="height:16px; width:auto; object-fit:contain;">`;
+              ? `<span>🌍</span>`
+              : `<img src="${entry.icon || '/images/ma_icon.png'}" alt="${entry.name}" onerror="this.src='/images/ma_icon.png'">`;
           return `<button class="source-btn" onclick="setSource('${entry.key}')">${iconHtml} ${entry.name}</button>`;
       }).join('');
 
@@ -570,7 +555,9 @@
     }
     function saveSpeakerSelection() {
         const select = document.getElementById('global-speaker');
+
         
+        console.log(speaker);
         // Erst den normalen Value für den localStorage speichern
         localStorage.setItem('bose_active_speaker', select.value);
         
@@ -641,7 +628,7 @@
     }
   }
 
-  // --- NOW PLAYING POLLING ---
+ /*  // --- NOW PLAYING POLLING ---
   // Starts the poller only when the "Now Playing" tab is active to save resources.
 
   let lastSeenPosition = -1;
@@ -659,7 +646,7 @@
       loadNowPlaying();
 
       // 📡 NETWORK POLLING: Stays at 2.5 seconds
-      npInterval = setInterval(loadNowPlaying, 2500);
+      npInterval = setInterval(loadNowPlaying, 2000);
 
       // ⏱️ UI TICKER: Updates the screen every 1 second
       localTicker = setInterval(() => {
@@ -731,11 +718,11 @@
 
       if (device) {
           // --- ARTWORK ---
-          nowPlaying.img.outerHTML = /*html*/`
+          nowPlaying.img.outerHTML = /*html*//* `
             <div id="np-img" class="np-art ${device.artPlaceholder}">
                 ${device.art && device.art !== 'custom_url' ? `<img src="${device.art}">` : ''}
             </div>
-          `;
+          ` ;*//*
           nowPlaying.img = document.getElementById('np-img');
           nowPlaying.img.style.display = 'flex';
 
@@ -782,7 +769,7 @@
           nowPlaying.artist.innerText = "";
           nowPlaying.status.innerText = "STANDBY / OFFLINE";
       }
-  }
+  } */
 
   // --- ACTIONS ---
 
@@ -967,11 +954,11 @@
       const box = document.getElementById('search-results');
 
       if (!q.trim()) {
-          box.innerHTML = '<div style="padding:20px; color:#aaa">Please enter a search term.</div>';
+          box.innerHTML = '<div class="loading-search-results">Please enter a search term.</div>';
           return;
       }
 
-      box.innerHTML = '<div style="padding:20px; color:#888">Searching MASS...</div>';
+      box.innerHTML = '<div class="loading-search-results">Searching MASS...</div>';
 
       const entry = currentSearchOrder.find(e => e.key === state.source);
       const sourceType = entry ? entry.sourceType : 'music';
@@ -989,12 +976,12 @@
       });
 
       if (data.error) {
-          box.innerHTML = `<div style="padding:20px; color:red">Server Error: ${data.error}</div>`;
+          box.innerHTML = `<div class="loading-search-results">Server Error: ${data.error}</div>`;
           return;
       }
 
       if (!Array.isArray(data) || data.length === 0) {
-          box.innerHTML = '<div style="padding:20px; color:#aaa">No results found (Strict Filter is ON).</div>';
+          box.innerHTML = '<div class="loading-search-results">No results found (Strict Filter is ON).</div>';
       } else {
           const allowSave = (state.source !== 'spotify');
           box.innerHTML = data.map(i => renderCard(i, false, allowSave, false)).join('');
@@ -1005,7 +992,7 @@
 
   async function loadRecents() {
       const box = document.getElementById('recents-results');
-      box.innerHTML = '<div style="padding:20px; color:#888">Loading Recents...</div>';
+      box.innerHTML = '<div class="loading-search-results">Loading Recents...</div>';
 
       const data = await api('/api/manager/recents');
       if (Array.isArray(data)) {
@@ -1093,7 +1080,7 @@
                   provHtml += `<option value="${provDomain}">${friendlyName}</option>`;
               } else {
                   // Provider has NO active favorites - Gray it out and disable it
-                  provHtml += `<option value="${provDomain}" disabled style="color: #666; font-style: italic;">${friendlyName}</option>`;
+                  provHtml += `<option value="${provDomain}" disabled>${friendlyName}</option>`;
               }
           });
 
@@ -1119,7 +1106,7 @@
       const favsHtml = filteredFavs.map(i => renderCard(i, true, true, true)).join('');
 
       document.getElementById('lib-presets').innerHTML = presets;
-      document.getElementById('lib-favorites').innerHTML = favsHtml || '<div style="padding:20px; color:#555">No items match your filters.</div>';
+      document.getElementById('lib-favorites').innerHTML = favsHtml || '<div class="loading-search-results">No items match your filters.</div>';
   }
 
   // --- MODAL & SAVING ---
@@ -1277,7 +1264,7 @@
 
   async function loadCustomHistory() {
       const box = document.getElementById('custom-history-results');
-      box.innerHTML = '<div style="padding:20px; color:#888">Loading History...</div>';
+      box.innerHTML = '<div class="loading-search-results">Loading History...</div>';
 
       const library = await api('/api/manager/library');
       if (!Array.isArray(library))
@@ -1287,7 +1274,7 @@
       const history = library.filter(i => i.slot === -1).reverse();
 
       if (history.length === 0) {
-          box.innerHTML = '<div style="padding:10px; color:#555">No recent unsaved streams.</div>';
+          box.innerHTML = '<div class="loading-search-results">No recent unsaved streams.</div>';
       } else {
           box.innerHTML = history.map(i => renderCard(i, false, true, true)).join('');
       }

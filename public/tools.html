@@ -11,6 +11,7 @@
 	<link rel="icon" type="image/png" href="images/hybrid_icon.png">
 	<!-- <link rel="stylesheet" href="style.css?v=26"> -->
 	<link rel="stylesheet" href="new-css/tools.css">
+    <link rel="stylesheet" href="new-css/global_ui.css">
 	<link rel="manifest" href="manifest.json">
 
 	<script src="global_ui.js"></script>
@@ -811,9 +812,6 @@
 		    document.body.classList.toggle('light-mode', !isDark);
 		    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 		}
-
-		if (localStorage.getItem('theme') === 'light')
-			document.body.classList.add('light-mode');
 
 		let currentDocUrl = "";
 		function openDoc(url) {

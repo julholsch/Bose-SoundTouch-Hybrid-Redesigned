@@ -519,11 +519,16 @@ router.get('/manager/recents', async(req, res) => {
     try {
         const token = await mass.getToken(); // Still need raw token for the loop below
 
+        console.log("Manager Recents: +")
+        console.log(token);
+
         // 1. Get List of URIs
         const recentRes = await massRequest("music/recently_played_items", {
             limit: 100,
             media_types: ["track", "album", "playlist", "radio"]
         });
+
+        console.log(`resent Res: ${recentRes}`);
 
         const skeletonItems = recentRes.items || recentRes || [];
 

@@ -11,6 +11,7 @@
     <link rel="icon" type="image/png" href="images/hybrid_icon.png">
     
     <link rel="stylesheet" href="new-css/control.css">
+    <link rel="stylesheet" href="new-css/global_ui.css">
     
     <link rel="manifest" href="manifest.json">
     
@@ -49,35 +50,6 @@
 </div>
 
 <script>
-    // --- THEME MANAGEMENT ---
-    // Checks local storage for theme preference and applies 'light-mode' class if necessary.
-    function applyTheme() {
-        const saved = localStorage.getItem('theme');
-        if (saved === 'light')
-            document.body.classList.add('light-mode');
-        else
-            document.body.classList.remove('light-mode');
-    }
-    applyTheme();
-    // Listens for storage changes to sync theme instantly.
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'theme')
-            applyTheme();
-    });
-
-    // --- GLOBAL STATE ---
-    let currentDevices = []; // Stores the latest snapshot of speaker data from the backend.
-    let isUserInteracting = false; // Flags if the user is dragging a slider to pause polling.
-    let isPollingFrozen = false; // Temporarily disables updates during network operations.
-    let lastRenderedHTML = ""; // Caches the last HTML string to optimize DOM diffing.
-    let globalSettings = {
-        mobileAutoSortSpeakers: true
-    };
-    
-    // --- CONFIGURATION ---
-    const POLLING_DELAY = 3500; // Time to wait after a command before resuming polling (Network latency mask).
-    let volumeThrottleTimer = null; // Timer for debouncing main volume inputs.
-    let interactionWatchdog = null; // Safety timer to resume polling if the user stops interacting.
 
     
     // --- FETCH USER SETTINGS ---
@@ -94,309 +66,6 @@
         }
     }
 
-    // ======================================================
-    // 1. LOCK MANAGER (Optimistic UI Handler)
-    // ======================================================
-    // The LockManager creates "Shadow Locks" that override the backend data temporarily.
-    // This ensures the UI feels instant (e.g., Play button turns Green immediately), 
-    // even if the hardware takes 3-5 seconds to report the new state.
-    const LockManager = {
-        locks: {},
-
-        // Sets a lock for a specific device IP and property type (POWER, TRANSPORT, etc).
-        set: function (ip, type, val, expected = null) {
-            this.locks[ip] = {
-                type,
-                val,
-                expected,
-                timestamp: Date.now()
-            };
-            renderSpeakers(true); // Forces an immediate re-render to reflect the user's action.
-        },
-
-        get: function (ip) {
-            return this.locks[ip];
-        },
-
-        // Checks if the backend state has "caught up" to the lock.
-        // If the hardware reports the expected state, the lock is released.
-        check: function (device) {
-            const lock = this.locks[device.ip];
-            if (!lock)
-                return;
-            if (isPollingFrozen)
-                return;
-
-            // Transport Lock Logic (Play/Pause handling)
-            if (lock.type === 'TRANSPORT' && lock.val === 'PLAY_PAUSE') {
-                const current = device.playStatus;
-                const expected = lock.expected;
-
-                // Only delete the yellow lock if the speaker actually PAUSED
-                if (expected === 'NOT_PLAYING') {
-                    if (current === 'PAUSE_STATE' || current === 'STOP_STATE')
-                        delete this.locks[device.ip];
-                }
-                // Only delete the green lock if the speaker actually PLAYED
-                else if (expected === 'PLAYING') {
-                    if (current === 'PLAY_STATE' || current === 'BUFFERING_STATE')
-                        delete this.locks[device.ip];
-                }
-
-                // Failsafe: Expire locks older than 60s to prevent stuck UI states.
-                if (Date.now() - lock.timestamp > 60000)
-                    delete this.locks[device.ip];
-                return;
-            }
-
-            // General Lock Release: If device reports it is "Ready for Display", release.
-            if (device.readyForDisplay) {
-                delete this.locks[device.ip];
-            }
-        }
-    };
-
-    // ======================================================
-    // 2. LOGIC ENGINE (UI Calculation)
-    // ======================================================
-    // Converts raw device data into display-ready properties (classes, disabled states, text).
-    function calculateUi(device) {
-        // Determines if the device is a "Slave" in a multi-room group.
-        const isSlave = (device.zone && device.zone.master && device.zone.master !== device.mac);
-        let masterIp = null;
-        let effectiveDevice = device; 
-        let effectiveLock = LockManager.get(device.ip);
-
-        // If Slave, it attempts to inherit metadata (Art, Artist) from the Master.
-        if (isSlave) {
-            const master = currentDevices.find(d => d.mac === device.zone.master);
-            if (master) {
-                masterIp = master.ip;
-                effectiveDevice = master; // Use Master's data for display
-                // Slave inherits Master's locks if they exist.
-                const masterLock = LockManager.get(master.ip);
-                if (masterLock)
-                    effectiveLock = masterLock;
-            }
-        }
-
-        // Initializes the base UI object.
-        let ui = {
-            isStandby: effectiveDevice.isStandby,
-            track: effectiveDevice.track || effectiveDevice.source,
-            artist: effectiveDevice.artist,
-            art: effectiveDevice.art,
-            artPlaceholder: effectiveDevice.artPlaceholder || 'art-off', 
-            pwrClass: !effectiveDevice.isStandby ? 'on' : '',          
-            playClass: '',          
-            prevClass: '', 
-            nextClass: '', 
-            joinClass: '',
-            presetNum: effectiveDevice.activePreset,          
-            playDisabled: true, 
-            nextDisabled: true, 
-            prevDisabled: true,          
-            volDisabled: device.isStandby, 
-            joinDisabled: false, 
-            presetDisabled: false,
-            sourceAuxDisabled: false,
-            sourceBluetoothDisabled: false,
-            sourceWifiDisabled: false
-        };
-
-        // --- NATIVE STATE HANDLING ---
-        // Sets the color of the Play/Pause button based on playback state.
-        if (effectiveDevice.playStatus === 'PLAY_STATE') {
-            ui.playClass = 'btn-active'; // Green (Playing)
-        } else if (effectiveDevice.playStatus === 'PAUSE_STATE') {
-            ui.playClass = 'btn-pending'; // Yellow (Paused)
-        } else {
-            ui.playClass = ''; // Gray (Stopped)
-        }
-
-        // Special handling for Slaves waiting for Master synchronization.
-        if (isSlave && masterIp) {
-            const master = currentDevices.find(d => d.ip === masterIp);
-            if (!master) {
-                ui.track = "Joining..."; 
-                ui.artist = ""; 
-                ui.art = "";
-            }
-        }
-
-        // Fallback for missing metadata using the ContentItem source.
-        if (effectiveDevice.ContentItem && (effectiveDevice.ContentItem.source === 'Ready' || effectiveDevice.ContentItem.source === 'Paused')) {
-            ui.track = effectiveDevice.ContentItem.source;
-        }
-
-        // --- ENABLE CONTROLS RULE ---
-        // Controls are enabled if the device is Playing OR Paused (virtual state).
-        if ((effectiveDevice.playStatus === 'PLAY_STATE' || effectiveDevice.playStatus === 'PAUSE_STATE') && !effectiveDevice.isStandby) {
-            ui.playDisabled = false;
-            
-            // 🛑 THE RADIO CHECK: Is this a live stream or custom URL?
-            const mType = (effectiveDevice.mediaType || '').toLowerCase();
-            const provider = (effectiveDevice.provider || '').toLowerCase();
-            
-            // Trap any known radio sources (TuneIn, Built-in Custom URLs, or Radio tags)
-            const isRadio = mType.includes('radio') || mType.includes('custom') || 
-                            provider.includes('tunein') || provider.includes('builtin') || 
-                            !!effectiveDevice.stationName;
-            
-            // Prev/Next buttons are disabled while Paused OR if playing a Radio stream.
-            if (effectiveDevice.playStatus === 'PAUSE_STATE' || isRadio) {
-                ui.nextDisabled = true; 
-                ui.prevDisabled = true;
-            } else {
-                ui.nextDisabled = false; 
-                ui.prevDisabled = false;
-            }
-        }
-
-        // --- STANDBY RULE ---
-        // If the device is Off, all transport controls are disabled.
-        if (ui.isStandby) {
-            ui.track = "Off"; 
-            ui.artist = ""; 
-            ui.art = "";           
-            ui.playDisabled = true; 
-            ui.nextDisabled = true; 
-            ui.prevDisabled = true;
-            ui.volDisabled = true; 
-            ui.joinDisabled = false; 
-            ui.presetDisabled = false;
-            ui.sourceAuxDisabled = false;
-            ui.sourceBluetoothDisabled = false;
-            ui.sourceWifiDisabled = false;
-            ui.presetNum = 0; 
-        }
-
-        // 3. APPLY LOCKS (User Interaction Overrides)
-        // Checks for active locks and forces the UI to match the user's expected state.
-        if (effectiveLock) {
-            if (effectiveLock.type === 'POWER' && effectiveLock.val === 'OFF') {
-                ui.isStandby = true; 
-                ui.pwrClass = ''; 
-                ui.playDisabled = true; 
-                ui.nextDisabled = true; 
-                ui.prevDisabled = true;
-                ui.joinDisabled = false; 
-                ui.presetDisabled = false; 
-                ui.volDisabled = true;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.presetNum = 0;
-                ui.art = ""; 
-                ui.track = "Off"; 
-                ui.artist = ""; 
-                ui.playClass = ''; 
-                ui.artPlaceholder = 'art-off';
-            } else if (effectiveLock.type === 'POWER' && effectiveLock.val === 'ON') {
-                ui.isStandby = false;
-                ui.pwrClass = 'on';
-                ui.playDisabled = true;
-                ui.nextDisabled = true;
-                ui.prevDisabled = true;
-                ui.volDisabled = false;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.presetNum = 0;
-                ui.art = "";
-                ui.track = "Ready";
-                ui.artist = "";
-                ui.playClass = '';
-                ui.artPlaceholder = 'art-off';
-            } else if (effectiveLock.type === 'PRESET') {
-                ui.isStandby = false;
-                ui.pwrClass = 'on';
-                ui.presetNum = effectiveLock.val;
-                ui.playDisabled = true;
-                ui.nextDisabled = true;
-                ui.prevDisabled = true;
-                ui.volDisabled = false;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.art = "";
-                ui.track = "Loading...";
-                ui.artist = "";
-                ui.playClass = '';
-                ui.artPlaceholder = 'art-off';
-            } else if (effectiveLock.type === 'TRANSPORT') {
-                if (effectiveLock.val === 'PLAY_PAUSE') {
-                    // Optimistic toggling of the Play button color.
-                    if (effectiveLock.expected === 'NOT_PLAYING') {
-                        ui.playClass = 'btn-pending'; // Yellow (Expect Pause)
-                        ui.playDisabled = false;
-                        ui.nextDisabled = true;
-                        ui.prevDisabled = true;
-                        ui.sourceAuxDisabled = true;
-                        ui.sourceBluetoothDisabled = true;
-                        ui.sourceWifiDisabled = true; 
-                    } else {
-                        ui.playClass = 'btn-active'; // Green (Expect Play)
-                        ui.playDisabled = false;
-                        ui.nextDisabled = true;
-                        ui.prevDisabled = true;
-                        ui.sourceAuxDisabled = true;
-                        ui.sourceBluetoothDisabled = true;
-                        ui.sourceWifiDisabled = true; 
-                    }
-                } else if (effectiveLock.val === 'PREV_TRACK') {
-                    ui.prevClass = 'btn-pending';
-                    ui.playClass = 'btn-pending';
-                    ui.playDisabled = true;
-                    ui.nextDisabled = true;
-                    ui.prevDisabled = false;
-                    ui.sourceAuxDisabled = true;
-                    ui.sourceBluetoothDisabled = true;
-                    ui.sourceWifiDisabled = true; 
-                } else if (effectiveLock.val === 'NEXT_TRACK') {
-                    ui.nextClass = 'btn-pending';
-                    ui.playClass = 'btn-pending';
-                    ui.playDisabled = true;
-                    ui.prevDisabled = true;
-                    ui.nextDisabled = false;
-                    ui.sourceAuxDisabled = true;
-                    ui.sourceBluetoothDisabled = true;
-                    ui.sourceWifiDisabled = true; 
-                }
-            } else if (effectiveLock.type === 'JOIN') {
-                ui.isStandby = false;
-                ui.pwrClass = 'on';
-                ui.joinClass = 'btn-master-join';
-                ui.presetNum = 0;
-                ui.presetDisabled = false;
-                ui.volDisabled = false;
-                ui.playDisabled = true;
-                ui.nextDisabled = true;
-                ui.prevDisabled = true;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.playClass = '';
-                ui.art = "";
-                ui.track = "Joining...";
-                ui.artist = "";
-                ui.artPlaceholder = 'art-off';
-            }
-        }
-
-        // Hard override: Slaves effectively have disabled transport controls.
-        if (isSlave) {
-            ui.playDisabled = true;
-            ui.nextDisabled = true;
-            ui.prevDisabled = true;
-            ui.presetDisabled = true;
-            ui.sourceAuxDisabled = true;
-            ui.sourceBluetoothDisabled = true;
-            ui.sourceWifiDisabled = true; 
-        }
-
-        return ui;
-    }
 
     // ======================================================
     // 3. RENDER ENGINE (Dynamic Sorting & HTML Generation)
@@ -522,6 +191,7 @@
             // EXCLUSION: Stereo Left channels are NOT standard multi-room masters
             const isGroupMaster = d.zone && d.zone.master === d.mac && d.stereoRole !== 'LEFT';
             const isGroupMember = d.zone && d.zone.master && !isGroupMaster;
+            
             d.isGroupMaster = isGroupMaster;
             let statusText = ui.isStandby ? 'STANDBY' : 'ON';
             if (isGroupMaster)
@@ -540,7 +210,7 @@
                 if (members.length > 0)
                     groupMaxVolume = Math.max(d.volume, ...members.map(m => m.volume));
             }
-
+            
             // Event Handlers
             const clickPrev = `onmousedown="uiTransport('${d.ip}', 'PREV_TRACK')"`;
             const clickPlay = `onmousedown="uiTransport('${d.ip}', 'PLAY_PAUSE')"`;
@@ -551,20 +221,20 @@
             const clickBluetooth = `onmousedown="uiBluetooth('${d.ip}')"`;
             const clickWifi = `onmousedown="uiWifi('${d.ip}')"`;
         
-        // --- THE ATOMIC FIX (Artwork Z-Index Sandwich) ---
-        // 1. ui.artPlaceholder provides the base layer CSS emoji.
-        // 2. The actual image is an positioned <img> on top (z-index: 10).
-        // 3. If the image fails to load, onerror hides it, revealing the emoji underneath
-        const artHtml = `
-            <div class="art ${ui.artPlaceholder}">
-                ${ui.art && ui.art !== 'custom_url' ? `<img src="${ui.art}" onerror="this.style.display='none'">` : ''}
-            </div>
-        `;
+            // --- THE ATOMIC FIX (Artwork Z-Index Sandwich) ---
+            // 1. ui.artPlaceholder provides the base layer CSS emoji.
+            // 2. The actual image is an positioned <img> on top (z-index: 10).
+            // 3. If the image fails to load, onerror hides it, revealing the emoji underneath
+            const artHtml = `
+                <div class="art ${ui.artPlaceholder}">
+                    ${ui.art && ui.art !== 'custom_url' ? `<img src="${ui.art}" onerror="this.style.display='none'">` : ''}
+                </div>
+            `;
 
-        const dis = (val) => val ? 'disabled' : ''; // Utility for HTML attributes
-        const cls = (val) => val ? 'btn-disabled' : ''; // Utility for CSS classes
-            
-        return /*html*/ `
+            const dis = (val) => val ? 'disabled' : ''; // Utility for HTML attributes
+            const cls = (val) => val ? 'btn-disabled' : ''; // Utility for CSS classes
+                
+            return /*html*/ `
             <div class="card" id="card-${d.ip}">
                 <div class="card-header speaker">
                     <h3 class="card-heading">
@@ -694,78 +364,6 @@
 
     } 
 
-    // --- ACTIONS (User Inputs & Network) ---
-
-    // Fetches latest status from the server and initiates rendering.
-    async function loadStatus() {
-        if (isPollingFrozen)
-            return; // Skips polling if network is busy.
-        if (isUserInteracting)
-            return; // Skips polling if user is dragging a slider.
-
-        try {
-            const res = await fetch('/api/status');
-            const newData = await res.json();
-            // --- SAFE HEALTH CHECK INJECTION ---
-            try {
-                const hRes = await fetch('/api/health');
-                if (hRes.ok) {
-                    const h = await hRes.json();
-                    const banner = document.getElementById('mass-error-banner');
-                    if (banner) {
-                        if (h && h.healthy === false) {
-                            if (banner.style.display !== 'flex')
-                                banner.style.display = 'flex';
-                        } else {
-                            banner.style.display = 'none';
-                        }
-                    }
-                }
-            } catch (e) { /* completely ignored so it can't crash your UI */
-            }	  
-        
-        // Persists old metadata ("Ghosting") if the new data is invalid but locked.
-        if (currentDevices.length > 0) {
-            newData.forEach(newDev => {
-                const oldDev = currentDevices.find(d => d.ip === newDev.ip);
-                const isLocked = LockManager.get(newDev.ip);
-                if (oldDev && isLocked && !newDev.readyForDisplay && !newDev.isStandby) {
-                    newDev.track = oldDev.track;
-                    newDev.artist = oldDev.artist;
-                    newDev.album = oldDev.album;
-                    newDev.art = oldDev.art;
-                }
-            });
-        }
-
-        currentDevices = newData;
-        // Cleans up expired locks if the backend state now matches the expectation.
-        currentDevices.forEach(d => LockManager.check(d));
-        renderSpeakers();
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
-    // Wrapper for sending commands that automatically pauses polling to prevent UI jitter.
-    async function sendCommand(url, body) {
-        isPollingFrozen = true;
-        try {
-            await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-            await new Promise(r => setTimeout(r, POLLING_DELAY));
-        } catch (e) {
-            console.error(e);
-        } finally {
-            isPollingFrozen = false;
-            loadStatus();
-        }
-    }
 
     // Handles Power toggle click. Sets an immediate optimistic lock.
     function uiTogglePower(ip, isCurrentlyStandby) {
