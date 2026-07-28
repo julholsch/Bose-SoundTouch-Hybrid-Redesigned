@@ -301,8 +301,8 @@
 
   // State management for the current view and search filters
   
+let selectedSpeaker = readUrlFilter("speaker");
   let filterValue = readUrlFilter("tab");
-  let selectedSpeaker = readUrlFilter("speaker");
   if (filterValue === null) {
     filterValue = "library";
   }
@@ -311,8 +311,8 @@
       source: 'global',
       filter: 'playlist',
       tab: filterValue,
-      speaker: selectedSpeaker,
-      favFilter: 'all'
+      favFilter: 'all',
+        speaker: selectedSpeaker
   };
   let selectedUuid = null;
   let currentSearchOrder = []; // populated from settings on load
@@ -344,7 +344,7 @@
       }
   }
 
-    window.addEventListener("popstate", () => {
+/*     window.addEventListener("popstate", () => {
         // Aktuellen Tab aus der geänderten URL auslesen oder Fallback nutzen
         const currentTab = readUrlFilter("tab") || "library";
         const currentSpeaker = readUrlFilter("speaker");
@@ -352,7 +352,7 @@
         // UI umschalten, aber das Update der URL blockieren (da der Browser das schon tat)
         newSwitchTab(currentTab, false);
         selectSpeakerByFilter(currentSpeaker);
-    });
+    }); */
 
     // --- INITIALIZATION ---
     window.onload = async function () {
@@ -361,8 +361,8 @@
         loadProviders();
         fetchSpeakers();
         
+        
         newSwitchTab(filterValue, true, true);
-        startNpPolling();
     }
 
   async function loadProviders() {
@@ -413,7 +413,7 @@
 // --- API WRAPPER ---
 // Simplifies fetch calls and error handling across the application.
 // This reduces code duplication significantly.
-    async function api(url, options = {}) {
+/*     async function api(url, options = {}) {
         try {
             const res = await fetch(url, {
                 headers: {
@@ -428,9 +428,9 @@
                 error: e.message
             };
         }
-    }
+    } */
 
-// --- CORE LOGIC: SPEAKER SELECTION ---
+/* // --- CORE LOGIC: SPEAKER SELECTION ---
 // Fetches speakers from Mass and Status endpoints.
 // Sorts based on backend confign order (speakers.json).
 // Implements logic to Auto-Select a playing speaker (Priority A/B/C).
@@ -577,7 +577,7 @@
         saveSpeakerSelection();
         // If viewing the Now Playing tab, refresh immediately to show the new speaker's status.
         loadNowPlaying();
-    }
+    } */
 
     function newSwitchTab(tabTarget, shouldUpdateUrl = true, replaceHistory = false) {
         state.tab = tabTarget;

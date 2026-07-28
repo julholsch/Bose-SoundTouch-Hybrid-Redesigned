@@ -51,6 +51,73 @@
 
 <script>
 
+/*         // --- GLOBAL STATE ---
+    let currentDevices = []; // Stores the latest snapshot of speaker data from the backend.
+    let isUserInteracting = false; // Flags if the user is dragging a slider to pause polling.
+    let isPollingFrozen = false; // Temporarily disables updates during network operations.
+    let lastRenderedHTML = ""; // Caches the last HTML string to optimize DOM diffing.
+    let globalSettings = {
+        mobileAutoSortSpeakers: true
+    }; */
+    
+
+
+
+  /* const LockManager = {
+        locks: {},
+
+        // Sets a lock for a specific device IP and property type (POWER, TRANSPORT, etc).
+        set: function (ip, type, val, expected = null) {
+            this.locks[ip] = {
+                type,
+                val,
+                expected,
+                timestamp: Date.now()
+            };
+            renderSpeakers(true); // Forces an immediate re-render to reflect the user's action.
+        },
+
+        get: function (ip) {
+            return this.locks[ip];
+        },
+
+        // Checks if the backend state has "caught up" to the lock.
+        // If the hardware reports the expected state, the lock is released.
+        check: function (device) {
+            const lock = this.locks[device.ip];
+            if (!lock)
+                return;
+            if (isPollingFrozen)
+                return;
+
+            // Transport Lock Logic (Play/Pause handling)
+            if (lock.type === 'TRANSPORT' && lock.val === 'PLAY_PAUSE') {
+                const current = device.playStatus;
+                const expected = lock.expected;
+
+                // Only delete the yellow lock if the speaker actually PAUSED
+                if (expected === 'NOT_PLAYING') {
+                    if (current === 'PAUSE_STATE' || current === 'STOP_STATE')
+                        delete this.locks[device.ip];
+                }
+                // Only delete the green lock if the speaker actually PLAYED
+                else if (expected === 'PLAYING') {
+                    if (current === 'PLAY_STATE' || current === 'BUFFERING_STATE')
+                        delete this.locks[device.ip];
+                }
+
+                // Failsafe: Expire locks older than 60s to prevent stuck UI states.
+                if (Date.now() - lock.timestamp > 60000)
+                    delete this.locks[device.ip];
+                return;
+            }
+
+            // General Lock Release: If device reports it is "Ready for Display", release.
+            if (device.readyForDisplay) {
+                delete this.locks[device.ip];
+            }
+        }
+    }; */
     
     // --- FETCH USER SETTINGS ---
     // Pulls live preferences from settings.json on page load
@@ -82,6 +149,7 @@
                     originalIndex: i
                 }));
 
+
         const roots = []; // Stores top-level speakers (Masters & Standalone).
         const slaveMap = {}; // Maps Master IPs to their Slave Devices.
 
@@ -108,7 +176,6 @@
                 roots.push(d);
             }
         });
-
         // 3. Scoring Phase: Sorts the Root devices based on Priority Tiers.
         roots.sort((a, b) => {
             // --- BYPASS AUTO-SORT ---
@@ -166,6 +233,8 @@
 
         // 4. Flattening Phase: Reassembles the list into a single array.
         const sortedList = [];
+
+        
         roots.forEach(root => {
             sortedList.push(root); // Adds the Root (Master or Standalone).
 
@@ -176,6 +245,7 @@
                 sortedList.push(...slaves);
             }
         });
+
 
         // --- HTML GENERATION ---
         // Generates the HTML card for each device in the sorted list.
@@ -340,6 +410,7 @@
             </div>`;
         }).join('');
 
+
         // --- DOM UPDATE ---
         // Updates the DOM only if content has changed.
         // Uses morphdom (if available) to smoothly animate sorting changes without refreshing the whole page.
@@ -364,6 +435,55 @@
 
     } 
 
+    async function loadStatus() {
+        if (isPollingFrozen)
+            return; // Skips polling if network is busy.
+        if (isUserInteracting)
+            return; // Skips polling if user is dragging a slider.
+
+        try {
+            const res = await fetch('/api/status');
+            const newData = await res.json();
+            // --- SAFE HEALTH CHECK INJECTION ---
+            try {
+                const hRes = await fetch('/api/health');
+                if (hRes.ok) {
+                    const h = await hRes.json();
+                    const banner = document.getElementById('mass-error-banner');
+                    if (banner) {
+                        if (h && h.healthy === false) {
+                            if (banner.style.display !== 'flex')
+                                banner.style.display = 'flex';
+                        } else {
+                            banner.style.display = 'none';
+                        }
+                    }
+                }
+            } catch (e) { /* completely ignored so it can't crash your UI */
+            }	  
+        
+        // Persists old metadata ("Ghosting") if the new data is invalid but locked.
+        if (currentDevices.length > 0) {
+            newData.forEach(newDev => {
+                const oldDev = currentDevices.find(d => d.ip === newDev.ip);
+                const isLocked = LockManager.get(newDev.ip);
+                if (oldDev && isLocked && !newDev.readyForDisplay && !newDev.isStandby) {
+                    newDev.track = oldDev.track;
+                    newDev.artist = oldDev.artist;
+                    newDev.album = oldDev.album;
+                    newDev.art = oldDev.art;
+                }
+            });
+        }
+
+        currentDevices = newData;
+        // Cleans up expired locks if the backend state now matches the expectation.
+        currentDevices.forEach(d => LockManager.check(d));
+        renderSpeakers();
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     // Handles Power toggle click. Sets an immediate optimistic lock.
     function uiTogglePower(ip, isCurrentlyStandby) {

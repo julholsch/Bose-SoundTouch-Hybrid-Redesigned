@@ -1,6 +1,124 @@
 
+    // --- GLOBAL STATE ---
+let currentDevices = []; // Stores the latest snapshot of speaker data from the backend.
+let isUserInteracting = false; // Flags if the user is dragging a slider to pause polling.
+let isPollingFrozen = false; // Temporarily disables updates during network operations.
+let lastRenderedHTML = ""; // Caches the last HTML string to optimize DOM diffing.
+let globalSettings = {
+    mobileAutoSortSpeakers: true
+};
 
-    // --- NOW PLAYING POLLING ---
+    // --- CONFIGURATION ---
+    const POLLING_DELAY = 3500; // Time to wait after a command before resuming polling (Network latency mask).
+    let volumeThrottleTimer = null; // Timer for debouncing main volume inputs.
+    let interactionWatchdog = null; // Safety timer to resume polling if the user stops interacting.
+
+const LockManager = {
+    locks: {},
+
+    // Sets a lock for a specific device IP and property type (POWER, TRANSPORT, etc).
+    set: function (ip, type, val, expected = null) {
+        this.locks[ip] = {
+            type,
+            val,
+            expected,
+            timestamp: Date.now()
+        };
+        try {
+
+            renderSpeakers(true); // Forces an immediate re-render to reflect the user's action.
+        } catch (e) {
+            console.log("Error Executing renderSpeaker(true)");
+        }
+    },
+
+    get: function (ip) {
+        return this.locks[ip];
+    },
+
+    // Checks if the backend state has "caught up" to the lock.
+    // If the hardware reports the expected state, the lock is released.
+    check: function (device) {
+        const lock = this.locks[device.ip];
+        if (!lock)
+            return;
+        if (isPollingFrozen)
+            return;
+
+        // Transport Lock Logic (Play/Pause handling)
+        if (lock.type === 'TRANSPORT' && lock.val === 'PLAY_PAUSE') {
+            const current = device.playStatus;
+            const expected = lock.expected;
+
+            // Only delete the yellow lock if the speaker actually PAUSED
+            if (expected === 'NOT_PLAYING') {
+                if (current === 'PAUSE_STATE' || current === 'STOP_STATE')
+                    delete this.locks[device.ip];
+            }
+            // Only delete the green lock if the speaker actually PLAYED
+            else if (expected === 'PLAYING') {
+                if (current === 'PLAY_STATE' || current === 'BUFFERING_STATE')
+                    delete this.locks[device.ip];
+            }
+
+            // Failsafe: Expire locks older than 60s to prevent stuck UI states.
+            if (Date.now() - lock.timestamp > 60000)
+                delete this.locks[device.ip];
+            return;
+        }
+
+        // General Lock Release: If device reports it is "Ready for Display", release.
+        if (device.readyForDisplay) {
+            delete this.locks[device.ip];
+        }
+    }
+};
+
+
+async function loadDeviceStatus() {
+    try {
+        const status = await fetch("api/status");
+        const newStatusData = await status.json();
+        try {
+            const healthStatus = await fetch('/api/health');
+            if (healthStatus.ok) {
+                const h = await healthStatus.json();
+                const banner = document.getElementById('mass-error-banner');
+                if (banner) {
+                    if (h && h.healthy === false) {
+                        if (banner.style.display !== 'flex')
+                            banner.style.display = 'flex';
+                    } else {
+                        banner.style.display = 'none';
+                    }
+                }
+            }
+        } catch (e) { 
+            console.log("Health Error: ", e);
+        }	
+        if (currentDevices.length > 0) {
+            newStatusData.forEach(newDev => {
+                const oldDev = currentDevices.find(d => d.ip === newDev.ip);
+                const isLocked = LockManager.get(newDev.ip);
+                if (oldDev && isLocked && !newDev.readyForDisplay && !newDev.isStandby) {
+                    newDev.track = oldDev.track;
+                    newDev.artist = oldDev.artist;
+                    newDev.album = oldDev.album;
+                    newDev.art = oldDev.art;
+                }
+            });
+        }
+
+        currentDevices = newStatusData;
+        currentDevices.forEach(d => LockManager.check(d));
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+
+// --- NOW PLAYING POLLING ---
   // Starts the poller only when the "Now Playing" tab is active to save resources.
 
   let lastSeenPosition = -1;
@@ -52,6 +170,7 @@
       }
 
       const devices = await api('/api/status');
+
       if (Array.isArray(devices)) {
           const device = devices.find(device => device.ip === targetIp);
 
@@ -73,20 +192,40 @@
               device.lastUpdateAt = positionAnchorTime;
               lastKnownDevice = device;
 
+
               updateNpUI(device);
           }
+      } else {
       }
+      
+  
   }
 
   // Updates the Now Playing card with Art, Metadata, and Status Badge.
   function updateNpUI(device) {
+
+/*     const devicesWithIndex = currentDevices.map((d, i) => ({
+        ...d,
+        originalIndex: i
+    }));
+
+    console.log("devicesWithIndex: ", devicesWithIndex);
+    const visibleDevices = devicesWithIndex.filter(d => d.stereoRole !== 'RIGHT');
+    
+    const selectedDevice = visibleDevices.filter(d => d.mac === document.getElementById('global-speaker').selectedOptions[0].dataset.mac);
+    console.log("visibleDevices: ", visibleDevices);
+    console.log("selectedDevice: ", selectedDevice); */
+
+    const ui = calculateUi(device);
+
       const nowPlaying = {
           img: document.getElementById('np-img'),
           track: document.getElementById('np-track'),
           artist: document.getElementById('np-artist'),
           album: document.getElementById('np-album'),
           status: document.getElementById('np-status'),
-          timer: document.getElementById('np-timer')
+          timer: document.getElementById('np-timer'),
+          controls: document.getElementById('np-controls')
       };
 
       if (device) {
@@ -111,6 +250,10 @@
               const isPlaying = (device.playStatus === 'PLAY_STATE' || device.playStatus === 'BUFFERING_STATE');
               const color = isPlaying ? "var(--accent)" : (device.playStatus === 'PAUSE_STATE' ? "var(--pending)" : "var(--text-primary)");
               const label = isPlaying ? "PLAYING" : (device.playStatus === 'PAUSE_STATE' ? "PAUSED" : "ON");
+            
+            ui.playDisabled = false;
+            ui.nextDisabled = false; 
+            ui.prevDisabled = false;
 
               // Calculate per-second drift since the last real update from the hardware
               let timerHtml = "";
@@ -141,81 +284,58 @@
           nowPlaying.track.innerText = "Ready";
           nowPlaying.artist.innerText = "";
           nowPlaying.status.innerText = "STANDBY / OFFLINE";
+        ui.playDisabled = true;
+        ui.nextDisabled = true; 
+        ui.prevDisabled = true;
       }
+
+        
+        
+        const clickPrev = `onmousedown="uiTransport('${device.ip}', 'PREV_TRACK')"`;
+        const clickPlay = `onmousedown="uiTransport('${device.ip}', 'PLAY_PAUSE')"`;
+        const clickNext = `onmousedown="uiTransport('${device.ip}', 'NEXT_TRACK')"`;
+
+            
+        const dis = (val) => val ? 'disabled' : ''; // Utility for HTML attributes
+        const cls = (val) => val ? 'btn-disabled' : '';
+
+
+
+        nowPlaying.controls.innerHTML = `
+            <button class="btn-secondary prev ${ui.prevClass}" ${dis(ui.prevDisabled)} ${clickPrev}>⏮</button>
+            <button class="btn-secondary play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
+            <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
+        `;
   }
 
 
-  
-    // --- GLOBAL STATE ---
-    let currentDevices = []; // Stores the latest snapshot of speaker data from the backend.
-    let isUserInteracting = false; // Flags if the user is dragging a slider to pause polling.
-    let isPollingFrozen = false; // Temporarily disables updates during network operations.
-    let lastRenderedHTML = ""; // Caches the last HTML string to optimize DOM diffing.
-    let globalSettings = {
-        mobileAutoSortSpeakers: true
-    };
-    
-    // --- CONFIGURATION ---
-    const POLLING_DELAY = 3500; // Time to wait after a command before resuming polling (Network latency mask).
-    let volumeThrottleTimer = null; // Timer for debouncing main volume inputs.
-    let interactionWatchdog = null; // Safety timer to resume polling if the user stops interacting.
+const noplayingFooter =  /*html*/ `
+    <footer class="np-view">
+        <div class="np-card">
+            <div id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
+            <div class="np-infos">
+                <div id="np-track" class="np-track">Loading...</div>
+                <div id="np-artist" class="np-artist">Loading...</div>
+                <div id="np-album" class="np-album">Loading...</div>
+                <div id="np-timer" class="np-timer"></div>
+            </div>
+            <div id="np-controls" class="np-controls">              
+            </div>
+            <div id="np-status" class="np-status-badge">CONNECTING</div>
+            <div class="speaker-select">
+                <div class="custom-dropdown-wrapper">
+                    
+                    <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </footer>
+`
 
 
-  const LockManager = {
-        locks: {},
 
-        // Sets a lock for a specific device IP and property type (POWER, TRANSPORT, etc).
-        set: function (ip, type, val, expected = null) {
-            this.locks[ip] = {
-                type,
-                val,
-                expected,
-                timestamp: Date.now()
-            };
-            renderSpeakers(true); // Forces an immediate re-render to reflect the user's action.
-        },
-
-        get: function (ip) {
-            return this.locks[ip];
-        },
-
-        // Checks if the backend state has "caught up" to the lock.
-        // If the hardware reports the expected state, the lock is released.
-        check: function (device) {
-            const lock = this.locks[device.ip];
-            if (!lock)
-                return;
-            if (isPollingFrozen)
-                return;
-
-            // Transport Lock Logic (Play/Pause handling)
-            if (lock.type === 'TRANSPORT' && lock.val === 'PLAY_PAUSE') {
-                const current = device.playStatus;
-                const expected = lock.expected;
-
-                // Only delete the yellow lock if the speaker actually PAUSED
-                if (expected === 'NOT_PLAYING') {
-                    if (current === 'PAUSE_STATE' || current === 'STOP_STATE')
-                        delete this.locks[device.ip];
-                }
-                // Only delete the green lock if the speaker actually PLAYED
-                else if (expected === 'PLAYING') {
-                    if (current === 'PLAY_STATE' || current === 'BUFFERING_STATE')
-                        delete this.locks[device.ip];
-                }
-
-                // Failsafe: Expire locks older than 60s to prevent stuck UI states.
-                if (Date.now() - lock.timestamp > 60000)
-                    delete this.locks[device.ip];
-                return;
-            }
-
-            // General Lock Release: If device reports it is "Ready for Display", release.
-            if (device.readyForDisplay) {
-                delete this.locks[device.ip];
-            }
-        }
-    };
 
     // ======================================================
     // 2. LOGIC ENGINE (UI Calculation)
@@ -227,6 +347,7 @@
         let masterIp = null;
         let effectiveDevice = device; 
         let effectiveLock = LockManager.get(device.ip);
+        // console.log(`device.zone: ${device.zone}`);
 
         // If Slave, it attempts to inherit metadata (Art, Artist) from the Master.
         if (isSlave) {
@@ -476,7 +597,7 @@
             console.error(e);
         } finally {
             isPollingFrozen = false;
-            loadStatus();
+            loadDeviceStatus();
         }
     }
 
@@ -505,101 +626,212 @@
     }
 
 
-        // --- ACTIONS (User Inputs & Network) ---
 
-    // Fetches latest status from the server and initiates rendering.
-    async function loadStatus() {
-        if (isPollingFrozen)
-            return; // Skips polling if network is busy.
-        if (isUserInteracting)
-            return; // Skips polling if user is dragging a slider.
 
-        try {
-            const res = await fetch('/api/status');
-            const newData = await res.json();
-            // --- SAFE HEALTH CHECK INJECTION ---
-            try {
-                const hRes = await fetch('/api/health');
-                if (hRes.ok) {
-                    const h = await hRes.json();
-                    const banner = document.getElementById('mass-error-banner');
-                    if (banner) {
-                        if (h && h.healthy === false) {
-                            if (banner.style.display !== 'flex')
-                                banner.style.display = 'flex';
-                        } else {
-                            banner.style.display = 'none';
-                        }
-                    }
-                }
-            } catch (e) { /* completely ignored so it can't crash your UI */
-            }	  
+
+
+let selectedSpeaker2 = readUrlFilter("speaker");
+
+let speakerSelectState = {
+    speaker: selectedSpeaker2
+};
+
+window.onload = async function () {
+    fetchSpeakers();
+    startNpPolling();
+}
+
+window.addEventListener("popstate", () => {
+  // Aktuellen Tab aus der geänderten URL auslesen oder Fallback nutzen
+  const currentTab = readUrlFilter("tab") || "library";
+  const currentSpeaker = readUrlFilter("speaker");
+  console.log("popstat");
+  // UI umschalten, aber das Update der URL blockieren (da der Browser das schon tat)
+  newSwitchTab(currentTab, false);
+  selectSpeakerByFilter(currentSpeaker);
+});
+
+ function readUrlFilter(filterName) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterValue = urlParams.get(filterName);
+    return filterValue;
+ }
+
+  function updateUrlFilter(filterName, filterValue, replaceState = false) {
+    const url = new URL(window.location.href);
+    url.searchParams.set(filterName, filterValue);
+    if (!replaceState) {
+        history.pushState({}, '', url.href);
+    } else {
+        history.replaceState({}, '', url.href);
         
-        // Persists old metadata ("Ghosting") if the new data is invalid but locked.
-        if (currentDevices.length > 0) {
-            newData.forEach(newDev => {
-                const oldDev = currentDevices.find(d => d.ip === newDev.ip);
-                const isLocked = LockManager.get(newDev.ip);
-                if (oldDev && isLocked && !newDev.readyForDisplay && !newDev.isStandby) {
-                    newDev.track = oldDev.track;
-                    newDev.artist = oldDev.artist;
-                    newDev.album = oldDev.album;
-                    newDev.art = oldDev.art;
-                }
-            });
+    }
+  }
+
+async function api(url, options = {}) {
+  try {
+      const res = await fetch(url, {
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          ...options
+      });
+      return await res.json();
+  } catch (e) {
+      console.error("API Error:", e);
+      return {
+          error: e.message
+      };
+  }
+}
+
+async function fetchSpeakers() {
+    const select = document.getElementById('global-speaker');
+  
+    try {
+        const [maPlayers, stDevices] = await Promise.all([
+                    api('/api/manager/players'),
+                    api('/api/status')
+                ]);
+
+        if (!stDevices || !stDevices.length) {
+            select.innerHTML = '<option value="">No Speakers</option>';
+            return;
         }
 
-        currentDevices = newData;
-        // Cleans up expired locks if the backend state now matches the expectation.
-        currentDevices.forEach(d => LockManager.check(d));
-        renderSpeakers();
-        } catch (e) {
-            console.error(e);
+        // 1. OUTER JOIN: Uses stDevices (speakers.json) as the master list.
+        const options = stDevices.map(d => {
+            const p = maPlayers ? maPlayers.find(mp => mp.ip === d.ip) : null;
+
+            const isPlaying = (d.playStatus === 'PLAY_STATE' || d.playStatus === 'BUFFERING_STATE');
+            const isOffline = !d.online;
+            const isMissingFromMass = !p;
+
+            let icon = '';
+            let colorClass = '';
+
+            // Determine Icons & Classes
+            if (isOffline) {
+                icon = ' 🔴';
+                colorClass = 'class="status-offline"';
+            } else if (isMissingFromMass) {
+                icon = ' 🔇';
+                colorClass = 'class="status-missing"';
+            } else if (isPlaying) {
+                icon = ' 🎵';
+            }
+
+            const finalLabel = `${d.name}${icon}`;
+
+            // --- THE FILTERS ---
+            const isStereoRight = (d.stereoRole === 'RIGHT');
+            let playDisabledAttr = '';
+            if (isOffline || isMissingFromMass) {
+                playDisabledAttr = `disabled ${colorClass}`;
+            } else if (isStereoRight) {
+                playDisabledAttr = `disabled style="color: var(--text-secondary); font-style: italic;"`;
+            }
+
+            const playValue = p ? p.id : '';
+            const editStyleAttr = colorClass ? `${colorClass}` : '';
+
+            return {
+                htmlId: `<option value="${playValue}" data-ip="${d.ip}" data-mac="${d.mac}" data-playing="${isPlaying}" ${playDisabledAttr}>${finalLabel}</option>`,
+                htmlIp: `<option value="${d.ip}" data-id="${playValue}" data-ip="${d.ip}" data-mac="${d.mac}" ${editStyleAttr}>${finalLabel}</option>`,
+                isPlaying: isPlaying,
+                id: playValue,
+                mac: d.mac,
+                isPlayable: (!isOffline && !isMissingFromMass && !isStereoRight)
+            };
+        });
+
+        select.innerHTML = options.length ? options.map(o => o.htmlId).join('') : '<option value="">No Configured Speakers Found</option>';
+
+        const ipOptionsHtml = options.map(o => o.htmlIp).join('');
+
+        const viewFilter = document.getElementById('preset-view-filter');
+        if (viewFilter) {
+            const currentVal = viewFilter.value;
+            viewFilter.innerHTML = `<option value="global">Global (Default)</option>${ipOptionsHtml}`;
+            if (currentVal)
+                viewFilter.value = currentVal;
+        }
+
+        const editFilter = document.getElementById('edit-speaker');
+        if (editFilter) {
+            const currentEditVal = editFilter.value;
+            editFilter.innerHTML = `<option value="">Global (All Speakers)</option>${ipOptionsHtml}`;
+            if (currentEditVal)
+                editFilter.value = currentEditVal;
+        }
+
+        // 2. AUTO-SELECT LOGIC
+        const playableOptions = options.filter(o => o.isPlayable);
+        const activeSpeaker = playableOptions.find(o => o.isPlaying);
+
+        // Wir suchen genau das Objekt, bei dem die MAC mit state.speaker übereinstimmt
+        const matchedSpeaker = playableOptions.find(o => o.mac === speakerSelectState.speaker);
+
+
+        // ICH JULIUS Versuche hier auf die mac adress zu prüfen NICHTS VERÄNDERN BITTE!!
+        if (speakerSelectState.speaker != null && matchedSpeaker) {
+            select.value = matchedSpeaker.id;
+            saveSpeakerSelection();
+        } else {
+            // Dieser teil exsetierte schon vorher
+            if (activeSpeaker) {
+                select.value = activeSpeaker.id;
+                saveSpeakerSelection();
+
+            } else {
+                const saved = localStorage.getItem('bose_active_speaker');
+                if (saved && Array.from(select.options).some(o => o.value === saved && !o.disabled)) {
+                    select.value = saved;
+                } else {
+                    const firstValid = Array.from(select.options).find(o => !o.disabled && o.value !== "");
+                    if (firstValid) {
+                        select.value = firstValid.value;
+                        saveSpeakerSelection();
+                    }
+                }
+            }
+        }
+
+
+        loadNowPlaying();
+
+    } catch (e) {
+        console.log("Error Fetching Speaker: ", e);
+        select.innerHTML = '<option>Error Loading</option>';
+    }
+}
+    function saveSpeakerSelection() {
+        const select = document.getElementById('global-speaker');
+
+        
+        /* console.log(speaker); */
+        // Erst den normalen Value für den localStorage speichern
+        localStorage.setItem('bose_active_speaker', select.value);
+        
+        // Prüfen ob überhaupt eine Option ausgewählt ist und ein Wert existiert
+        if (select.selectedIndex !== -1 && select.value) {
+            // Über selectedOptions[0] greifen wir direkt auf die aktive Option zu
+            const macAddress = select.selectedOptions[0].dataset.mac;
+            
+            // Jetzt schreiben wir die gefundene MAC in den URL Filter
+            updateUrlFilter("speaker", macAddress, replaceState = true);
         }
     }
 
 
+    // Called when user manually changes the dropdown.
+    function handleSpeakerChange() {
+        saveSpeakerSelection();
+        // If viewing the Now Playing tab, refresh immediately to show the new speaker's status.
+        loadNowPlaying();
+    }
 
 
-/* activeDevice = localStorage.getItem('selected_speaker');
-console.log(`Log: ${activeDevice.id}`);
-const ui = calculateUi();
-const clickPrev = `onmousedown="uiTransport('${activeDevice.ip}', 'PREV_TRACK')"`;
-const clickPlay = `onmousedown="uiTransport('${activeDevice.ip}', 'PLAY_PAUSE')"`;
-const clickNext = `onmousedown="uiTransport('${activeDevice.ip}', 'NEXT_TRACK')"`;
-
-const dis = (val) => val ? 'disabled' : ''; // Utility for HTML attributes
-const cls = (val) => val ? 'btn-disabled' : ''; */
-/* <!--                       <button class="btn-secondary prev ${ui.prevClass}" ${dis(ui.prevDisabled)} ${clickPrev}>⏮</button>
-                      <button class="btn-secondary play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
-                      <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button> */
-const noplayingFooter =  /*html*/ `
-    <footer class="np-view">
-        <div class="np-card">
-            <div id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
-            <div class="np-infos">
-                <div id="np-track" class="np-track">Loading...</div>
-                <div id="np-artist" class="np-artist">Loading...</div>
-                <div id="np-album" class="np-album">Loading...</div>
-                <div id="np-timer" class="np-timer"></div>
-            </div>
-            <div class="np-controls">
-              
-
-
-            </div>
-            <div id="np-status" class="np-status-badge">CONNECTING</div>
-            <div class="speaker-select">
-                <div class="custom-dropdown-wrapper">
-                    
-                    <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
-                        <option value="">Loading...</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </footer>
-`
 
 
 // --- GITHUB UPDATE BANNER HTML ---
@@ -942,7 +1174,7 @@ window.triggerGlobalAllOff = async function() {
         if (typeof window.fetchDeviceState === 'function') {
             devices.forEach(d => window.fetchDeviceState(d.ip));
         } else if (typeof window.loadStatus === 'function') {
-            window.loadStatus();
+            window.loadDeviceStatus();;
         }
     } catch (e) {
         console.error("Failed to power off speakers", e);
@@ -950,4 +1182,6 @@ window.triggerGlobalAllOff = async function() {
         btns.forEach(b => b.style.opacity = '1');
     }
 };
+
+loadDeviceStatus();
 
