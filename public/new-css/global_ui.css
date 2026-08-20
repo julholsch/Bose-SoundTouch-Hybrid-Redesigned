@@ -3,9 +3,9 @@
    ========================================= */
 
 .np-view {
-  position: fixed;
+  position: sticky;
   right: 10px;
-  bottom: 10px;
+  bottom: 15px;
   left: 10px;
   z-index: 990;
 
@@ -19,6 +19,7 @@
   height: var(--np-view-heigth);
 
   margin: 0 auto;
+  margin-top: 20px;
 
   text-align: center;
 

@@ -15,6 +15,7 @@
 	<link rel="manifest" href="manifest.json">
 
 	<script src="global_ui.js"></script>
+    <script src="custom-elements/now-playing-bar.js"></script>
 </head>
 <body>
 
@@ -27,12 +28,12 @@
                     Bose SoundTouch Hybrid
                 </span>
             </div>
-				<div class="global-nav-menu">
-					<div class="global-link" onmousedown="window.location.href='control.html'">Remote</div>
-					<div class="global-link" onmousedown="window.location.href='manager.html'">Library</div>
-					<div class="global-link" onmousedown="window.location.href='admin.html'">Speaker</div>
-					<div class="global-link active" onmousedown="window.location.href='tools.html'">System</div>
-				</div>
+            <div class="global-nav-menu">
+                <button class="global-link" onclick="window.location.href='control.html'">Remote</button>
+                <button class="global-link" onclick="window.location.href='manager.html'">Library</button>
+                <button class="global-link" onclick="window.location.href='admin.html'">Speaker</button>
+                <button class="global-link active" onclick="window.location.href='tools.html'">System</button>
+            </div>
 			</div>
 		</header>
 
@@ -375,6 +376,29 @@
 				</section>
 			</main>
 		</div>
+
+<!-- 		<now-playing-bar>
+			<div part="np-card" class="np-card">
+				<div part="np-img" id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
+				<div part="np-info" class="np-infos">
+					<div part="np-track" id="np-track" class="np-track">Loading...</div>
+					<div part="np-artist" id="np-artist" class="np-artist">Loading...</div>
+					<div part="np-album" id="np-album" class="np-album">Loading...</div>
+					<div part="np-timer" id="np-timer" class="np-timer"></div>
+				</div>
+				<div part="np-controls" id="np-controls" class="np-controls">              
+				</div>
+				<div part="np-status" id="np-status" class="np-status-badge">CONNECTING</div>
+				<div class="speaker-select">
+					<div class="custom-dropdown-wrapper">
+						
+						<select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
+							<option value="">Loading...</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</now-playing-bar> -->
 	</div>
 
 

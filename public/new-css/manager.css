@@ -107,8 +107,8 @@ html {
 }
 
 body {
-  overflow-y: scroll;
-  padding: 20px;
+  /*overflow-y: scroll;*/
+  /*padding: 20px;*/
   margin: 0;
   font-family: -apple-system,
                BlinkMacSystemFont,
@@ -118,7 +118,9 @@ body {
 
   color: var(--text);
   background: var(--bg);
-  scrollbar-gutter: stable;
+  /*scrollbar-gutter: stable;*/
+
+
 
   * {
     font-family: -apple-system,
@@ -133,6 +135,10 @@ body {
   max-width: 1200px;
 
   margin: 0 auto;
+  gap: 10px;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 .separation-line {
@@ -201,7 +207,10 @@ input:disabled + label {
 }
 
 .app-content {
-  padding-bottom: calc(30px + var(--np-view-heigth));
+  /*padding-bottom: calc(30px + var(--np-view-heigth));*/
+
+  width: 100%;
+  min-block-size: 100svh;
 }
 
 
@@ -688,7 +697,7 @@ input.text-inputs {
 
 .app-header {
   position: sticky;
-  top: 10px;
+  top: 20px;
   z-index: 999;
 
   display: flex;
@@ -707,13 +716,13 @@ input.text-inputs {
   &::after {
     content: "";
     position: absolute;
-    top: -10px;
+    top: -20px;
     left: 0;
     z-index: -1;
 
     width: 100%;
 
-    height: calc(100% + 10px);
+    height: calc(100% + 20px);
 
     backdrop-filter: blur(15px);
 

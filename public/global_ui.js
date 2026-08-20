@@ -119,90 +119,91 @@ async function loadDeviceStatus() {
 
 
 // --- NOW PLAYING POLLING ---
-  // Starts the poller only when the "Now Playing" tab is active to save resources.
+// Starts the poller only when the "Now Playing" tab is active to save resources.
 
-  let lastSeenPosition = -1;
-  let lastSeenTrack = "";
-  let positionAnchorTime = Date.now();
-  let localTicker = null;
-  let npInterval = null;
-  let lastKnownDevice = null;
+let lastSeenPosition = -1;
+let lastSeenTrack = "";
+let positionAnchorTime = Date.now();
+let localTicker = null;
+let npInterval = null;
+let lastKnownDevice = null;
 
-  function startNpPolling() {
-      if (npInterval)
-          clearInterval(npInterval);
-      if (localTicker)
-          clearInterval(localTicker);
+async function startNpPolling() {
+    if (npInterval)
+        clearInterval(npInterval);
+    if (localTicker)
+        clearInterval(localTicker);
 
-      loadNowPlaying();
+    loadNowPlaying();
 
-      // 📡 NETWORK POLLING: Stays at 2.5 seconds
-      npInterval = setInterval(loadNowPlaying, 2000);
+    // 📡 NETWORK POLLING: Stays at 2.5 seconds
+    npInterval = setInterval(loadNowPlaying, 2000);
 
-      // ⏱️ UI TICKER: Updates the screen every 1 second
-      localTicker = setInterval(() => {
-          if (lastKnownDevice)
-              updateNpUI(lastKnownDevice);
-      }, 1000);
-  }
+    // ⏱️ UI TICKER: Updates the screen every 1 second
+    localTicker = setInterval(() => {
+        if (lastKnownDevice)
+            updateNpUI(lastKnownDevice);
 
-  function stopNpPolling() {
-      if (npInterval)
-          clearInterval(npInterval);
-      if (localTicker)
-          clearInterval(localTicker);
-      npInterval = null;
-      localTicker = null;
-  }
+    }, 1000);
+}
 
-    // Fetches status for the *currently selected speaker* dropdown item.
-  async function loadNowPlaying() {
-      const select = document.getElementById('global-speaker');
-      if (!select || select.selectedIndex === -1 || !select.value) {
-          updateNpUI(null);
-          return;
-      }
+function stopNpPolling() {
+    if (npInterval)
+        clearInterval(npInterval);
+    if (localTicker)
+        clearInterval(localTicker);
+    npInterval = null;
+    localTicker = null;
+}
 
-      const targetIp = select.selectedOptions[0].getAttribute('data-ip');
-      if (!targetIp) {
-          updateNpUI(null);
-          return;
-      }
+// Fetches status for the *currently selected speaker* dropdown item.
+async function loadNowPlaying() {
+    const select = document.getElementById('global-speaker');
+    if (!select || select.selectedIndex === -1 || !select.value) {
+        updateNpUI(null);
+        return;
+    }
 
-      const devices = await api('/api/status');
+    const targetIp = select.selectedOptions[0].getAttribute('data-ip');
+    if (!targetIp) {
+        updateNpUI(null);
+        return;
+    }
 
-      if (Array.isArray(devices)) {
-          const device = devices.find(device => device.ip === targetIp);
+    const devices = await api('/api/status');
 
-          if (device) {
-              // ⏱️ ANCHOR LOGIC: Reset stopwatch if Bose pushes a new time OR the track changes!
-              if (device.position !== lastSeenPosition || device.track !== lastSeenTrack) {
+    if (Array.isArray(devices)) {
+        const device = devices.find(device => device.ip === targetIp);
 
-                  // If the Track Name changed, force our local math to start counting from 0
-                  if (device.track !== lastSeenTrack) {
-                      device.position = 0;
-                  }
+        if (device) {
+            // ⏱️ ANCHOR LOGIC: Reset stopwatch if Bose pushes a new time OR the track changes!
+            if (device.position !== lastSeenPosition || device.track !== lastSeenTrack) {
 
-                  lastSeenPosition = device.position;
-                  lastSeenTrack = device.track;
-                  positionAnchorTime = Date.now();
-              }
+                // If the Track Name changed, force our local math to start counting from 0
+                if (device.track !== lastSeenTrack) {
+                    device.position = 0;
+                }
 
-              // Apply the true anchor time to the device so the math works
-              device.lastUpdateAt = positionAnchorTime;
-              lastKnownDevice = device;
+                lastSeenPosition = device.position;
+                lastSeenTrack = device.track;
+                positionAnchorTime = Date.now();
+            }
+
+            // Apply the true anchor time to the device so the math works
+            device.lastUpdateAt = positionAnchorTime;
+            lastKnownDevice = device;
 
 
-              updateNpUI(device);
-          }
-      } else {
-      }
-      
-  
-  }
+            updateNpUI(device);
+        }
+    } else {
+    }
+    
 
-  // Updates the Now Playing card with Art, Metadata, and Status Badge.
-  function updateNpUI(device) {
+}
+
+// Updates the Now Playing card with Art, Metadata, and Status Badge.
+function updateNpUI(device) {
 
 /*     const devicesWithIndex = currentDevices.map((d, i) => ({
         ...d,
@@ -218,76 +219,76 @@ async function loadDeviceStatus() {
 
     const ui = calculateUi(device);
 
-      const nowPlaying = {
-          img: document.getElementById('np-img'),
-          track: document.getElementById('np-track'),
-          artist: document.getElementById('np-artist'),
-          album: document.getElementById('np-album'),
-          status: document.getElementById('np-status'),
-          timer: document.getElementById('np-timer'),
-          controls: document.getElementById('np-controls')
-      };
+    const nowPlaying = {
+        img: document.getElementById('np-img'),
+        track: document.getElementById('np-track'),
+        artist: document.getElementById('np-artist'),
+        album: document.getElementById('np-album'),
+        status: document.getElementById('np-status'),
+        timer: document.getElementById('np-timer'),
+        controls: document.getElementById('np-controls')
+    };
 
-      if (device) {
-          // --- ARTWORK ---
-          nowPlaying.img.outerHTML = /*html*/`
+    if (device) {
+        // --- ARTWORK ---
+        nowPlaying.img.outerHTML = /*html*/`
             <div id="np-img" class="np-art ${device.artPlaceholder}">
                 ${device.art && device.art !== 'custom_url' ? `<img src="${device.art}">` : ''}
             </div>
-          `;
-          nowPlaying.img = document.getElementById('np-img');
-          nowPlaying.img.style.display = 'flex';
+        `;
+        nowPlaying.img = document.getElementById('np-img');
+        nowPlaying.img.style.display = 'flex';
 
-          // --- METADATA ---
-          nowPlaying.track.innerText = device.track || "Ready";
-          nowPlaying.artist.innerText = device.artist || "";
-          nowPlaying.album.innerText = device.album || "";
+        // --- METADATA ---
+        nowPlaying.track.innerText = device.track || "Ready";
+        nowPlaying.artist.innerText = device.artist || "";
+        nowPlaying.album.innerText = device.album || "";
 
-          // --- STATUS & SMOOTH TIMER ---
-          if (device.isStandby) {
-              nowPlaying.status.innerHTML = `<span style="color:var(--text-secondary)">STANDBY</span>`;
-          } else {
-              const isPlaying = (device.playStatus === 'PLAY_STATE' || device.playStatus === 'BUFFERING_STATE');
-              const color = isPlaying ? "var(--accent)" : (device.playStatus === 'PAUSE_STATE' ? "var(--pending)" : "var(--text-primary)");
-              const label = isPlaying ? "PLAYING" : (device.playStatus === 'PAUSE_STATE' ? "PAUSED" : "ON");
+        // --- STATUS & SMOOTH TIMER ---
+        if (device.isStandby) {
+            nowPlaying.status.innerHTML = `<span style="color:var(--text-secondary)">STANDBY</span>`;
+        } else {
+            const isPlaying = (device.playStatus === 'PLAY_STATE' || device.playStatus === 'BUFFERING_STATE');
+            const color = isPlaying ? "var(--accent)" : (device.playStatus === 'PAUSE_STATE' ? "var(--pending)" : "var(--text-primary)");
+            const label = isPlaying ? "PLAYING" : (device.playStatus === 'PAUSE_STATE' ? "PAUSED" : "ON");
             
             ui.playDisabled = false;
             ui.nextDisabled = false; 
             ui.prevDisabled = false;
 
-              // Calculate per-second drift since the last real update from the hardware
-              let timerHtml = "";
-              if (device.duration > 0) {
-                  const formatTime = (secs) => {
-                      const m = Math.floor(secs / 60);
-                      const s = Math.floor(secs % 60).toString().padStart(2, '0');
-                      return `${m}:${s}`;
-                  };
+            // Calculate per-second drift since the last real update from the hardware
+            let timerHtml = "";
+            if (device.duration > 0) {
+                const formatTime = (secs) => {
+                    const m = Math.floor(secs / 60);
+                    const s = Math.floor(secs % 60).toString().padStart(2, '0');
+                    return `${m}:${s}`;
+                };
 
-                  // The Math: How many seconds passed since the server sent this status?
-                  const msSinceUpdate = Date.now() - (device.lastUpdateAt || Date.now());
-                  const secondDrift = isPlaying ? Math.floor(msSinceUpdate / 1000) : 0;
+                // The Math: How many seconds passed since the server sent this status?
+                const msSinceUpdate = Date.now() - (device.lastUpdateAt || Date.now());
+                const secondDrift = isPlaying ? Math.floor(msSinceUpdate / 1000) : 0;
 
-                  // Apply drift to the last known position from the hardware
-                  let currentPos = Math.min((device.position || 0) + secondDrift, device.duration);
+                // Apply drift to the last known position from the hardware
+                let currentPos = Math.min((device.position || 0) + secondDrift, device.duration);
 
-                  timerHtml = `<span class="np-timer">${formatTime(currentPos)} / ${formatTime(device.duration)}</span>`;
-              }
+                timerHtml = `<span class="np-timer">${formatTime(currentPos)} / ${formatTime(device.duration)}</span>`;
+            }
 
-              nowPlaying.status.innerHTML = `<span style="color:${color}">${label}</span>`;
-              nowPlaying.timer.innerHTML = `${timerHtml}`;
-          }
-      } else {
-          nowPlaying.img.outerHTML = `<div id="np-img" class="np-art art-blank"></div>`;
-          nowPlaying.img = document.getElementById('np-img');
-          nowPlaying.img.style.display = 'block';
-          nowPlaying.track.innerText = "Ready";
-          nowPlaying.artist.innerText = "";
-          nowPlaying.status.innerText = "STANDBY / OFFLINE";
+            nowPlaying.status.innerHTML = `<span style="color:${color}">${label}</span>`;
+            nowPlaying.timer.innerHTML = `${timerHtml}`;
+        }
+    } else {
+        nowPlaying.img.outerHTML = `<div id="np-img" class="np-art art-blank"></div>`;
+        nowPlaying.img = document.getElementById('np-img');
+        nowPlaying.img.style.display = 'block';
+        nowPlaying.track.innerText = "Ready";
+        nowPlaying.artist.innerText = "";
+        nowPlaying.status.innerText = "STANDBY / OFFLINE";
         ui.playDisabled = true;
         ui.nextDisabled = true; 
         ui.prevDisabled = true;
-      }
+    }
 
         
         
@@ -306,22 +307,22 @@ async function loadDeviceStatus() {
             <button class="btn-secondary play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>⏯</button>
             <button class="btn-secondary next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>⏭</button>
         `;
-  }
+}
 
 
 const noplayingFooter =  /*html*/ `
     <footer class="np-view">
-        <div class="np-card">
-            <div id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
-            <div class="np-infos">
-                <div id="np-track" class="np-track">Loading...</div>
-                <div id="np-artist" class="np-artist">Loading...</div>
-                <div id="np-album" class="np-album">Loading...</div>
-                <div id="np-timer" class="np-timer"></div>
+        <div part="np-card" class="np-card">
+            <div part="np-img" id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
+            <div part="np-info" class="np-infos">
+                <div part="np-track" id="np-track" class="np-track">Loading...</div>
+                <div part="np-artist" id="np-artist" class="np-artist">Loading...</div>
+                <div part="np-album" id="np-album" class="np-album">Loading...</div>
+                <div part="np-timer" id="np-timer" class="np-timer"></div>
             </div>
-            <div id="np-controls" class="np-controls">              
+            <div part="np-controls" id="np-controls" class="np-controls">              
             </div>
-            <div id="np-status" class="np-status-badge">CONNECTING</div>
+            <div part="np-status" id="np-status" class="np-status-badge">CONNECTING</div>
             <div class="speaker-select">
                 <div class="custom-dropdown-wrapper">
                     
@@ -337,293 +338,304 @@ const noplayingFooter =  /*html*/ `
 
 
 
-    // ======================================================
-    // 2. LOGIC ENGINE (UI Calculation)
-    // ======================================================
-    // Converts raw device data into display-ready properties (classes, disabled states, text).
-    function calculateUi(device) {
-        // Determines if the device is a "Slave" in a multi-room group.
-        const isSlave = (device.zone && device.zone.master && device.zone.master !== device.mac);
-        let masterIp = null;
-        let effectiveDevice = device; 
-        let effectiveLock = LockManager.get(device.ip);
-        // console.log(`device.zone: ${device.zone}`);
+// ======================================================
+// 2. LOGIC ENGINE (UI Calculation)
+// ======================================================
+// Converts raw device data into display-ready properties (classes, disabled states, text).
+async function calculateUi(device) {
+    // Determines if the device is a "Slave" in a multi-room group.
+/*     if (!device) {
 
-        // If Slave, it attempts to inherit metadata (Art, Artist) from the Master.
-        if (isSlave) {
-            const master = currentDevices.find(d => d.mac === device.zone.master);
-            if (master) {
-                masterIp = master.ip;
-                effectiveDevice = master; // Use Master's data for display
-                // Slave inherits Master's locks if they exist.
-                const masterLock = LockManager.get(master.ip);
-                if (masterLock)
-                    effectiveLock = masterLock;
-            }
+        const select = document.getElementById('global-speaker');
+        const targetIp = select.selectedOptions[0].getAttribute('data-ip');
+        const devices = await api('/api/status');
+    
+        if (Array.isArray(devices)) {
+            const device = devices.find(device => device.ip === targetIp);
         }
+    } */
 
-        // Initializes the base UI object.
-        let ui = {
-            isStandby: effectiveDevice.isStandby,
-            track: effectiveDevice.track || effectiveDevice.source,
-            artist: effectiveDevice.artist,
-            art: effectiveDevice.art,
-            artPlaceholder: effectiveDevice.artPlaceholder || 'art-off', 
-            pwrClass: !effectiveDevice.isStandby ? 'on' : '',          
-            playClass: '',          
-            prevClass: '', 
-            nextClass: '', 
-            joinClass: '',
-            presetNum: effectiveDevice.activePreset,          
-            playDisabled: true, 
-            nextDisabled: true, 
-            prevDisabled: true,          
-            volDisabled: device.isStandby, 
-            joinDisabled: false, 
-            presetDisabled: false,
-            sourceAuxDisabled: false,
-            sourceBluetoothDisabled: false,
-            sourceWifiDisabled: false
-        };
+    const isSlave = (device.zone && device.zone.master && device.zone.master !== device.mac);
+    let masterIp = null;
+    let effectiveDevice = device; 
+    let effectiveLock = LockManager.get(device.ip);
+    // console.log(`device.zone: ${device.zone}`);
 
-        // --- NATIVE STATE HANDLING ---
-        // Sets the color of the Play/Pause button based on playback state.
-        if (effectiveDevice.playStatus === 'PLAY_STATE') {
-            ui.playClass = 'btn-active'; // Green (Playing)
-        } else if (effectiveDevice.playStatus === 'PAUSE_STATE') {
-            ui.playClass = 'btn-pending'; // Yellow (Paused)
-        } else {
-            ui.playClass = ''; // Gray (Stopped)
+    // If Slave, it attempts to inherit metadata (Art, Artist) from the Master.
+    if (isSlave) {
+        const master = currentDevices.find(d => d.mac === device.zone.master);
+        if (master) {
+            masterIp = master.ip;
+            effectiveDevice = master; // Use Master's data for display
+            // Slave inherits Master's locks if they exist.
+            const masterLock = LockManager.get(master.ip);
+            if (masterLock)
+                effectiveLock = masterLock;
         }
+    }
 
-        // Special handling for Slaves waiting for Master synchronization.
-        if (isSlave && masterIp) {
-            const master = currentDevices.find(d => d.ip === masterIp);
-            if (!master) {
-                ui.track = "Joining..."; 
-                ui.artist = ""; 
-                ui.art = "";
-            }
-        }
+    // Initializes the base UI object.
+    let ui = {
+        isStandby: effectiveDevice.isStandby,
+        track: effectiveDevice.track || effectiveDevice.source,
+        artist: effectiveDevice.artist,
+        art: effectiveDevice.art,
+        artPlaceholder: effectiveDevice.artPlaceholder || 'art-off', 
+        pwrClass: !effectiveDevice.isStandby ? 'on' : '',          
+        playClass: '',          
+        prevClass: '', 
+        nextClass: '', 
+        joinClass: '',
+        presetNum: effectiveDevice.activePreset,          
+        playDisabled: true, 
+        nextDisabled: true, 
+        prevDisabled: true,          
+        volDisabled: device.isStandby, 
+        joinDisabled: false, 
+        presetDisabled: false,
+        sourceAuxDisabled: false,
+        sourceBluetoothDisabled: false,
+        sourceWifiDisabled: false
+    };
 
-        // Fallback for missing metadata using the ContentItem source.
-        if (effectiveDevice.ContentItem && (effectiveDevice.ContentItem.source === 'Ready' || effectiveDevice.ContentItem.source === 'Paused')) {
-            ui.track = effectiveDevice.ContentItem.source;
-        }
+    // --- NATIVE STATE HANDLING ---
+    // Sets the color of the Play/Pause button based on playback state.
+    if (effectiveDevice.playStatus === 'PLAY_STATE') {
+        ui.playClass = 'btn-active'; // Green (Playing)
+    } else if (effectiveDevice.playStatus === 'PAUSE_STATE') {
+        ui.playClass = 'btn-pending'; // Yellow (Paused)
+    } else {
+        ui.playClass = ''; // Gray (Stopped)
+    }
 
-        // --- ENABLE CONTROLS RULE ---
-        // Controls are enabled if the device is Playing OR Paused (virtual state).
-        if ((effectiveDevice.playStatus === 'PLAY_STATE' || effectiveDevice.playStatus === 'PAUSE_STATE') && !effectiveDevice.isStandby) {
-            ui.playDisabled = false;
-            
-            // 🛑 THE RADIO CHECK: Is this a live stream or custom URL?
-            const mType = (effectiveDevice.mediaType || '').toLowerCase();
-            const provider = (effectiveDevice.provider || '').toLowerCase();
-            
-            // Trap any known radio sources (TuneIn, Built-in Custom URLs, or Radio tags)
-            const isRadio = mType.includes('radio') || mType.includes('custom') || 
-                            provider.includes('tunein') || provider.includes('builtin') || 
-                            !!effectiveDevice.stationName;
-            
-            // Prev/Next buttons are disabled while Paused OR if playing a Radio stream.
-            if (effectiveDevice.playStatus === 'PAUSE_STATE' || isRadio) {
-                ui.nextDisabled = true; 
-                ui.prevDisabled = true;
-            } else {
-                ui.nextDisabled = false; 
-                ui.prevDisabled = false;
-            }
-        }
-
-        // --- STANDBY RULE ---
-        // If the device is Off, all transport controls are disabled.
-        if (ui.isStandby) {
-            ui.track = "Off"; 
+    // Special handling for Slaves waiting for Master synchronization.
+    if (isSlave && masterIp) {
+        const master = currentDevices.find(d => d.ip === masterIp);
+        if (!master) {
+            ui.track = "Joining..."; 
             ui.artist = ""; 
-            ui.art = "";           
+            ui.art = "";
+        }
+    }
+
+    // Fallback for missing metadata using the ContentItem source.
+    if (effectiveDevice.ContentItem && (effectiveDevice.ContentItem.source === 'Ready' || effectiveDevice.ContentItem.source === 'Paused')) {
+        ui.track = effectiveDevice.ContentItem.source;
+    }
+
+    // --- ENABLE CONTROLS RULE ---
+    // Controls are enabled if the device is Playing OR Paused (virtual state).
+    if ((effectiveDevice.playStatus === 'PLAY_STATE' || effectiveDevice.playStatus === 'PAUSE_STATE') && !effectiveDevice.isStandby) {
+        ui.playDisabled = false;
+        
+        // 🛑 THE RADIO CHECK: Is this a live stream or custom URL?
+        const mType = (effectiveDevice.mediaType || '').toLowerCase();
+        const provider = (effectiveDevice.provider || '').toLowerCase();
+        
+        // Trap any known radio sources (TuneIn, Built-in Custom URLs, or Radio tags)
+        const isRadio = mType.includes('radio') || mType.includes('custom') || 
+                        provider.includes('tunein') || provider.includes('builtin') || 
+                        !!effectiveDevice.stationName;
+        
+        // Prev/Next buttons are disabled while Paused OR if playing a Radio stream.
+        if (effectiveDevice.playStatus === 'PAUSE_STATE' || isRadio) {
+            ui.nextDisabled = true; 
+            ui.prevDisabled = true;
+        } else {
+            ui.nextDisabled = false; 
+            ui.prevDisabled = false;
+        }
+    }
+
+    // --- STANDBY RULE ---
+    // If the device is Off, all transport controls are disabled.
+    if (ui.isStandby) {
+        ui.track = "Off"; 
+        ui.artist = ""; 
+        ui.art = "";           
+        ui.playDisabled = true; 
+        ui.nextDisabled = true; 
+        ui.prevDisabled = true;
+        ui.volDisabled = true; 
+        ui.joinDisabled = false; 
+        ui.presetDisabled = false;
+        ui.sourceAuxDisabled = false;
+        ui.sourceBluetoothDisabled = false;
+        ui.sourceWifiDisabled = false;
+        ui.presetNum = 0; 
+    }
+
+    // 3. APPLY LOCKS (User Interaction Overrides)
+    // Checks for active locks and forces the UI to match the user's expected state.
+    if (effectiveLock) {
+        if (effectiveLock.type === 'POWER' && effectiveLock.val === 'OFF') {
+            ui.isStandby = true; 
+            ui.pwrClass = ''; 
             ui.playDisabled = true; 
             ui.nextDisabled = true; 
             ui.prevDisabled = true;
-            ui.volDisabled = true; 
             ui.joinDisabled = false; 
-            ui.presetDisabled = false;
+            ui.presetDisabled = false; 
+            ui.volDisabled = true;
             ui.sourceAuxDisabled = false;
             ui.sourceBluetoothDisabled = false;
-            ui.sourceWifiDisabled = false;
-            ui.presetNum = 0; 
-        }
-
-        // 3. APPLY LOCKS (User Interaction Overrides)
-        // Checks for active locks and forces the UI to match the user's expected state.
-        if (effectiveLock) {
-            if (effectiveLock.type === 'POWER' && effectiveLock.val === 'OFF') {
-                ui.isStandby = true; 
-                ui.pwrClass = ''; 
-                ui.playDisabled = true; 
-                ui.nextDisabled = true; 
-                ui.prevDisabled = true;
-                ui.joinDisabled = false; 
-                ui.presetDisabled = false; 
-                ui.volDisabled = true;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.presetNum = 0;
-                ui.art = ""; 
-                ui.track = "Off"; 
-                ui.artist = ""; 
-                ui.playClass = ''; 
-                ui.artPlaceholder = 'art-off';
-            } else if (effectiveLock.type === 'POWER' && effectiveLock.val === 'ON') {
-                ui.isStandby = false;
-                ui.pwrClass = 'on';
-                ui.playDisabled = true;
-                ui.nextDisabled = true;
-                ui.prevDisabled = true;
-                ui.volDisabled = false;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.presetNum = 0;
-                ui.art = "";
-                ui.track = "Ready";
-                ui.artist = "";
-                ui.playClass = '';
-                ui.artPlaceholder = 'art-off';
-            } else if (effectiveLock.type === 'PRESET') {
-                ui.isStandby = false;
-                ui.pwrClass = 'on';
-                ui.presetNum = effectiveLock.val;
-                ui.playDisabled = true;
-                ui.nextDisabled = true;
-                ui.prevDisabled = true;
-                ui.volDisabled = false;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.art = "";
-                ui.track = "Loading...";
-                ui.artist = "";
-                ui.playClass = '';
-                ui.artPlaceholder = 'art-off';
-            } else if (effectiveLock.type === 'TRANSPORT') {
-                if (effectiveLock.val === 'PLAY_PAUSE') {
-                    // Optimistic toggling of the Play button color.
-                    if (effectiveLock.expected === 'NOT_PLAYING') {
-                        ui.playClass = 'btn-pending'; // Yellow (Expect Pause)
-                        ui.playDisabled = false;
-                        ui.nextDisabled = true;
-                        ui.prevDisabled = true;
-                        ui.sourceAuxDisabled = true;
-                        ui.sourceBluetoothDisabled = true;
-                        ui.sourceWifiDisabled = true; 
-                    } else {
-                        ui.playClass = 'btn-active'; // Green (Expect Play)
-                        ui.playDisabled = false;
-                        ui.nextDisabled = true;
-                        ui.prevDisabled = true;
-                        ui.sourceAuxDisabled = true;
-                        ui.sourceBluetoothDisabled = true;
-                        ui.sourceWifiDisabled = true; 
-                    }
-                } else if (effectiveLock.val === 'PREV_TRACK') {
-                    ui.prevClass = 'btn-pending';
-                    ui.playClass = 'btn-pending';
-                    ui.playDisabled = true;
+            ui.sourceWifiDisabled = false; 
+            ui.presetNum = 0;
+            ui.art = ""; 
+            ui.track = "Off"; 
+            ui.artist = ""; 
+            ui.playClass = ''; 
+            ui.artPlaceholder = 'art-off';
+        } else if (effectiveLock.type === 'POWER' && effectiveLock.val === 'ON') {
+            ui.isStandby = false;
+            ui.pwrClass = 'on';
+            ui.playDisabled = true;
+            ui.nextDisabled = true;
+            ui.prevDisabled = true;
+            ui.volDisabled = false;
+            ui.sourceAuxDisabled = false;
+            ui.sourceBluetoothDisabled = false;
+            ui.sourceWifiDisabled = false; 
+            ui.presetNum = 0;
+            ui.art = "";
+            ui.track = "Ready";
+            ui.artist = "";
+            ui.playClass = '';
+            ui.artPlaceholder = 'art-off';
+        } else if (effectiveLock.type === 'PRESET') {
+            ui.isStandby = false;
+            ui.pwrClass = 'on';
+            ui.presetNum = effectiveLock.val;
+            ui.playDisabled = true;
+            ui.nextDisabled = true;
+            ui.prevDisabled = true;
+            ui.volDisabled = false;
+            ui.sourceAuxDisabled = false;
+            ui.sourceBluetoothDisabled = false;
+            ui.sourceWifiDisabled = false; 
+            ui.art = "";
+            ui.track = "Loading...";
+            ui.artist = "";
+            ui.playClass = '';
+            ui.artPlaceholder = 'art-off';
+        } else if (effectiveLock.type === 'TRANSPORT') {
+            if (effectiveLock.val === 'PLAY_PAUSE') {
+                // Optimistic toggling of the Play button color.
+                if (effectiveLock.expected === 'NOT_PLAYING') {
+                    ui.playClass = 'btn-pending'; // Yellow (Expect Pause)
+                    ui.playDisabled = false;
                     ui.nextDisabled = true;
-                    ui.prevDisabled = false;
+                    ui.prevDisabled = true;
                     ui.sourceAuxDisabled = true;
                     ui.sourceBluetoothDisabled = true;
                     ui.sourceWifiDisabled = true; 
-                } else if (effectiveLock.val === 'NEXT_TRACK') {
-                    ui.nextClass = 'btn-pending';
-                    ui.playClass = 'btn-pending';
-                    ui.playDisabled = true;
+                } else {
+                    ui.playClass = 'btn-active'; // Green (Expect Play)
+                    ui.playDisabled = false;
+                    ui.nextDisabled = true;
                     ui.prevDisabled = true;
-                    ui.nextDisabled = false;
                     ui.sourceAuxDisabled = true;
                     ui.sourceBluetoothDisabled = true;
                     ui.sourceWifiDisabled = true; 
                 }
-            } else if (effectiveLock.type === 'JOIN') {
-                ui.isStandby = false;
-                ui.pwrClass = 'on';
-                ui.joinClass = 'btn-master-join';
-                ui.presetNum = 0;
-                ui.presetDisabled = false;
-                ui.volDisabled = false;
+            } else if (effectiveLock.val === 'PREV_TRACK') {
+                ui.prevClass = 'btn-pending';
+                ui.playClass = 'btn-pending';
                 ui.playDisabled = true;
                 ui.nextDisabled = true;
+                ui.prevDisabled = false;
+                ui.sourceAuxDisabled = true;
+                ui.sourceBluetoothDisabled = true;
+                ui.sourceWifiDisabled = true; 
+            } else if (effectiveLock.val === 'NEXT_TRACK') {
+                ui.nextClass = 'btn-pending';
+                ui.playClass = 'btn-pending';
+                ui.playDisabled = true;
                 ui.prevDisabled = true;
-                ui.sourceAuxDisabled = false;
-                ui.sourceBluetoothDisabled = false;
-                ui.sourceWifiDisabled = false; 
-                ui.playClass = '';
-                ui.art = "";
-                ui.track = "Joining...";
-                ui.artist = "";
-                ui.artPlaceholder = 'art-off';
+                ui.nextDisabled = false;
+                ui.sourceAuxDisabled = true;
+                ui.sourceBluetoothDisabled = true;
+                ui.sourceWifiDisabled = true; 
             }
-        }
-
-        // Hard override: Slaves effectively have disabled transport controls.
-        if (isSlave) {
+        } else if (effectiveLock.type === 'JOIN') {
+            ui.isStandby = false;
+            ui.pwrClass = 'on';
+            ui.joinClass = 'btn-master-join';
+            ui.presetNum = 0;
+            ui.presetDisabled = false;
+            ui.volDisabled = false;
             ui.playDisabled = true;
             ui.nextDisabled = true;
             ui.prevDisabled = true;
-            ui.presetDisabled = true;
-            ui.sourceAuxDisabled = true;
-            ui.sourceBluetoothDisabled = true;
-            ui.sourceWifiDisabled = true; 
-        }
-
-        return ui;
-    }
-
-
-      // Wrapper for sending commands that automatically pauses polling to prevent UI jitter.
-    async function sendCommand(url, body) {
-        isPollingFrozen = true;
-        try {
-            await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-            await new Promise(r => setTimeout(r, POLLING_DELAY));
-        } catch (e) {
-            console.error(e);
-        } finally {
-            isPollingFrozen = false;
-            loadDeviceStatus();
+            ui.sourceAuxDisabled = false;
+            ui.sourceBluetoothDisabled = false;
+            ui.sourceWifiDisabled = false; 
+            ui.playClass = '';
+            ui.art = "";
+            ui.track = "Joining...";
+            ui.artist = "";
+            ui.artPlaceholder = 'art-off';
         }
     }
 
-        // Handles Transport controls (Play/Pause/Next/Prev).
-    function uiTransport(ip, key) {
-        const device = currentDevices.find(d => d.ip === ip);
-        let expected = null;
+    // Hard override: Slaves effectively have disabled transport controls.
+    if (isSlave) {
+        ui.playDisabled = true;
+        ui.nextDisabled = true;
+        ui.prevDisabled = true;
+        ui.presetDisabled = true;
+        ui.sourceAuxDisabled = true;
+        ui.sourceBluetoothDisabled = true;
+        ui.sourceWifiDisabled = true; 
+    }
 
-        // Toggles the expected state for Play/Pause button logic.
-        if (key === 'PLAY_PAUSE') {
-            const lock = LockManager.get(ip);
-            // If a lock already exists, toggle the expectation.
-            if (lock && lock.type === 'TRANSPORT' && lock.val === 'PLAY_PAUSE' && lock.expected === 'NOT_PLAYING') {
-                expected = 'PLAYING';
-            } else if (device.playStatus === 'PLAY_STATE') {
-                expected = 'NOT_PLAYING';
-            } else {
-                expected = 'PLAYING';
-            }
-        }
-        LockManager.set(ip, 'TRANSPORT', key, expected);
-        sendCommand('/api/key', {
-            ip,
-            key
+    return ui;
+}
+
+
+    // Wrapper for sending commands that automatically pauses polling to prevent UI jitter.
+async function sendCommand(url, body) {
+    isPollingFrozen = true;
+    try {
+        await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
         });
+        await new Promise(r => setTimeout(r, POLLING_DELAY));
+    } catch (e) {
+        console.error(e);
+    } finally {
+        isPollingFrozen = false;
+        loadDeviceStatus();
     }
+}
+
+    // Handles Transport controls (Play/Pause/Next/Prev).
+function uiTransport(ip, key) {
+    const device = currentDevices.find(d => d.ip === ip);
+    let expected = null;
+
+    // Toggles the expected state for Play/Pause button logic.
+    if (key === 'PLAY_PAUSE') {
+        const lock = LockManager.get(ip);
+        // If a lock already exists, toggle the expectation.
+        if (lock && lock.type === 'TRANSPORT' && lock.val === 'PLAY_PAUSE' && lock.expected === 'NOT_PLAYING') {
+            expected = 'PLAYING';
+        } else if (device.playStatus === 'PLAY_STATE') {
+            expected = 'NOT_PLAYING';
+        } else {
+            expected = 'PLAYING';
+        }
+    }
+    LockManager.set(ip, 'TRANSPORT', key, expected);
+    sendCommand('/api/key', {
+        ip,
+        key
+    });
+}
 
 
 
