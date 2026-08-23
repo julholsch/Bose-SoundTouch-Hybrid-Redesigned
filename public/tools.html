@@ -12,6 +12,7 @@
 	<!-- <link rel="stylesheet" href="style.css?v=26"> -->
 	<link rel="stylesheet" href="new-css/tools.css">
     <link rel="stylesheet" href="new-css/global_ui.css">
+
 	<link rel="manifest" href="manifest.json">
 
 	<script src="global_ui.js"></script>
@@ -21,252 +22,253 @@
 
 	<div class="app-container">
 		<header class="app-header">
-        <div class="header-inner-panel">
-            <div class="app-logo">
-                <img src="images/hybrid_icon.png" alt="Logo">
-                <span>
-                    Bose SoundTouch Hybrid
-                </span>
-            </div>
-            <div class="global-nav-menu">
-                <button class="global-link" onclick="window.location.href='control.html'">Remote</button>
-                <button class="global-link" onclick="window.location.href='manager.html'">Library</button>
-                <button class="global-link" onclick="window.location.href='admin.html'">Speaker</button>
-                <button class="global-link active" onclick="window.location.href='tools.html'">System</button>
-            </div>
+			<div class="header-inner-panel">
+				<div class="app-logo">
+					<img src="images/hybrid_icon.png" alt="Logo">
+					<span>
+						Bose SoundTouch Hybrid
+					</span>
+				</div>
+				<div class="global-nav-menu">
+					<button class="global-link" onclick="window.location.href='control.html'">Remote</button>
+					<button class="global-link" onclick="window.location.href='manager.html'">Library</button>
+					<button class="global-link" onclick="window.location.href='admin.html'">Speaker</button>
+					<button class="global-link active" onclick="window.location.href='tools.html'">System</button>
+				</div>
+			</div>
+			<div class="app-content-header">
+				<div class="nav-tabs manager-main-tabs">
+					<button class="nav-btn active" data-tab-btn="preferences" onclick="switchToolsTab('preferences')">Application Preferences</button>
+					<button class="nav-btn" data-tab-btn="services" onclick="switchToolsTab('services')">System Services & Tools</button>
+				</div>
 			</div>
 		</header>
 
-        <div class="nav-tabs manager-main-tabs">
-            <button class="nav-btn active" data-tab-btn="preferences" onclick="switchToolsTab('preferences')">Application Preferences</button>
-            <button class="nav-btn" data-tab-btn="services" onclick="switchToolsTab('services')">System Services & Tools</button>
-        </div>
-		
-
-		<div id="tab-preferences" data-tab-name="preferences" style="--card: var(--card-purple-tint);" class="tools-subpage">
-			<main class="tools">
-				<section id="app-preferences" class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
-					<div class="two-column-header">
-						<div class="card-header">
-							<h3 class="card-heading">⚙️ Application Preferences</h3>
-							<span class="card-sub-heading">Configure UI layouts and background automation rules.</span>
+		<main>
+			<div id="tab-preferences" data-tab-name="preferences" style="--card: var(--card-purple-tint);" class="tools-subpage">
+				<main class="tools">
+					<section id="app-preferences" class="tool-cards card" style="--card-border-accent-clr: var(--accent);">
+						<div class="two-column-header">
+							<div class="card-header">
+								<h3 class="card-heading">⚙️ Application Preferences</h3>
+								<span class="card-sub-heading">Configure UI layouts and background automation rules.</span>
+							</div>
 						</div>
-					</div>
-				
-					<div class="card-rows">
+
+						<div class="card-rows">
+							<div class="card-grid">
+								<div class="inner-panel" >
+									<h3 class="inner-panel-heading">📖 Guides and Help</h3>
+									<div class="theme-and-guides">
+										<button class="btn-secondary" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
+										<button class="btn-secondary" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
+									</div>
+								</div>
+								<div class="inner-panel" >
+									<h3 class="inner-panel-heading">ℹ️ System Inforamtion</h3>
+									<div class="badge-wrapper">
+										<div class="app-version-wrapper">
+											<div class="badge-pill">
+												<img src="images/hybrid_icon.png" alt="App">
+												<span id="badge-app-text">App ?</span>
+											</div>
+											<div class="badge-pill">
+												<img src="images/ma_icon.png" alt="MASS">
+												<span id="badge-mass-text">MASS ?</span>
+											</div>
+										</div>
+										<div id="tz-display" class="badge-pill">
+											🕒 TZ: Loading...
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="inner-panel" >
+								<div>
+									<div class="inner-panel-heading">Search Menu Layout</div>
+									<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
+								</div>
+								<div id="sortable-list" class="sortable-list">
+
+								</div>
+								<div class="btn-in-columns">
+									<button class="btn-primary" onclick="saveSearchOrder()" style="--btn-bg-clr: var(--card-border-accent-clr);">💾 Save Layout Order</button>
+									<button class="btn-primary" style="--btn-bg-clr: #1abc9c;" onclick="refreshProvidersFromMass()">🔄 Refresh from MASS</button>
+								</div>
+							</div>
+
+							<div class="inner-panel" >
+								<div>
+									<div class="inner-panel-heading">Background Automation</div>
+									<div class="inner-panel-sub-heading">Configure automated behaviors and sync rules.</div>
+
+									<label class="pref-label">
+										<input type="checkbox" id="pref_darkMode" class="pref-checkbox" onchange="toggleThemeFromPref(this)"> 🌓 Dark Mode
+									</label>
+									<hr class="separation-line">
+									<div class="pref-grid">
+										<!-- Frist column -->
+										<div class="pref-grid-column">
+											<label class="pref-label"><input type="checkbox" id="pref_autoResume" class="pref-checkbox"> Auto-Resume Presets on Power On</label>
+											<label class="pref-label"><input type="checkbox" id="pref_autoRestart" class="pref-checkbox"> Auto-Reload DLNA & AirPlay on Connection Error</label>
+											<label class="pref-label"><input type="checkbox" id="pref_autoSync" class="pref-checkbox"> Auto-Sync Slave Volume on Grouping</label>
+											<label class="pref-label"><input type="checkbox" id="pref_mobileAutoSortSpeakers" class="pref-checkbox"> Auto-Sort Active Speakers (Mobile Only)</label>
+										</div>
+										<!-- Second column -->
+										<div class="pref-grid-column">
+											<label class="pref-label">
+												<input type="checkbox" id="pref_scheduledSpeakerAudit" class="pref-checkbox" onchange="handleAuditToggle()">
+												Enable Speaker Audit at
+												<select id="pref_scheduledAuditHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:2px 4px; border-radius:4px; font-size:0.9em; width:auto;" disabled></select>
+											</label>
+											<div>
+												<label class="pref-label">
+													<input type="checkbox" id="pref_scheduledRestart" class="pref-checkbox" onchange="handleScheduledRestartToggle()">
+													Enable System Restart at
+													<select id="pref_scheduledRestartHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:2px 4px; border-radius:4px; font-size:0.9em; width:auto;" disabled></select>
+												</label>
+												<label class="pref-label pref-sub-label">
+													<input type="checkbox" id="pref_includeReboot" class="pref-checkbox" disabled> Include All Speaker Reboots
+												</label>
+											</div>
+										</div>
+										<!-- Third column -->
+										<div class="pref-grid-column">
+											<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta</label>
+											<label class="pref-label" style="opacity: 0.4; pointer-events: none;"><input type="checkbox" id="pref_doubleTapPresets" class="pref-checkbox" disabled> Enable Double Tap Extended Presets</label>
+											<label class="pref-label" style="opacity: 0.4; pointer-events: none;"><input type="checkbox" id="pref_remoteControlHijack" class="pref-checkbox" disabled> Enable Remote Control Hijack</label>
+										</div>
+									</div>
+									<hr class="separation-line">
+								</div>
+								<div class="btn-in-columns">
+									<button class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
+								</div>
+							</div>
+						</div>
+					</section>
+
+
+
+					<section id="stereo-pairing" class="tool-cards card" data-accordion="stereo-pairing" style="--card-border-accent-clr: #f39c12;">
+						<div class="card-header toggable" onclick="toggleAccordion('stereo-pairing')">
+							<div class="card-heading-wrapper">
+								<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
+								<span id="stereoPairCount" class="tool-info-badge">0 Pairs</span>
+								<span id="log-chevron" class="chevron">▼</span>
+							</div>
+							<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
+						</div>
+						<div id="stereoPairingCollapse" class="inner-collapse-container">
+							<h4 class="container-heading">Active Combinations</h4>
+							<div class="active-pairs-wrapper">
+								<ul id="activeStereoPairsList">
+									<li class="no-active-pair-li-element">No active pairings found.</li>
+								</ul>
+							</div>
+
+							<hr class="separation-line">
+
+							<h4 class="container-heading">Create New Pair</h4>
+							<div class="pairing-setup-wrapper">
+								<div class="pairing-setup-column">
+									<label for="leftSpeakerSelect">LEFT CHANNEL</label>
+									<select id="leftSpeakerSelect">
+										<option value="" disabled selected>Select ST10...</option>
+									</select>
+								</div>
+								<div class="pairing-setup-column">
+									<label for="rightSpeakerSelect">RIGHT CHANNEL</label>
+									<select id="rightSpeakerSelect">
+										<option value="" disabled selected>Select ST10...</option>
+									</select>
+								</div>
+								<div class="pairing-setup-column">
+									<label for="pairNameInput">PAIR NAME</label>
+									<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo">
+								</div>
+								<button id="saveStereoPairBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)">
+									💾 Save Pair
+								</button>
+
+							</div>
+						</div>
+					</section>
+
+					<!-- ⏰ Scheduled Play Card -->
+					<section class="card" data-accordion="scheduled-play" style="--card-border-accent-clr: var(--accent-teal);">
+						<div class="card-header toggable" onclick="toggleAccordion('scheduled-play')">
+							<div class="card-heading-wrapper">
+								<h3 class="card-heading">⏰ Scheduled Play</h3>
+								<span id="scheduledPlayCount" class="tool-info-badge">0 Schedules</span>
+								<span id="log-chevron" class="chevron">▼</span>
+							</div>
+							<div class="card-sub-heading">Automatically trigger a speaker preset at a set time every day.</div>
+						</div>
+
+						<div id="scheduledPlaysCollapse" class="inner-collapse-container">
+							<ul id="scheduledPlaysList" style="list-style: none; padding: 0; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+								<li id="scheduledPlaysEmpty" style="padding: 10px; background: var(--input-bg); color: var(--text-secondary); font-style: italic;">No scheduled plays configured.</li>
+							</ul>
+
+							<div style="display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap;">
+								<div style="flex-grow: 1; min-width: 150px;">
+									<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">SPEAKER</label>
+									<select id="newPlaySpeaker" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+										<option value="" disabled selected>Select speaker...</option>
+									</select>
+								</div>
+								<div>
+									<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">PRESET</label>
+									<select id="newPlayPreset" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+									</select>
+								</div>
+								<div>
+									<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">TIME</label>
+									<div style="display:flex; gap:5px; align-items:center;">
+										<select id="newPlayHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+											<option value="" disabled selected>HH</option>
+										</select>
+										<select id="newPlayMinute" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
+											<option value="" disabled selected>MM</option>
+										</select>
+									</div>
+								</div>
+								<div>
+									<button id="addScheduledPlayBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)" onclick="addScheduledPlay()">
+										➕ Add
+									</button>
+								</div>
+							</div>
+						</div>
+					</section>
+
+				</main>
+			</div>
+			<div id="tab-services" data-tab-name="services" class="tools-subpage" style="display:none; --card: var(--card-green-tint);">
+				<main class="tools">
+					<section id="system-services" class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
+						<div class="card-header">
+							<h3 class="card-heading">⚙️ System Services</h3>
+							<div class="card-sub-heading">Manage container instances and hardware injections.</div>
+						</div>
+
 						<div class="card-grid">
 							<div class="inner-panel" >
-								<h3 class="inner-panel-heading">📖 Guides and Help</h3>
-								<div class="theme-and-guides">
-									<button class="btn-secondary" onclick="document.getElementById('doc-modal').style.display='flex'">📚 Reference</button>
-									<button class="btn-secondary" onclick="document.getElementById('h-modal').style.display='flex'">💡Guides</button>
-								</div>
-							</div>
-							<div class="inner-panel" >
-								<h3 class="inner-panel-heading">ℹ️ System Inforamtion</h3>
-								<div class="badge-wrapper">
-									<div class="app-version-wrapper">
-										<div class="badge-pill">
-											<img src="images/hybrid_icon.png" alt="App">
-											<span id="badge-app-text">App ?</span> 
-										</div>
-										<div class="badge-pill">
-											<img src="images/ma_icon.png" alt="MASS">
-											<span id="badge-mass-text">MASS ?</span> 
-										</div>
-									</div>
-									<div id="tz-display" class="badge-pill">
-										🕒 TZ: Loading...
-									</div>
-								</div>
-							</div>
-
-						</div>
-						<div class="inner-panel" >
-							<div>
-								<div class="inner-panel-heading">Search Menu Layout</div>
-								<div class="inner-panel-sub-heading">Arrange search provider tabs from left to right.</div>
-							</div>
-							<div id="sortable-list" class="sortable-list">
-
-							</div>
-							<div class="btn-in-columns">
-								<button class="btn-primary" onclick="saveSearchOrder()" style="--btn-bg-clr: var(--card-border-accent-clr);">💾 Save Layout Order</button>
-								<button class="btn-primary" style="--btn-bg-clr: #1abc9c;" onclick="refreshProvidersFromMass()">🔄 Refresh from MASS</button>
-							</div>
-						</div>
-
-						<div class="inner-panel" >
-							<div>
-								<div class="inner-panel-heading">Background Automation</div>
-								<div class="inner-panel-sub-heading">Configure automated behaviors and sync rules.</div>
-								
-								<label class="pref-label">
-									<input type="checkbox" id="pref_darkMode" class="pref-checkbox" onchange="toggleThemeFromPref(this)"> 🌓 Dark Mode
-								</label>
-								<hr class="separation-line">
-								<div class="pref-grid">
-									<!-- Frist column -->
-									<div class="pref-grid-column">
-										<label class="pref-label"><input type="checkbox" id="pref_autoResume" class="pref-checkbox"> Auto-Resume Presets on Power On</label>
-										<label class="pref-label"><input type="checkbox" id="pref_autoRestart" class="pref-checkbox"> Auto-Reload DLNA & AirPlay on Connection Error</label>
-										<label class="pref-label"><input type="checkbox" id="pref_autoSync" class="pref-checkbox"> Auto-Sync Slave Volume on Grouping</label>
-										<label class="pref-label"><input type="checkbox" id="pref_mobileAutoSortSpeakers" class="pref-checkbox"> Auto-Sort Active Speakers (Mobile Only)</label>
-									</div>
-									<!-- Second column -->
-									<div class="pref-grid-column">
-										<label class="pref-label">
-											<input type="checkbox" id="pref_scheduledSpeakerAudit" class="pref-checkbox" onchange="handleAuditToggle()">
-											Enable Speaker Audit at
-											<select id="pref_scheduledAuditHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:2px 4px; border-radius:4px; font-size:0.9em; width:auto;" disabled></select>
-										</label>
-										<div>
-											<label class="pref-label">
-												<input type="checkbox" id="pref_scheduledRestart" class="pref-checkbox" onchange="handleScheduledRestartToggle()">
-												Enable System Restart at
-												<select id="pref_scheduledRestartHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:2px 4px; border-radius:4px; font-size:0.9em; width:auto;" disabled></select>
-											</label>
-											<label class="pref-label pref-sub-label">
-												<input type="checkbox" id="pref_includeReboot" class="pref-checkbox" disabled> Include All Speaker Reboots
-											</label>						
-										</div>
-									</div>
-									<!-- Third column -->
-									<div class="pref-grid-column">
-										<label class="pref-label"><input type="checkbox" id="pref_bypassCloudEmulation" class="pref-checkbox"> Bypass Cloud Simulation Beta</label>
-										<label class="pref-label" style="opacity: 0.4; pointer-events: none;"><input type="checkbox" id="pref_doubleTapPresets" class="pref-checkbox" disabled> Enable Double Tap Extended Presets</label>
-										<label class="pref-label" style="opacity: 0.4; pointer-events: none;"><input type="checkbox" id="pref_remoteControlHijack" class="pref-checkbox" disabled> Enable Remote Control Hijack</label>
-									</div>
-								</div>
-								<hr class="separation-line">
-							</div>
-							<div class="btn-in-columns">
-								<button class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr);" onclick="savePreferences()">💾 Save Automation Rules</button>
-							</div>
-						</div>
-					</div>
-				</section> 
-
-
-								
-				<section id="stereo-pairing" class="tool-cards card" data-accordion="stereo-pairing" style="--card-border-accent-clr: #f39c12;">
-					<div class="card-header toggable" onclick="toggleAccordion('stereo-pairing')">
-						<div class="card-heading-wrapper">
-							<h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
-							<span id="stereoPairCount" class="tool-info-badge">0 Pairs</span>
-							<span id="log-chevron" class="chevron">▼</span>
-						</div>
-						<div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
-					</div>				
-					<div id="stereoPairingCollapse" class="inner-collapse-container">
-						<h4 class="container-heading">Active Combinations</h4>
-						<div class="active-pairs-wrapper">
-							<ul id="activeStereoPairsList">
-								<li class="no-active-pair-li-element">No active pairings found.</li>
-							</ul>
-						</div>
-
-						<hr class="separation-line">
-
-						<h4 class="container-heading">Create New Pair</h4>
-						<div class="pairing-setup-wrapper">
-							<div class="pairing-setup-column">
-								<label for="leftSpeakerSelect">LEFT CHANNEL</label>
-								<select id="leftSpeakerSelect">
-									<option value="" disabled selected>Select ST10...</option>
-								</select>
-							</div>
-							<div class="pairing-setup-column">
-								<label for="rightSpeakerSelect">RIGHT CHANNEL</label>
-								<select id="rightSpeakerSelect">
-									<option value="" disabled selected>Select ST10...</option>
-								</select>
-							</div>
-							<div class="pairing-setup-column">
-								<label for="pairNameInput">PAIR NAME</label>
-								<input type="text" id="pairNameInput" placeholder="e.g. Office Stereo">
-							</div>
-							<button id="saveStereoPairBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)">
-								💾 Save Pair
-							</button>
-
-						</div>
-					</div>
-				</section>
-
-				<!-- ⏰ Scheduled Play Card -->
-				<section class="card" data-accordion="scheduled-play" style="--card-border-accent-clr: var(--accent-teal);">
-					<div class="card-header toggable" onclick="toggleAccordion('scheduled-play')">
-						<div class="card-heading-wrapper">
-							<h3 class="card-heading">⏰ Scheduled Play</h3>
-							<span id="scheduledPlayCount" class="tool-info-badge">0 Schedules</span>
-							<span id="log-chevron" class="chevron">▼</span>
-						</div>
-						<div class="card-sub-heading">Automatically trigger a speaker preset at a set time every day.</div>
-					</div>
-					
-					<div id="scheduledPlaysCollapse" class="inner-collapse-container">
-						<ul id="scheduledPlaysList" style="list-style: none; padding: 0; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
-							<li id="scheduledPlaysEmpty" style="padding: 10px; background: var(--input-bg); color: var(--text-secondary); font-style: italic;">No scheduled plays configured.</li>
-						</ul>
-
-						<div style="display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap;">
-							<div style="flex-grow: 1; min-width: 150px;">
-								<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">SPEAKER</label>
-								<select id="newPlaySpeaker" style="width:100%; background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
-									<option value="" disabled selected>Select speaker...</option>
-								</select>
-							</div>
-							<div>
-								<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">PRESET</label>
-								<select id="newPlayPreset" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
-									<option value="1">1</option>
-									<option value="2">2</option>
-									<option value="3">3</option>
-									<option value="4">4</option>
-									<option value="5">5</option>
-									<option value="6">6</option>
-								</select>
-							</div>
-							<div>
-								<label style="display:block; font-size:0.75em; color:var(--text-secondary); margin-bottom:5px;">TIME</label>
-								<div style="display:flex; gap:5px; align-items:center;">
-									<select id="newPlayHour" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
-										<option value="" disabled selected>HH</option>
-									</select>
-									<select id="newPlayMinute" style="background:var(--input-bg); color:var(--input-text); border:1px solid var(--border); padding:8px; border-radius:4px;">
-										<option value="" disabled selected>MM</option>
-									</select>
-								</div>
-							</div>
-							<div>
-								<button id="addScheduledPlayBtn" class="btn-primary" style="--btn-bg-clr: var(--card-border-accent-clr)" onclick="addScheduledPlay()">
-									➕ Add
-								</button>
-							</div>
-						</div>
-					</div>
-				</section>
-
-			</main>
-		</div>
-		<div id="tab-services" data-tab-name="services" class="tools-subpage" style="display:none; --card: var(--card-green-tint);">
-			<main class="tools">
-				<section id="system-services" class="tool-cards card" style="--card-border-accent-clr: #9b59b6;">
-					<div class="card-header">
-						<h3 class="card-heading">⚙️ System Services</h3>
-						<div class="card-sub-heading">Manage container instances and hardware injections.</div>
-					</div>
-					
-					<div class="card-grid">
-						<div class="inner-panel" >
-							<div class="inner-panel-heading">SoundTouch Hybrid Application</div>
-							<div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
+								<div class="inner-panel-heading">SoundTouch Hybrid Application</div>
+								<div class="inner-panel-sub-heading">Restart the container or run a background speaker audit.</div>
 
 								<div class="warning-box-wrapper">
 									<div class="warning-box">
 										<label>
-											<input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+											<input type="checkbox" id="forceInjectCheck" onchange="document.getElementById('forceSpeakerSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)">
 											Force Pre-Flight NVRAM
 										</label>
 										<select id="forceSpeakerSelect" disabled>
@@ -276,7 +278,7 @@
 
 									<div class="warning-box">
 										<label>
-											<input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)"> 
+											<input type="checkbox" id="forceRebootCheck" onchange="document.getElementById('forceRebootSelect').disabled = !this.checked;" class="pref-checkbox" style="--accent: var(--card-border-accent-clr)">
 											Force Speaker Reboot
 										</label>
 										<select id="forceRebootSelect" disabled>
@@ -288,117 +290,96 @@
 									<img src="images/hybrid_icon.png" alt="Icon">
 									Restart SoundTouch Hybrid
 								</button>
-							<button class="btn-primary" style="--btn-bg-clr: #3498db;" onclick="triggerManualAudit()">
-								🔍 Run Speaker Audit
-							</button>
-						</div>						
-						<div class="inner-panel" >
-							<div>
-								<div class="inner-panel-heading">Music Assistant Server</div>
-								<div class="inner-panel-sub-heading">
-									Send a non-destructive network ping, aggressively reload protocols (temporarily stops music), or restart the container.
+								<button class="btn-primary" style="--btn-bg-clr: #3498db;" onclick="triggerManualAudit()">
+									🔍 Run Speaker Audit
+								</button>
+							</div>
+							<div class="inner-panel" >
+								<div>
+									<div class="inner-panel-heading">Music Assistant Server</div>
+									<div class="inner-panel-sub-heading">
+										Send a non-destructive network ping, aggressively reload protocols (temporarily stops music), or restart the container.
+									</div>
+								</div>
+
+								<button class="btn-primary" onclick="rescanMass(this)" style="--btn-bg-clr: #f39c12;">
+									🔄 Soft Rescan (Keep-Alive)
+								</button>
+
+								<button class="btn-primary" onclick="aggressiveReloadMass(this)" style="--btn-bg-clr: #d35400;">
+									🚨 Aggressive Reload (DLNA & AirPlay)
+								</button>
+
+								<button class="btn-primary" onclick="restartMass(this)" style="--btn-bg-clr:#e74c3c;">
+									<img src="images/ma_icon.png" alt="MA"> Restart MASS Container
+								</button>
+							</div>
+						</div>
+					</section>
+
+					<section id="server-log" class="tool-cards card" data-accordion="server-log" style="--card-border-accent-clr: #e74c3c;">
+						<div class="card-header toggable"  onclick="toggleAccordion('server-log')">
+							<div class="card-heading-wrapper">
+								<h3 class="card-heading">🖥️ Live Server Logs</h3>
+								<span id="log-chevron" class="chevron">▼</span>
+							</div>
+							<div class="card-sub-heading">Captures the last 350 console events from the Node.js server.</div>
+						</div>
+						<div id="log-container" class="inner-collapse-container">
+							<textarea id="live-log-viewer" class="console-preview" readonly></textarea>
+
+							<div class="log-controls">
+								<button class="btn-secondary" onclick="fetchLogs()">🔄 Refresh</button>
+
+								<label>
+									<input type="checkbox" class="pref-checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()">
+									Auto-Update
+								</label>
+
+								<label>
+									<input type="checkbox" class="pref-checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()">
+									Verbose Debug
+								</label>
+
+								<button class="btn-primary" style="--btn-bg-clr:#3498db;" onclick="downloadLogs()">💾 Download .txt</button>
+							</div>
+						</div>
+					</section>
+					<section id="Wi-Fi-Setting" class="tool-cards card" data-accordion="Wi-Fi-Setting" style="--card-border-accent-clr: #1abc9c;">
+						<div class="card-header toggable"  onclick="toggleAccordion('Wi-Fi-Setting')">
+							<div class="card-heading-wrapper">
+								<h3 class="card-heading">📶 Wi-Fi Provisioning</h3>
+								<span id="wifi-chevron" class="chevron">▼</span>
+							</div>
+							<div class="card-sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
+						</div>
+						<div id="wifi-container" class="inner-collapse-container">
+							<div class="warning-box">
+								<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
+							</div>
+							<div class="stream-grid">
+								<div>
+									<label>NETWORK NAME (SSID)</label>
+									<input type="text" id="wifi-ssid" placeholder="My Home Wi-Fi">
+								</div>
+								<div>
+									<label>PASSWORD</label>
+									<input type="text" id="wifi-pass" placeholder="My Wi-Fi Password">
 								</div>
 							</div>
-
-							<button class="btn-primary" onclick="rescanMass(this)" style="--btn-bg-clr: #f39c12;">
-								🔄 Soft Rescan (Keep-Alive)
-							</button>
-							
-							<button class="btn-primary" onclick="aggressiveReloadMass(this)" style="--btn-bg-clr: #d35400;">
-								🚨 Aggressive Reload (DLNA & AirPlay)
-							</button>
-							
-							<button class="btn-primary" onclick="restartMass(this)" style="--btn-bg-clr:#e74c3c;">
-								<img src="images/ma_icon.png" alt="MA"> Restart MASS Container
-							</button>
-						</div>
-					</div>
-				</section>
-
-				<section id="server-log" class="tool-cards card" data-accordion="server-log" style="--card-border-accent-clr: #e74c3c;">
-					<div class="card-header toggable"  onclick="toggleAccordion('server-log')">
-						<div class="card-heading-wrapper">
-							<h3 class="card-heading">🖥️ Live Server Logs</h3>
-							<span id="log-chevron" class="chevron">▼</span>
-						</div>
-						<div class="card-sub-heading">Captures the last 350 console events from the Node.js server.</div>
-					</div>			
-					<div id="log-container" class="inner-collapse-container">
-						<textarea id="live-log-viewer" class="console-preview" readonly></textarea>
-						
-						<div class="log-controls">
-							<button class="btn-secondary" onclick="fetchLogs()">🔄 Refresh</button>
-							
-							<label>
-								<input type="checkbox" class="pref-checkbox" id="auto-refresh-toggle" onchange="toggleAutoRefresh()"> 
-								Auto-Update
-							</label>
-							
-							<label>
-								<input type="checkbox" class="pref-checkbox" id="verbose-debug-toggle" onchange="toggleVerboseDebug()"> 
-								Verbose Debug
-							</label>
-							
-							<button class="btn-primary" style="--btn-bg-clr:#3498db;" onclick="downloadLogs()">💾 Download .txt</button>
-						</div>
-					</div>
-				</section>
-				<section id="Wi-Fi-Setting" class="tool-cards card" data-accordion="Wi-Fi-Setting" style="--card-border-accent-clr: #1abc9c;">
-					<div class="card-header toggable"  onclick="toggleAccordion('Wi-Fi-Setting')">
-						<div class="card-heading-wrapper">
-							<h3 class="card-heading">📶 Wi-Fi Provisioning</h3>
-							<span id="wifi-chevron" class="chevron">▼</span>
-						</div>
-						<div class="card-sub-heading">Push Wi-Fi credentials to a Wi-Fi connected speaker or via USB/Micro-USB setup cable.</div>
-					</div>				
-					<div id="wifi-container" class="inner-collapse-container">
-						<div class="warning-box">
-							<strong>⚠️ IMPORTANT:</strong> The Network Name (SSID) and Password must be typed exactly and are <strong>case-sensitive</strong>. If entered incorrectly, the speaker will fail to connect and you will have to use either the USB cable approach or the native "<span style="font-size: 0.85em;">MANUAL WI-FI UPDATE</span>" defined in the Setup Guide to fix it.
-						</div>
-						<div class="stream-grid">
-							<div>
-								<label>NETWORK NAME (SSID)</label>
-								<input type="text" id="wifi-ssid" placeholder="My Home Wi-Fi">
+							<div class="stream-controls">
+								<div>
+									<label>Target:</label>
+									<select id="wifi-target"></select>
+								</div>
+								<button class="btn-primary" onclick="pushWifi(this)" style="--btn-bg-clr: var(--card-border-accent-clr)">📡 PUSH WI-FI</button>
 							</div>
-							<div>
-								<label>PASSWORD</label>
-								<input type="text" id="wifi-pass" placeholder="My Wi-Fi Password">
-							</div>
-						</div>				
-						<div class="stream-controls">
-							<div>
-								<label>Target:</label>
-								<select id="wifi-target"></select>
-							</div>
-							<button class="btn-primary" onclick="pushWifi(this)" style="--btn-bg-clr: var(--card-border-accent-clr)">📡 PUSH WI-FI</button>
 						</div>
-					</div>
-				</section>
-			</main>
-		</div>
-
-<!-- 		<now-playing-bar>
-			<div part="np-card" class="np-card">
-				<div part="np-img" id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
-				<div part="np-info" class="np-infos">
-					<div part="np-track" id="np-track" class="np-track">Loading...</div>
-					<div part="np-artist" id="np-artist" class="np-artist">Loading...</div>
-					<div part="np-album" id="np-album" class="np-album">Loading...</div>
-					<div part="np-timer" id="np-timer" class="np-timer"></div>
-				</div>
-				<div part="np-controls" id="np-controls" class="np-controls">              
-				</div>
-				<div part="np-status" id="np-status" class="np-status-badge">CONNECTING</div>
-				<div class="speaker-select">
-					<div class="custom-dropdown-wrapper">
-						
-						<select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
-							<option value="">Loading...</option>
-						</select>
-					</div>
-				</div>
+					</section>
+				</main>
 			</div>
-		</now-playing-bar> -->
+
+		</main>
 	</div>
 
 

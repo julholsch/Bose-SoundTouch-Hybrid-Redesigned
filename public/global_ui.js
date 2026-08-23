@@ -1010,7 +1010,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // BUG FIX: Changed from boseMassBannerHTML to the correct maHealthBannerHTML
   document.body.insertAdjacentHTML("afterbegin", maHealthBannerHTML);
   document.body.insertAdjacentHTML("afterbegin", updateBannerHTML);
-  document.body.insertAdjacentHTML("beforeend", noplayingFooter);
+  document.querySelector(".app-container").insertAdjacentHTML("beforeend", noplayingFooter);
   startNpPolling();
   makeBannerDraggable();
   checkForUpdates();
