@@ -162,21 +162,6 @@ button.global-link {
 
 
 
-.inner-collapse-container {
-  display: none;
-
-  flex-direction: column;
-  gap: 15px;
-
-  .container-heading {
-    margin-bottom: 10px;
-
-    font-weight: bold;
-
-    color: var(--text);
-  }
-}
-
 
 
 .icon-power {

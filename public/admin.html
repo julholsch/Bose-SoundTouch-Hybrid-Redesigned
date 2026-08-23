@@ -43,21 +43,21 @@
                 <span><i class="icon-power"></i></span> All Off
             </button>
         </div>
-        <section id="stereo-pairing" class="card" style="--card-border-accent-clr: #f39c12;">
-            <div class="card-header" onclick="const el = document.getElementById('stereoPairingCollapse'); el.style.display = el.style.display === 'none' ? 'block' : 'none';">
+        <section id="stereo-pairing" class="tool-cards card" data-accordion="stereo-pairing" style="--card-border-accent-clr: #f39c12;">
+            <div class="card-header toggable" onclick="toggleAccordion('stereo-pairing')">
                 <div class="card-heading-wrapper">
                     <h3 class="card-heading">🎧 ST10 Stereo Pairing</h3>
-                    <span id="log-chevron">▼</span>
+                    <span id="stereoPairCount" class="tool-info-badge">0 Pairs</span>
+                    <span id="log-chevron" class="chevron">▼</span>
                 </div>
                 <div class="card-sub-heading">Bond two SoundTouch 10s into a persistent Left/Right stereo pair.</div>
-            </div>				
+            </div>
             <div id="stereoPairingCollapse" class="inner-collapse-container">
                 <h4 class="container-heading">Active Combinations</h4>
                 <div class="active-pairs-wrapper">
                     <ul id="activeStereoPairsList">
                         <li class="no-active-pair-li-element">No active pairings found.</li>
                     </ul>
-                    <span id="stereoPairCount">0 Pairs</span>
                 </div>
 
                 <hr class="separation-line">
@@ -115,7 +115,28 @@
 </div>
 
 <script>
+    function toggleAccordion(triggerTarget) {
+        const accordion = document.querySelector(`[data-accordion="${triggerTarget}"]`);
 
+
+        if (accordion.classList.contains('open')) {
+            accordion.classList.remove('open');
+
+            if (accordion.id === "server-log") {
+                clearInterval(liveLogTimer);
+            }
+        } else {
+            accordion.classList.add('open');
+            if (accordion.id === "server-log") {
+                fetchLogs(); // Fetch immediately on open
+
+                // Start interval if checkbox is checked
+                if (document.getElementById('auto-refresh-toggle').checked) {
+                    liveLogTimer = setInterval(fetchLogs, 2000);
+                }
+            }
+        }
+    }
   function formatXml(xml) {
     if (!xml) return '';
     let formatted = '', pad = 0;
@@ -138,7 +159,7 @@
             return typeStr.includes("10");
         });
         const isStereoCapable = soundTouch10Devices.length >= 2;
-        document.getElementById("stereo-pairing").style.display = isStereoCapable ? "" : "none";
+        //document.getElementById("stereo-pairing").style.display = isStereoCapable ? "" : "none";
 
 
         document.getElementById('speaker-grid').innerHTML = devices.map(d => {

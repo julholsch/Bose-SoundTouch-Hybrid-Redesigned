@@ -134,7 +134,7 @@ async function startNpPolling() {
     if (localTicker)
         clearInterval(localTicker);
 
-    loadNowPlaying();
+    await loadNowPlaying();
 
     // 📡 NETWORK POLLING: Stays at 2.5 seconds
     npInterval = setInterval(loadNowPlaying, 2000);
@@ -233,7 +233,7 @@ function updateNpUI(device) {
         // --- ARTWORK ---
         nowPlaying.img.outerHTML = /*html*/`
             <div id="np-img" class="np-art ${device.artPlaceholder}">
-                ${device.art && device.art !== 'custom_url' ? `<img src="${device.art}">` : ''}
+                ${device.art && device.art !== 'custom_url' ? `<img alt="now playing image" src="${device.art}">` : ''}
             </div>
         `;
         nowPlaying.img = document.getElementById('np-img');
@@ -298,7 +298,7 @@ function updateNpUI(device) {
 
             
         const dis = (val) => val ? 'disabled' : ''; // Utility for HTML attributes
-        const cls = (val) => val ? 'btn-disabled' : '';
+        //const cls = (val) => val ? 'btn-disabled' : '';
 
 
 
@@ -310,19 +310,19 @@ function updateNpUI(device) {
 }
 
 
-const noplayingFooter =  /*html*/ `
+const nowPlayingFooter =  /*html*/ `
     <footer class="np-view">
-        <div part="np-card" class="np-card">
-            <div part="np-img" id="np-img" class="np-art art-off"><img src="" alt="" style="display: none;"></div>
-            <div part="np-info" class="np-infos">
-                <div part="np-track" id="np-track" class="np-track">Loading...</div>
-                <div part="np-artist" id="np-artist" class="np-artist">Loading...</div>
-                <div part="np-album" id="np-album" class="np-album">Loading...</div>
-                <div part="np-timer" id="np-timer" class="np-timer"></div>
+        <div id="np-card" class="np-card">
+            <div id="np-img" class="np-img np-art art-off"><img src="" alt="" style="display: none;"></div>
+            <div id="np-info" class="np-info np-infos">
+                <div id="np-track" class="np-track">Loading...</div>
+                <div id="np-artist" class="np-artist">Loading...</div>
+                <div id="np-album" class="np-album">Loading...</div>
+                <div id="np-timer" class="np-timer"></div>
             </div>
-            <div part="np-controls" id="np-controls" class="np-controls">              
+            <div id="np-controls" class="np-controls">              
             </div>
-            <div part="np-status" id="np-status" class="np-status-badge">CONNECTING</div>
+            <div id="np-status" class="np-status np-status-badge">CONNECTING</div>
             <div class="speaker-select">
                 <div class="custom-dropdown-wrapper">
                     
@@ -609,7 +609,7 @@ async function sendCommand(url, body) {
         console.error(e);
     } finally {
         isPollingFrozen = false;
-        loadDeviceStatus();
+        await loadDeviceStatus();
     }
 }
 
@@ -649,8 +649,8 @@ let speakerSelectState = {
 };
 
 window.onload = async function () {
-    fetchSpeakers();
-    startNpPolling();
+    await fetchSpeakers();
+    await startNpPolling();
 }
 
 window.addEventListener("popstate", () => {
@@ -660,13 +660,12 @@ window.addEventListener("popstate", () => {
   console.log("popstat");
   // UI umschalten, aber das Update der URL blockieren (da der Browser das schon tat)
   newSwitchTab(currentTab, false);
-  selectSpeakerByFilter(currentSpeaker);
+  //selectSpeakerByFilter(currentSpeaker);
 });
 
  function readUrlFilter(filterName) {
     const urlParams = new URLSearchParams(window.location.search);
-    const filterValue = urlParams.get(filterName);
-    return filterValue;
+    return urlParams.get(filterName);
  }
 
   function updateUrlFilter(filterName, filterValue, replaceState = false) {
@@ -790,7 +789,7 @@ async function fetchSpeakers() {
             select.value = matchedSpeaker.id;
             saveSpeakerSelection();
         } else {
-            // Dieser teil exsetierte schon vorher
+            // Dieser Teil exsetierte schon vorher
             if (activeSpeaker) {
                 select.value = activeSpeaker.id;
                 saveSpeakerSelection();
@@ -810,7 +809,7 @@ async function fetchSpeakers() {
         }
 
 
-        loadNowPlaying();
+        await loadNowPlaying();
 
     } catch (e) {
         console.log("Error Fetching Speaker: ", e);
@@ -825,12 +824,13 @@ async function fetchSpeakers() {
         // Erst den normalen Value für den localStorage speichern
         localStorage.setItem('bose_active_speaker', select.value);
         
-        // Prüfen ob überhaupt eine Option ausgewählt ist und ein Wert existiert
+        // Prüfen, ob überhaupt eine Option ausgewählt ist und ein Wert existiert
+        let replaceState;
         if (select.selectedIndex !== -1 && select.value) {
             // Über selectedOptions[0] greifen wir direkt auf die aktive Option zu
             const macAddress = select.selectedOptions[0].dataset.mac;
-            
-            // Jetzt schreiben wir die gefundene MAC in den URL Filter
+
+            // Jetzt schreiben wir die gefundene MAC in den URL-Filter
             updateUrlFilter("speaker", macAddress, replaceState = true);
         }
     }
@@ -1010,7 +1010,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // BUG FIX: Changed from boseMassBannerHTML to the correct maHealthBannerHTML
   document.body.insertAdjacentHTML("afterbegin", maHealthBannerHTML);
   document.body.insertAdjacentHTML("afterbegin", updateBannerHTML);
-  document.querySelector(".app-container").insertAdjacentHTML("beforeend", noplayingFooter);
+  document.querySelector(".app-container").insertAdjacentHTML("beforeend", nowPlayingFooter);
   startNpPolling();
   makeBannerDraggable();
   checkForUpdates();
@@ -1186,7 +1186,7 @@ window.triggerGlobalAllOff = async function() {
         if (typeof window.fetchDeviceState === 'function') {
             devices.forEach(d => window.fetchDeviceState(d.ip));
         } else if (typeof window.loadStatus === 'function') {
-            window.loadDeviceStatus();;
+            await window.loadDeviceStatus();
         }
     } catch (e) {
         console.error("Failed to power off speakers", e);

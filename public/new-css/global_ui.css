@@ -688,6 +688,167 @@ button.global-link {
   }
 }
 
+[data-accordion] {
+  interpolate-size: allow-keywords;
+  gap: 0;
+  transition: gap .2s ease-in-out;
+  .inner-collapse-container {
+    visibility: hidden;
+    flex-direction: column;
+    height: 0px;
+    gap: 15px;
+    transition: all .2s ease-in-out;
+
+
+    .container-heading {
+      margin-bottom: 10px;
+
+      font-weight: bold;
+
+      color: var(--text);
+    }
+  }
+
+  .chevron {
+    transform: rotateZ(0);
+    transition: transform .2s ease-in-out;
+  }
+
+  &.open {
+    gap: 15px;
+    transition: gap .2s ease-in-out;
+    .inner-collapse-container {
+      visibility: visible;
+      transition: all .2s ease-in-out;
+      height: max-content;
+      gap: 0;
+
+      .container-heading {
+        margin-bottom: 0;
+      }
+    }
+
+    .chevron {
+      transform: rotateZ(180deg);
+      transition: transform .3s ease-in-out;
+    }
+  }
+}
+
+.active-pairs-wrapper {
+  ul {
+    overflow: hidden;
+
+    padding: 0;
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+    margin-bottom: 20px;
+
+    list-style: none;
+  }
+
+  .no-active-pair-li-element {
+    padding: 10px;
+
+    font-style: italic;
+
+    color: var(--text-secondary);
+    background: var(--input-bg);
+  }
+
+  .active-pairs-li-element {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: var(--card);
+
+    strong {
+      font-size: 1.1em;
+
+      color: var(--text);
+    }
+
+    small {
+      color: var(--text-secondary);
+    }
+
+    button {
+      border: none;
+
+      color: white;
+      background: var(--danger);
+
+      cursor: pointer;
+    }
+  }
+
+}
+.tool-info-badge {
+  padding: 4px 8px;
+  margin-right: auto;
+  border: 1px solid var(--border);
+
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+
+  background: var(--input-bg);
+}
+
+.pairing-setup-wrapper {
+  display: flex;
+
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  align-items: flex-end;
+  gap: 10px;
+
+  .pairing-setup-column {
+    flex-grow: 1;
+
+    min-width: 200px;
+
+    label {
+      display: block;
+
+      font-size: 0.75em;
+
+      color: var(--text-secondary);
+    }
+
+    select,
+    input {
+      width: 100%;
+
+      height: 40px;
+      padding: 0 10px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 6px;
+
+      color: var(--input-text);
+      background: var(--input-bg);
+    }
+  }
+}
+
+.btn-in-columns {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-self: center;
+}
+
 /* =========================================
    9. NOW PLAYING TAB 
    ========================================= */
@@ -803,6 +964,94 @@ button.global-link {
 
     object-fit: cover;
   }
+}
+
+
+
+.art {
+  position: relative;
+
+  overflow: hidden;
+
+  width: 60px;
+
+  height: 60px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 4px;
+
+  background: var(--art-bg);
+
+  object-fit: cover;
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+  }
+}
+
+/* ART Placeholders*/
+
+.art-blank,
+.art-globe,
+.art-off {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid var(--border);
+
+  background-color: var(--art-bg);
+
+  &.np-art {
+    font-size: 80px;
+  }
+
+  &.art {
+    font-size: 40px;
+  }
+}
+
+.art-blank::after,
+.art-globe::after,
+.art-off::after {
+  color: var(--text);
+  opacity: 0.4;
+}
+
+.art-blank::after {
+  content: "";
+}
+
+.art-globe::after {
+  content: "🌐";
+}
+
+.art-off::after {
+  content: url("/images/svg/PowerOff.svg");
+  color: red;
+  padding: 5px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /*translate: 0 -10px;*/
+  z-index: 10;
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
 }
 
 .np-timer {
@@ -1075,7 +1324,40 @@ option {
   flex-direction: row;
 }
 
-/* --- MASS ERROR BANNER --- */
+/* Actions */
+/* Red Trash Can for Favorites */
+
+.action-delete {
+  color: #e74c3c !important;
+
+  /* Red */
+  border: none;
+
+  font-size: 0.8em;
+
+  font-weight: bold;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+/* Yellow/Orange X for Presets */
+
+.action-clear {
+  color: #f39c12 !important;
+
+  /* Warning Orange */
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+/* ============== */
+/* === BANNER === */
+/* ============== */
 
 .banner {
   position: relative;
@@ -1123,8 +1405,9 @@ option {
   cursor: pointer;
 }
 
-
-/* --- MASS ERROR BANNER --- */
+/* ========================= */
+/* === MASS ERROR BANNER === */
+/* ========================= */
 
 #mass-error-banner {
   position: fixed;
@@ -1271,6 +1554,10 @@ option {
 */
 
 @media screen and (max-width: 768px) {
+  :root {
+    --np-view-heigth: 100px;
+  }
+
   .modal-content.pdf-mode {
     width: 100%;
 
@@ -1280,12 +1567,8 @@ option {
     border-radius: 0;
   }
 
-  body {
-    padding: 10px !important;
-  }
-
   .card {
-    padding: 15px !important;
+    padding: 15px;
   }
 
   .header-inner-panel {
@@ -1308,6 +1591,10 @@ option {
     width: min-content;
 
     white-space: wrap;
+
+    span {
+      display: none;
+    }
   }
 
   .global-nav-menu {
@@ -1336,9 +1623,6 @@ option {
       background: var(--accent);
     }
   }
-  .app-logo span {
-    display: none;
-  }
 
   .stream-grid {
     grid-template-columns: 1fr !important;
@@ -1354,5 +1638,71 @@ option {
 
       margin-top: 5px;
     }
+  }
+
+  .filter-pill-wrapper {
+    overflow-x: auto;
+
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    font-size: .8rem;
+
+    white-space: nowrap;
+  }
+
+  .np-track {
+    font-size: 1em;
+
+    font-weight: bold;
+    line-height: 1.2;
+
+    text-align: left;
+
+    color: var(--text);
+  }
+
+  .np-art {
+    width: 60px;
+
+    height: 60px;
+  }
+
+  .np-card {
+    display: flex;
+
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .np-artist {
+    font-size: .8em;
+
+    text-align: left;
+
+    color: var(--accent);
+  }
+
+  .np-timer {
+    font-size: .8rem;
+
+    text-align: left;
+  }
+
+  .np-album {
+    font-size: .6em;
+
+    font-style: italic;
+
+    text-align: left;
+
+    color: var(--text-secondary);
+  }
+
+  .np-status-badge {
+    padding: 4px 6px;
+
+    font-size: .8rem;
   }
 }
