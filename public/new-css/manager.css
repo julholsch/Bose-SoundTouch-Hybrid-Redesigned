@@ -102,9 +102,9 @@ body.light-mode {
   --console-text: var(--input-text);
 }
 
-html {
-  scroll-padding-bottom: var(--np-view-heigth);
-}
+/*html {*/
+/*  scroll-padding-bottom: var(--np-view-heigth);*/
+/*}*/
 
 body {
   /*overflow-y: scroll;*/
@@ -118,6 +118,7 @@ body {
 
   color: var(--text);
   background: var(--bg);
+  overflow: hidden;
   /*scrollbar-gutter: stable;*/
 
 
@@ -132,11 +133,15 @@ body {
 }
 
 .app-container {
-  max-width: 1200px;
+  /*max-width: 1200px;*/
+  width: 100%;
+  scrollbar-gutter: stable;
 
   margin: 0 auto;
   gap: 10px;
-
+  overflow-y: auto;
+  height: 100dvh;
+  min-block-size: 100svh;
   display: grid;
   grid-template-rows: auto 1fr auto;
 }
@@ -209,8 +214,7 @@ input:disabled + label {
 .app-content {
   /*padding-bottom: calc(30px + var(--np-view-heigth));*/
 
-  width: 100%;
-  min-block-size: 100svh;
+
 }
 
 
@@ -281,7 +285,7 @@ input:disabled + label {
     background: var(--card);
 
     opacity: 0;
-    box-shadow: 0px 0px 5px 1px var(--bg);
+    box-shadow: 0 0 5px 1px var(--bg);
     backdrop-filter: blur(5px);
 
     transition: all .2s ease-in-out allow-discrete;
@@ -705,7 +709,7 @@ input.text-inputs {
   flex-direction: column;
   gap: 10px;
 
-  padding: 0px 0 2px 0;
+  padding: 0 0 2px 0;
 
   pointer-events: none;
 
@@ -845,7 +849,7 @@ button.global-link {
 
   background: var(--card);
 
-  box-shadow: 0 0 10px 0px var(--shadow);
+  box-shadow: 0 0 10px 0 var(--shadow);
   backdrop-filter: blur(5px);
 
   transition: all .2s ease-in-out;
@@ -1077,7 +1081,7 @@ button.global-link {
 
 .top-bar {
   position: sticky;
-  top: 0px;
+  top: 0;
 
   display: flex;
 
