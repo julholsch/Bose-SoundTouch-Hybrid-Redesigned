@@ -3,7 +3,7 @@ node_modules/
 
 # --- Secrets & Private Configs ---
 .env
-
+.env.bak
 claude.md
 
 # --- Junk & Backups ---
