@@ -1,4 +1,34 @@
-# V3.6 Quick Notes: 
+# Bose SoundTouch Web UI Redesign
+
+> **Work in Progress:** This repository is currently under active development and refactoring. 
+> This means things like some pages are currently a bit broken on smaller screens. \
+> And the version this fork is based on is V3.6
+
+A comprehensive fork of the [Bose SoundTouch Hybrid Project by TJGigs](https://github.com/TJGigs/bose-soundtouch-hybrid).
+
+The goal of this project is to modernize the existing web interface from the ground up, optimize the layout for desktop displays, and create a much more consistent user experience.
+
+## Key Features & Improvements
+
+* **Modern Redesign:** Overhauled page structure and a clean, restructured layout. The responsivnes is currently broken
+* **NowPlayingBar:** Created a new playback bar featuring a modern aesthetic for intuitive control. Across the Web UI. Replacing the now playing tab on the Libary Manger page. 
+* **Clean Icon System:** Replaced outdated emojis with real SVG/PNG icons for a professional look and feel.
+* **Optimized Zone Management:** Improved backend logic for handling device lists and multi-room speaker zones.
+* **Better CSS:** The Origanal version used a lot of inline-css which made it hard to change things. I am working on to bring everthing in to css files an make it easy to adujst. \
+That will also make it possivle later to give the options for things like for example a custome theme color of the UI.
+
+## Credits
+
+Special thanks to TJGigs for the original codebase and foundation of the Bose SoundTouch Hybrid Server.
+
+
+# Original Readme Text from TJGigs:
+<details>
+
+<summary>Click here to expand</summary>
+
+
+## V3.6 Quick Notes: 
 *	🔊 Addresses Bugs and Several Enhancements
 *	🔊 Dynamic User Defined Search Subtabs. (existence, Visibility, Position) Pulled from MASS providers 
 *	🔊 Podcasts and Audiobooks added to Search and Library
@@ -191,3 +221,6 @@ Before proceeding with the instructions below, please do the following:
 * **Official Shutdown Discussion:** The original community thread tracking Bose's EOL announcement and API release [Bose EOL Reddit](https://www.reddit.com/r/bose/comments/1o2cnhw/bose_ending_cloud_support_for_soundtouch/).
 * **The Reddit "Alternative App" Megathread:** Ongoing conversation about replacing the Bose App. [Bose Alternatives Reddit](https://www.reddit.com/r/bose/comments/1o8my2n/soundtouch_app_alternatives/).
 * **The Bose Wiki (App Alternatives):** A community-maintained list of current workarounds and projects. [Bose Alternatives Wiki](https://bose.fandom.com/wiki/SoundTouch_app_alternatives).
+
+
+</details>
