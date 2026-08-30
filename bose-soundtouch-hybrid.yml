@@ -53,10 +53,10 @@ services:
       - "3000:3000" 
 
     volumes:
-      - ./public:/app/public
-      - ./config-data:/app/config
-      - ./routes:/app/routes
-      - ./server.js:/app/server.js
+      - ./public:/app/public # <-- Remove this
+      - ./config-data:/app/config # <-- Change this to your location where you want the config files
+      - ./routes:/app/routes # <-- Remove this
+      - ./server.js:/app/server.js # <-- Remove this
 
       - /var/run/docker.sock:/var/run/docker.sock
 
