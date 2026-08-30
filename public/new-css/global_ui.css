@@ -22,6 +22,7 @@ p {
 
   /* DARK MODE (Default) */
   --bg: #161616;
+  --bg-transparent: rgb(22 22 22 / 0.56);
   --card: #252525b9;
   --text: #e0e0e0;
   --btn-text-clr: #000000;
@@ -135,15 +136,22 @@ body {
 }
 
 .app-container {
-  max-width: 1200px;
+  max-width: 100dvw;
   margin: 0 auto;
   scrollbar-gutter: stable;
+  padding: 0 10px;
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100dvh;
   min-block-size: 100svh;
   gap: 10px;
   display: grid;
   grid-template-rows: auto 1fr auto;
+  & > * {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
 }
 
 .separation-line {
@@ -354,6 +362,7 @@ button:disabled,
   padding: 0 0 2px 0;
 
   pointer-events: none;
+  margin-bottom: 20px;
 
   div {
     pointer-events: auto;
@@ -363,10 +372,10 @@ button:disabled,
     content: "";
     position: absolute;
     top: -20px;
-    left: 0;
+    left: -25px;
     z-index: -1;
 
-    width: 100%;
+    width: 100dvw;
 
     height: calc(100% + 20px);
 
@@ -387,6 +396,7 @@ button:disabled,
 }
 
 .header-inner-panel {
+
   display: flex;
 
   justify-content: space-between;
@@ -400,7 +410,6 @@ button:disabled,
   border: 1px solid var(--border);
 
   border-radius: 12px;
-  margin-bottom: 20px;
 
   background: var(--card);
 
@@ -555,27 +564,27 @@ button.global-link {
   }
 }
 
-.header-inner-panel {
-  display: flex;
+/*.header-inner-panel {*/
+/*  display: flex;*/
 
-  justify-content: space-between;
-  align-items: center;
+/*  justify-content: space-between;*/
+/*  align-items: center;*/
 
-  box-sizing: unset;
+/*  box-sizing: unset;*/
 
-  height: 50px;
-  padding: 5px 25px;
+/*  height: 50px;*/
+/*  padding: 5px 25px;*/
 
-  border: 1px solid var(--border);
+/*  border: 1px solid var(--border);*/
 
-  border-radius: 12px;
-  margin-bottom: 20px;
+/*  border-radius: 12px;*/
+/*  margin-bottom: 20px;*/
 
-  background: var(--card);
+/*  background: var(--card);*/
 
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  backdrop-filter: blur(5px);
-}
+/*  box-shadow: 0 4px 6px rgba(0,0,0,0.05);*/
+/*  backdrop-filter: blur(5px);*/
+/*}*/
 
 .inner-panel-heading {
   display: flex;
@@ -893,11 +902,12 @@ button.global-link {
   display: flex;
 
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: stretch;
   align-items: center;
   gap: 15px;
 
   width: 100%;
+  height: 100%;
 
   padding: 10px;
 
@@ -931,6 +941,23 @@ button.global-link {
     }
 } */
 
+.np-column {
+  position: relative;
+  flex-grow: 1;
+  gap: 10px;
+  display: flex;
+  width: 30%;
+  height: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+
+  &:has(.np-controls) {
+    justify-content: center;
+    width: 40%;
+  }
+}
+
 .np-art {
   position: relative;
 
@@ -948,7 +975,7 @@ button.global-link {
 
   background: var(--art-bg);
 
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
 
   object-fit: cover;
 
@@ -1040,6 +1067,7 @@ button.global-link {
 .art-off::after {
   content: url("/images/svg/PowerOff.svg");
   color: red;
+  stroke: currentColor;
   padding: 5px;
   position: absolute;
   top: 0;
@@ -1062,7 +1090,7 @@ button.global-link {
 
 .np-infos {
   display: flex;
-
+  /*max-width: ;*/
   flex-direction: column;
   align-items: flex-start;
 }
@@ -1095,6 +1123,64 @@ button.global-link {
 
   color: var(--text-secondary);
 }
+
+.np-controls-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+  --controls-size: 50px;
+  --controls-icon-scale: 1.2;
+
+  .control-icon {
+
+    scale: var(--controls-icon-scale);
+    fill: white;
+    width: var(--controls-size);
+    height: var(--controls-size);
+    &:hover {
+      fill: var(--accent);
+    }
+  }
+
+  .play {
+    --controls-size: 60px;
+    --controls-icon-scale: 1.4;
+  }
+
+  .np-controls {
+    border-radius: 50%;
+    width: var(--controls-size);
+    height: var(--controls-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-transparent);
+    backdrop-filter: blur(0px);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: all .1s ease-in-out;
+    border-color: var(--border);
+
+    &:hover {
+      border-color: var(--accent);
+    }
+  }
+}
+.control-icon {
+
+  scale:1.3;
+  fill: white;
+  width: 20px;
+  height: 20px;
+  /*&:hover {*/
+  /*  fill: var(--accent);*/
+  /*}*/
+
+  &.icon-backwards {
+    rotate: 180deg;
+  }
+}
+
 
 .np-status-badge {
   position: absolute;
