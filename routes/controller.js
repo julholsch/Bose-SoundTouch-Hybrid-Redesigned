@@ -8,7 +8,7 @@ const deviceState = require('../device_state');
 
 // --- CONFIGURATION ---
 const BOSE_HEADERS = { headers: { 'Content-Type': 'application/xml' } };
-const PRESS_DELAY = 450;
+const PRESS_DELAY = 100;
 const SPEAKERS = require('../config/speakers.json');
 
 // SYNC_LOCKS: Prevents multiple "Join" operations from overlapping on the same device.

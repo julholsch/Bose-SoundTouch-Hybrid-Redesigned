@@ -138,6 +138,9 @@ button.global-link {
 
 .card-heading {
   margin: 0 0 5px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 
   img {
     width: auto;

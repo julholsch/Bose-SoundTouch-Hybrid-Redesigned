@@ -955,6 +955,9 @@ button.global-link {
   &:has(.np-controls) {
     justify-content: center;
     width: 40%;
+    gap: 5px;
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -1082,10 +1085,44 @@ button.global-link {
   object-fit: cover;
 }
 
+.np-progress-timer-wrapper {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+  width: 100%;
+}
+
 .np-timer {
   font-size: 1.2rem;
 
   text-align: left;
+}
+
+.np-progress {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 20px;
+  overflow: hidden;
+  border: none;
+
+  background-color: var(--btn-bg);
+
+  &[value]::-webkit-progress-bar
+  {
+    background-color: var(--btn-bg);
+  }
+
+  &[value]::-moz-progress-bar {
+
+    background-color: var(--accent);
+  }
+
+  &[value]::-webkit-progress-value{
+    background-color: var(--accent);
+  }
 }
 
 .np-infos {

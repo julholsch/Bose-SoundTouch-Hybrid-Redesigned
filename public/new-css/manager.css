@@ -442,7 +442,7 @@ option {
   width: 100%;
 
   border-bottom: 1px solid #333;
-  margin: 30px 0 0 0;
+  /*margin: 30px 0 0 0;*/
 }
 
 .section-title {
@@ -529,6 +529,13 @@ option {
     display: grid;
     grid-template-columns: 100%;
     grid-template-rows: auto;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -560,7 +567,7 @@ option {
     }
     100% {
         opacity: 1;
-        display: block;
+        display: flex;
         translate: 0 0;
   
     }
@@ -570,7 +577,7 @@ option {
   @keyframes disappear {
     0% {
         opacity: 1;
-        display: block;
+        display: flex;
         translate: 0 0;
     }
     100% {

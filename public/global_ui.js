@@ -217,6 +217,23 @@ function updateNpUI(device) {
     console.log("visibleDevices: ", visibleDevices);
     console.log("selectedDevice: ", selectedDevice); */
 
+    const playIcon = `
+        <svg class="control-icon icon-play" version="1.1" id="Icons np-icon-play" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 0 32 32" xml:space="preserve">
+            <path d="M21.6,15.2l-9-7c-0.3-0.2-0.7-0.3-1.1-0.1C11.2,8.3,11,8.6,11,9v14c0,0.4,0.2,0.7,0.6,0.9C11.7,24,11.9,24,12,24
+                c0.2,0,0.4-0.1,0.6-0.2l9-7c0.2-0.2,0.4-0.5,0.4-0.8S21.9,15.4,21.6,15.2z"/>
+        </svg>`;
+
+    const pauseIcon = `
+        <svg class="control-icon icon-play" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                 viewBox="0 0 32 32" xml:space="preserve">
+            <g>
+                <path d="M14,8H9C8.4,8,8,8.4,8,9v14c0,0.6,0.4,1,1,1h5c0.6,0,1-0.4,1-1V9C15,8.4,14.6,8,14,8z"/>
+                <path d="M23,8h-5c-0.6,0-1,0.4-1,1v14c0,0.6,0.4,1,1,1h5c0.6,0,1-0.4,1-1V9C24,8.4,23.6,8,23,8z"/>
+            </g>
+        </svg>
+    `;
+
     const ui = calculateUi(device);
 
     const nowPlaying = {
@@ -226,7 +243,8 @@ function updateNpUI(device) {
         album: document.getElementById('np-album'),
         status: document.getElementById('np-status'),
         timer: document.getElementById('np-timer'),
-        controls: document.getElementById('np-controls')
+        controls: document.getElementById('np-controls'),
+        playIcon: document.getElementById('np-icon-play')
     };
 
     if (device) {
@@ -272,7 +290,11 @@ function updateNpUI(device) {
                 // Apply drift to the last known position from the hardware
                 let currentPos = Math.min((device.position || 0) + secondDrift, device.duration);
 
-                timerHtml = `<span class="np-timer">${formatTime(currentPos)} / ${formatTime(device.duration)}</span>`;
+                timerHtml = `<span class="np-timer">${formatTime(currentPos)}</span> 
+                             <progress class="np-progress" value="${currentPos}" max="${device.duration}">
+                                ${currentPos}
+                             </progress> 
+                             <span class="np-timer">${formatTime(device.duration)}</span>`;
             }
 
             nowPlaying.status.innerHTML = `<span style="color:${color}">${label}</span>`;
@@ -312,11 +334,7 @@ function updateNpUI(device) {
                 </svg>
             </button>
             <button class="btn-secondary np-controls play ${ui.playClass}" ${dis(ui.playDisabled)} ${clickPlay}>
-            <svg class="control-icon icon-play" version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                 viewBox="0 0 32 32" xml:space="preserve">
-                <path d="M21.6,15.2l-9-7c-0.3-0.2-0.7-0.3-1.1-0.1C11.2,8.3,11,8.6,11,9v14c0,0.4,0.2,0.7,0.6,0.9C11.7,24,11.9,24,12,24
-                    c0.2,0,0.4-0.1,0.6-0.2l9-7c0.2-0.2,0.4-0.5,0.4-0.8S21.9,15.4,21.6,15.2z"/>
-            </svg>
+                ${device && !device.isStandby && device.playStatus !== "PAUSE_STATE" ? pauseIcon : playIcon}
             </button>
             <button class="btn-secondary np-controls next ${ui.nextClass}" ${dis(ui.nextDisabled)} ${clickNext}>
                 <svg class="control-icon icon-forward" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -328,7 +346,7 @@ function updateNpUI(device) {
             </button>
         `;
 }
-         /*       <svg height="800px" width="800px" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+         /*       <svg id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                  viewBox="0 0 32 32" xml:space="preserve">
                     <g>
                         <path d="M14,8H9C8.4,8,8,8.4,8,9v14c0,0.6,0.4,1,1,1h5c0.6,0,1-0.4,1-1V9C15,8.4,14.6,8,14,8z"/>
@@ -348,16 +366,23 @@ const nowPlayingFooter =  /*html*/ `
                     <div id="np-track" class="np-track">Loading...</div>
                     <div id="np-artist" class="np-artist">Loading...</div>
                     <div id="np-album" class="np-album">Loading...</div>
-                    <div id="np-timer" class="np-timer"></div>
                 </div>
             </div>
             <div class="np-column">
                 <div id="np-controls" class="np-controls-wrapper">              
                 </div>
+                
+                <div id="np-timer" class="np-progress-timer-wrapper">
+                    <span class="np-timer">0:00</span>
+                        <progress class="np-progress" value="0" max="100">
+                            0                    
+                        </progress> 
+                    <span class="np-timer">0:00</span>
+                </div>
             </div>
             
             <div class="np-column">
-                <div id="np-status" class="np-status np-status-badge">CONNECTING</div>
+                <div style="display: none" id="np-status" class="np-status np-status-badge">CONNECTING</div>
                 
                 <div class="speaker-select">
                     <div class="custom-dropdown-wrapper">
