@@ -359,19 +359,60 @@ function updateNpUI(device) {
 const nowPlayingFooter =  /*html*/ `
     <footer class="np-view">
         <div id="np-card" class="np-card">
-            <div class="np-column">
-                <div id="np-img" class="np-img np-art art-off"><img src="" alt="" style="display: none;"></div>
+            <div class="np-row">
+                <div class="np-column">
+                    <div id="np-img" class="np-img np-art art-off"><img src="" alt="" style="display: none;"></div>
+                    
+                    <div id="np-info" class="np-info np-infos">
+                        <div id="np-track" class="np-track">Loading...</div>
+                        <div id="np-artist" class="np-artist">Loading...</div>
+                        <div id="np-album" class="np-album">Loading...</div>
+                    </div>
+                </div>
+                <div class="np-column">
+                    <div id="np-controls" class="np-controls-wrapper">    
+                <button class="btn-secondary np-controls prev" disabled>
+                    <svg class="control-icon icon-backwards" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                     viewBox="0 0 32 32" xml:space="preserve">
+                    <path d="M26.6,15.2l-9-7c-0.3-0.2-0.7-0.3-1.1-0.1C16.2,8.3,16,8.6,16,9v5L8.6,8.2C8.3,8,7.9,7.9,7.6,8.1C7.2,8.3,7,8.6,7,9v14
+                        c0,0.4,0.2,0.7,0.6,0.9C7.7,24,7.9,24,8,24c0.2,0,0.4-0.1,0.6-0.2L16,18v5c0,0.4,0.2,0.7,0.6,0.9C16.7,24,16.9,24,17,24
+                        c0.2,0,0.4-0.1,0.6-0.2l9-7c0.2-0.2,0.4-0.5,0.4-0.8S26.9,15.4,26.6,15.2z"/>
+                    </svg>
+                </button>
+                <button class="btn-secondary np-controls play" disabled>
+            <svg class="control-icon icon-play" version="1.1" id="Icons np-icon-play" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                 viewBox="0 0 32 32" xml:space="preserve">
+                <path d="M21.6,15.2l-9-7c-0.3-0.2-0.7-0.3-1.1-0.1C11.2,8.3,11,8.6,11,9v14c0,0.4,0.2,0.7,0.6,0.9C11.7,24,11.9,24,12,24
+                    c0.2,0,0.4-0.1,0.6-0.2l9-7c0.2-0.2,0.4-0.5,0.4-0.8S21.9,15.4,21.6,15.2z"/>
+            </svg>
+                    
+                </button>
+                <button class="btn-secondary np-controls next" disabled>
+                    <svg class="control-icon icon-forward" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                     viewBox="0 0 32 32" xml:space="preserve">
+                        <path d="M26.6,15.2l-9-7c-0.3-0.2-0.7-0.3-1.1-0.1C16.2,8.3,16,8.6,16,9v5L8.6,8.2C8.3,8,7.9,7.9,7.6,8.1C7.2,8.3,7,8.6,7,9v14
+                            c0,0.4,0.2,0.7,0.6,0.9C7.7,24,7.9,24,8,24c0.2,0,0.4-0.1,0.6-0.2L16,18v5c0,0.4,0.2,0.7,0.6,0.9C16.7,24,16.9,24,17,24
+                            c0.2,0,0.4-0.1,0.6-0.2l9-7c0.2-0.2,0.4-0.5,0.4-0.8S26.9,15.4,26.6,15.2z"/>
+                    </svg>
+                </button>          
+                    </div>
+       
+                </div>
                 
-                <div id="np-info" class="np-info np-infos">
-                    <div id="np-track" class="np-track">Loading...</div>
-                    <div id="np-artist" class="np-artist">Loading...</div>
-                    <div id="np-album" class="np-album">Loading...</div>
+                <div class="np-column">
+                    <div style="display: none" id="np-status" class="np-status np-status-badge">CONNECTING</div>
+                    
+                    <div class="speaker-select">
+                        <div class="custom-dropdown-wrapper">
+                            
+                            <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+                    </div>                
                 </div>
             </div>
-            <div class="np-column">
-                <div id="np-controls" class="np-controls-wrapper">              
-                </div>
-                
+            <div class="np-row">           
                 <div id="np-timer" class="np-progress-timer-wrapper">
                     <span class="np-timer">0:00</span>
                         <progress class="np-progress" value="0" max="100">
@@ -379,19 +420,6 @@ const nowPlayingFooter =  /*html*/ `
                         </progress> 
                     <span class="np-timer">0:00</span>
                 </div>
-            </div>
-            
-            <div class="np-column">
-                <div style="display: none" id="np-status" class="np-status np-status-badge">CONNECTING</div>
-                
-                <div class="speaker-select">
-                    <div class="custom-dropdown-wrapper">
-                        
-                        <select id="global-speaker" class="mini-select" onchange="handleSpeakerChange()">
-                            <option value="">Loading...</option>
-                        </select>
-                    </div>
-                </div>                
             </div>
         </div>
     </footer>
