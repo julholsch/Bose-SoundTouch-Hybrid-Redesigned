@@ -1,10 +1,10 @@
 // ============================================================================
 // PHASE 1: IMPORTS & CONSTANTS
 // ============================================================================
-const CURRENT_VERSION = "v4.5";
+const CURRENT_VERSION = "v4.6";
 const ENV_SCHEMA_VERSION = "v4.2";
 const SETTINGS_SCHEMA_VERSION = "v4.4";
-const minReq = [2, 10, 3]; //MASS VERSION
+const minReq = [2, 10, 7]; //MASS VERSION
 let UPDATE_CACHED_DATA = { updateAvailable: false, current: CURRENT_VERSION };
 const express = require('express');
 const fs = require('fs');

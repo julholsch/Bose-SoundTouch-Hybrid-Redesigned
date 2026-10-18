@@ -1109,6 +1109,25 @@ async function processSettledState(ip) {
         }
     }
 
+    // --- WATCHDOG: POWER TRANSITION LOG (issue #201) ---
+    // Records Standby <-> Active transitions for watchdog speakers so a wake can be
+    // ordered against cloud_event / handshake entries in the same log. Logging only.
+    // Timestamp is settled-state time (post-debounce), not the raw WebSocket event.
+    if (global.WATCHDOG_SPEAKERS?.includes(ip)) {
+        const prev = LAST_VALID_STATE[ip];
+        if (prev && prev.isStandby !== isStandby) {
+            utils.appendWatchdogLog(ip, {
+                type:         'power_transition',
+                from:         prev.isStandby ? 'STANDBY' : 'ACTIVE',
+                to:           isStandby ? 'STANDBY' : 'ACTIVE',
+                source,
+                playStatus:   finalPlayStatus,
+                activePreset,
+                mode:         isMaster ? 'MASTER' : 'SLAVE'
+            });
+        }
+    }
+
     LAST_VALID_STATE[ip] = result;
     FINAL_STATE[ip] = result;
     OFFLINE_COUNTS[ip] = 0;

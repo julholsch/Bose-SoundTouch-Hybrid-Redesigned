@@ -240,6 +240,13 @@ async function auditSpeakerConfig(baseUrl, reqConfig, massPlayers, speaker) {
         "volume_control": dlnaId,
         "mute_control":   dlnaId,
         "play_media_overrides_group": true,
+        // MASS min/max volume RESCALES (0-100 mapped onto min..max, device reports
+        // reverse-scaled) rather than clamping, and since MA 2.10.x actively corrects
+        // out-of-range external changes. syncVolumeToMass/setVolume send true hardware
+        // values, so any non-default here would silently rescale them and fight
+        // enforceHardwareVolumeCap. BSTH's own per-speaker limits (admin.html) own this.
+        "min_volume": 0,
+        "max_volume": 100,
         "preferred_output_protocol": activeId,
         [`${activeId}||protocol||enabled`]: true,
         ...(sendspinId ? { [`${sendspinId}||protocol||enabled`]: false } : {}),
@@ -259,7 +266,22 @@ async function auditSpeakerConfig(baseUrl, reqConfig, massPlayers, speaker) {
     }
 
     if (Object.keys(batchPayload).length > 0) {
+        // Always name what drifted (not just in Verbose) — discussion #181: a daily "drift
+        // detected" with no detail can't be diagnosed from a user's log. Protocol ids
+        // (uuid:…, ap…, spb_…) are swapped for DLNA/AIRPLAY/SENDSPIN in both keys and values.
+        const protoLabel = (s) => {
+            if (typeof s !== 'string') return s;
+            if (dlnaId) s = s.split(dlnaId).join('DLNA');
+            if (airplayId) s = s.split(airplayId).join('AIRPLAY');
+            if (sendspinId) s = s.split(sendspinId).join('SENDSPIN');
+            return s.replace('||protocol||', '.');
+        };
+        const driftDetail = Object.entries(batchPayload).map(([key, targetValue]) => {
+            const current = currentValues[key] ? JSON.stringify(protoLabel(currentValues[key].value)) : '(missing)';
+            return `${protoLabel(key)}: ${current} → ${JSON.stringify(protoLabel(targetValue))}`;
+        });
         console.log(`[MASS Utils] ⚠️ UI drift detected on ${player.name}. Pushing user-facing settings (${activeMode.toUpperCase()})...`);
+        driftDetail.forEach(d => console.log(`   └─ ${d}`));
         if (global.DEBUG_MODE) console.log(`[MASS Utils] Payload: ${JSON.stringify(batchPayload)}`);
         await axios.post(`${baseUrl}/api`, {
             command: "config/players/save", args: { player_id: player.player_id, values: batchPayload }

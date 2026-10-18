@@ -426,7 +426,7 @@ router.get('/manager/providers', async(req, res) => {
 // Performs a unified search across Music Assistant providers.
 router.post('/manager/search', async(req, res) => {
     let { query, source, sourceType, type, limit, providerFilter } = req.body;
-    let searchLimit = parseInt(limit) || 25;
+    let searchLimit = parseInt(limit) || 50;
     if (searchLimit > 100)
         searchLimit = 100;
     if (!query || query.trim() === "")
@@ -445,12 +445,30 @@ router.post('/manager/search', async(req, res) => {
         if (source === 'global')
             mediaTypes.push("radio", "podcast", "podcast_episode", "audiobook");
 
+        // Scope the search to the selected provider on the MASS side (discussion #199).
+        // Unscoped, MASS's per-type `limit` is filled from ALL providers and the
+        // isSourceMatch/providerFilter passes below then discard the other providers'
+        // hits — so "25" on the NAS tab could return 15. Scoped, the full limit comes from
+        // the chosen provider; MASS still maps hits back to library:// items, so URIs are
+        // unchanged. Deliberately NOT adding "library" to the list: library items from
+        // other providers would eat into the limit again (verified on MA 2.10.6).
+        // `providers` exists in music/search since at least MA 2.10.0 (minReq is 2.10.3).
+        // The client-side filters below stay as a no-op safety net.
+        let providerScope = null;
+        if (source && source !== 'global' && source !== 'radio')
+            providerScope = source;
+        else if (source === 'global' && providerFilter && providerFilter !== 'all')
+            providerScope = providerFilter;
+
         // 1. Fetch Data
-        const data = await massRequest("music/search", {
+        const searchArgs = {
             search_query: query,
             limit: searchLimit,
             media_types: mediaTypes
-        });
+        };
+        if (providerScope)
+            searchArgs.providers = [providerScope];
+        const data = await massRequest("music/search", searchArgs);
 
         // 2. Process Results
         let results = [];

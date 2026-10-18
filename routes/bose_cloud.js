@@ -98,6 +98,9 @@ function buildHandshakeDiagnosis(state) {
             ? `Partial handshake following power-on. Source providers delivered but account profile (preset injection) was not requested within the 30s window.${invalidSourceNote}`
             : `Partial re-validation. BMX and source providers delivered but account profile (preset injection) was not requested.${invalidSourceNote}`;
     }
+    if (!powerOn && bmx && presets && !sourceProviders) {
+        return `Speaker refreshed its account without rebooting. Presets were delivered — no action needed.${invalidSourceNote}`;
+    }
     return `Incomplete handshake — one or more required steps did not complete within the 30s evaluation window.${invalidSourceNote}`;
 }
 
