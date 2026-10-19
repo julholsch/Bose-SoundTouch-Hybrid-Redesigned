@@ -1,7 +1,7 @@
 # --- Dependencies ---
 node_modules/
 .idea/
-
+.ai/
 # --- Secrets & Private Configs ---
 .env
 .env.bak
