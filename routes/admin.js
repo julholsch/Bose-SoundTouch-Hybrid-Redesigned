@@ -114,6 +114,7 @@ router.get('/admin/device_status', async(req, res) => {
             const c = await parser.parseStringPromise(clock.data);
             if (c.clockDisplay && c.clockDisplay.clockConfig) {
                 result.clock = c.clockDisplay.clockConfig.$.userEnable;
+                result.clockFormat = c.clockDisplay.clockConfig.$.timeFormat === 'TIME_FORMAT_24HOUR_ID' ? '24' : '12';
             }
         }
         if (autoOff && autoOff.data) {
@@ -207,6 +208,36 @@ router.post('/admin/settings_toggle', async(req, res) => {
         res.send({
             success: true,
             state: newState
+        });
+    } catch (e) {
+        res.status(500).send({
+            error: e.message
+        });
+    }
+});
+
+// 12h/24h display toggle. With the Bose app gone there is no other way to change this.
+// Same raw-XML round-trip as the clockDisplay userEnable toggle above, so timezoneInfo
+// (set by the boot clock audit) and brightnessLevel survive untouched. The speaker's
+// ClockDisplay.xml is the only store — nothing saved in settings.json, and the boot
+// audit (preflight.js) preserves whatever timeFormat the speaker reports.
+router.post('/admin/clock_format', async(req, res) => {
+    const { ip } = req.body;
+    try {
+        const check = await axios.get(`http://${ip}:8090/clockDisplay`);
+        const raw = check.data;
+        const is24 = raw.includes('timeFormat="TIME_FORMAT_24HOUR_ID"');
+        const newFormat = is24 ? 'TIME_FORMAT_12HOUR_ID' : 'TIME_FORMAT_24HOUR_ID';
+        let xmlBody;
+        if (raw.includes('timeFormat="'))
+            xmlBody = raw.replace(/timeFormat="\w+"/, `timeFormat="${newFormat}"`);
+        else
+            xmlBody = raw.replace('/>', ` timeFormat="${newFormat}" />`);
+        await axios.post(`http://${ip}:8090/clockDisplay`, xmlBody, BOSE_HEADERS);
+        console.log(`[Admin] 🕒 Clock format on ${ip} → ${is24 ? '12h' : '24h'}`);
+        res.send({
+            success: true,
+            format: is24 ? '12' : '24'
         });
     } catch (e) {
         res.status(500).send({

@@ -86,7 +86,7 @@
 
   function maxVolLimitOptions(selected) {
       let html = '';
-      for (const v of [50, 60, 70, 80, 90]) {
+      for (const v of [50, 55, 60, 65, 70, 75, 80, 85, 90, 95]) {
           html += `<option value="${v}"${String(v) === String(selected) ? ' selected' : ''}>${v}</option>`;
       }
       html += `<option value=""${selected == null ? ' selected' : ''}>No Limit</option>`;
@@ -198,7 +198,10 @@
           
           <div class="control-row ${hasClock ? '' : 'hidden'}">
             <label>Clock</label>
-            <button id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
+            <div style="display:flex; gap:8px;">
+                <button id="clkfmt-${d.ip}" onclick="tCF('${d.ip}', this)">...</button>
+                <button id="clk-${d.ip}" onclick="tS('${d.ip}','clockDisplay', this)">...</button>
+            </div>
           </div>
 
           <div class="tools-area">
@@ -287,6 +290,9 @@
 
           const clk = document.getElementById(`clk-${ip}`);
           if(clk) { clk.innerText = s.clock === 'true' ? 'ON' : 'OFF'; clk.className = s.clock === 'true' ? 'state-on' : 'state-off'; }
+
+          const clkFmt = document.getElementById(`clkfmt-${ip}`);
+          if(clkFmt && s.clockFormat) clkFmt.innerText = `${s.clockFormat}H`;
 
           const ao = document.getElementById(`ao-${ip}`);
           if(ao) { ao.innerText = s.autoOff === 'true' ? 'ON' : 'OFF'; ao.className = s.autoOff === 'true' ? 'state-on' : 'state-off'; }
@@ -377,7 +383,15 @@
       else { btn.innerText = d.state === 'true' ? 'ON' : 'OFF'; btn.className = d.state === 'true' ? 'state-on' : 'state-off'; }
   }
   
-  async function tA(ip, btn) { 
+  async function tCF(ip, btn) {
+      btn.innerText = "...";
+      const res = await fetch('api/admin/clock_format', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) });
+      const d = await res.json();
+      if(d.error) { alert("Error: " + d.error); fetchDeviceState(ip); }
+      else btn.innerText = `${d.format}H`;
+  }
+
+  async function tA(ip, btn) {
       btn.innerText = "...";
       const r = await fetch('api/admin/auto_off', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ip }) }); 
       const d = await r.json(); 

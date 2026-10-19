@@ -133,13 +133,16 @@ async function playMedia(target, item) {
     // Safety Pause
     await new Promise(r => setTimeout(r, 250));
 
-    // Play Command with explicit OpenAPI parameters
+    // Play Command with explicit OpenAPI parameters.
+    // option "replace" = MASS's real arg name (the old "enqueue"/"autostart" keys don't exist
+    // and were silently dropped, leaving the enqueue mode to MASS's per-media-type UI default).
+    // Replace swaps the whole queue in one step, so even if the clear above didn't fully land,
+    // nothing from a prior queue survives behind the new item — second layer of the same guarantee.
     const args = {
         queue_id: player.targetId,
         media: [uri],
-        enqueue: "play",
-        radio_mode: false,
-        autostart: true
+        option: "replace",
+        radio_mode: false
     };
 
     // Podcast presets can opt into always starting the newest episode instead of
@@ -147,6 +150,16 @@ async function playMedia(target, item) {
     // Only sent when explicitly set — omitting the key entirely for every other
     // item matches how this endpoint behaved before start_item existed.
     if (item.settings?.startFromLatest) args.start_item = "latest";
+
+    // Shuffle must ride on play_media itself (MASS 2.10.0+), not be set afterwards (issue #205):
+    // player_queues/clear above switches shuffle OFF by design, and enabling it after play_media
+    // only reshuffles the un-played tail — track 1 was already playing, so it always started first.
+    // A separate pre-play player_queues/shuffle isn't enough either: for ALBUM/podcast/radio,
+    // MASS forces shuffle back off unless play_media carries an explicit shuffle value.
+    // Only true is sent — false is already the state the clear left the queue in.
+    if (item.settings?.shuffle === true) args.shuffle = true;
+
+    if (global.DEBUG_MODE) console.log(`[MASS] play_media args: ${JSON.stringify(args)}`);
 
     const success = await sendWithRetry(player.targetId, player.targetIp, "player_queues/play_media", args, { kickstart: false, forceSuccess: true });
     
@@ -174,14 +187,18 @@ async function cmdStop(target) {
     if (!id) return;
     return await sendWithRetry(id, ip, "players/cmd/stop", { player_id: id }, { kickstart: false });
 }
-// Applies Shuffle/Repeat settings after playback starts.
+// Applies Repeat setting after playback starts.
 // 2-second delay to ensure player has fully transitioned to Playing state before accepting settings.
+// Shuffle is NOT applied here — it rides on the play_media call itself (see playMedia, issue #205).
+// Repeat is ALWAYS sent, "off" included: unlike shuffle, MASS's player_queues/clear does not reset
+// repeat_mode, so skipping "off" let a repeat left over from an earlier session carry into presets
+// that explicitly say off. Missing value (legacy library entries) is treated as "off".
 async function applySettings(playerId, settings) {
     const token = await getToken();
     const headers = { 'Authorization': `Bearer ${token}` };
+    const repeatMode = settings.repeat || 'off';
     setTimeout(() => {
-        if (settings.shuffle !== undefined) client.post(`${BASE_URL}`, { command: "player_queues/shuffle", args: { queue_id: playerId, shuffle_enabled: settings.shuffle }, message_id: Date.now() }, { headers }).catch(()=>{});
-        if (settings.repeat && settings.repeat !== 'off') client.post(`${BASE_URL}`, { command: "player_queues/repeat", args: { queue_id: playerId, repeat_mode: settings.repeat }, message_id: Date.now() }, { headers }).catch(()=>{});
+        client.post(`${BASE_URL}`, { command: "player_queues/repeat", args: { queue_id: playerId, repeat_mode: repeatMode }, message_id: Date.now() }, { headers }).catch(()=>{});
     }, 2000); 
 }
 
