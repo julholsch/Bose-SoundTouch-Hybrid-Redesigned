@@ -1,11 +1,6 @@
 
 
-.app-content {
-  display: flex;
 
-  flex-direction: column;
-  gap: 20px;
-}
 
 .speaker-status-bar {
   display: flex;

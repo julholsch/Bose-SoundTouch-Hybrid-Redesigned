@@ -136,23 +136,85 @@ body {
 }
 
 .app-container {
-  max-width: 100dvw;
+  /*max-width: 100dvw;*/
   margin: 0 auto;
-  scrollbar-gutter: stable;
+  /*scrollbar-gutter: stable;*/
   padding: 0 10px;
   overflow-y: auto;
   overflow-x: hidden;
-  height: 100dvh;
+  height: 100%;
+  width: 100%;
   min-block-size: 100svh;
-  gap: 10px;
+  /*gap: 10px;*/
   display: grid;
   grid-template-rows: auto 1fr auto;
-  & > * {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
+  /*& > * {*/
+  /*  max-width: 1200px;*/
+  /*  width: 100%;*/
+  /*  margin: 0 auto;*/
+  /*}*/
+}
+
+.app-content {
+  /*padding: 0 10px;*/
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-direction: column;
+  gap: 20px;
+  /*overflow-y: auto;*/
+  /*height: 100dvh;*/
+}
+
+.app-header {
+  position: sticky;
+  top: 10px;
+
+  z-index: 999;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+
+  flex-direction: column;
+  gap: 10px;
+
+  /*padding: 0 0 2px 0;*/
+
+  pointer-events: none;
+  margin: 10px auto;
+  div {
+    pointer-events: auto;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: -25px;
+    z-index: -1;
+
+    width: 100dvw;
+
+    height: calc(100% + 20px);
+
+    backdrop-filter: blur(15px);
+
+    /* Create the gradient fade */
+    -webkit-mask-image: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 1) 80%,
+            rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 1) 80%,
+            rgba(0, 0, 0, 0) 100%
+    );
   }
 }
+
+
 
 .separation-line {
   border-color: var(--border);
@@ -349,51 +411,6 @@ button:disabled,
 }
 
 
-.app-header {
-  position: sticky;
-  top: 20px;
-  z-index: 999;
-
-  display: flex;
-
-  flex-direction: column;
-  gap: 10px;
-
-  padding: 0 0 2px 0;
-
-  pointer-events: none;
-  margin-bottom: 20px;
-
-  div {
-    pointer-events: auto;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: -20px;
-    left: -25px;
-    z-index: -1;
-
-    width: 100dvw;
-
-    height: calc(100% + 20px);
-
-    backdrop-filter: blur(15px);
-
-    /* Create the gradient fade */
-    -webkit-mask-image: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 1) 80%,
-            rgba(0, 0, 0, 0) 100%
-    );
-    mask-image: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 1) 80%,
-            rgba(0, 0, 0, 0) 100%
-    );
-  }
-}
 
 .header-inner-panel {
 
@@ -900,10 +917,10 @@ button:disabled,
 
 .np-view {
   position: sticky;
-  right: 10px;
+  /*right: 10px;*/
   bottom: 15px;
-  left: 10px;
-  z-index: 990;
+  /*left: 10px;*/
+  z-index: 1000;
 
   display: flex;
 
@@ -915,11 +932,38 @@ button:disabled,
   width: 100%;
   height: var(--np-view-heigth);
 
-  margin: 0 auto;
-  margin-top: 20px;
+  margin: 10px auto;
 
   text-align: center;
+  div {
+    pointer-events: auto;
+  }
 
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: -25px;
+    z-index: -1;
+
+    width: 100dvw;
+
+    height: calc(100% + 20px);
+
+    backdrop-filter: blur(15px);
+
+    /* Create the gradient fade */
+    -webkit-mask-image: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 80%,
+            rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 1) 80%,
+            rgba(0, 0, 0, 0) 100%
+    );
+  }
   /* animation: slide-in .4s ease-in-out; */
 }
 
