@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="23c0c5ae-198c-45f1-8d72-a0e3354c83a4" name="Changes" comment="Updated gitignore" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution>
+      <executable />
+    </execution>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="59" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="INCOMING_COMMITS_CHECK_STRATEGY" value="FETCH" />
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Julholsch &lt;julholschterheyden@gmail.com&gt;" />
+      </list>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;julholsch&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/julholsch/Bose-SoundTouch-Hybrid-Redesigned.git&quot;,
+    &quot;accountId&quot;: &quot;47dad035-934f-48df-a6c2-837b9280ec98&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="7.190266375940077E-55" />
+      <entry key="MS500" value="1.4837099050028914E-11" />
+      <entry key="S2" value="0.001962625649875427" />
+      <entry key="S5" value="0.0830016253630508" />
+      <entry key="S10" value="0.3146275279522704" />
+      <entry key="S30" value="1.1478839193545807" />
+      <entry key="S60" value="1.9438122013081292" />
+      <entry key="M2" value="2.960318403979958" />
+      <entry key="M5" value="4.875434927009089" />
+      <entry key="M10" value="8.672136269602925" />
+      <entry key="M15" value="13.957646317872884" />
+      <entry key="M30" value="32.263722877604536" />
+      <entry key="H1" value="68.17926369409322" />
+      <entry key="H2" value="138.99527624375344" />
+      <entry key="H4" value="265.1669686763451" />
+      <entry key="D1" value="600.6343862448125" />
+      <entry key="W1" value="711.918538302483" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000000005918703" />
+      <entry key="S2" value="1.0049323811372894" />
+      <entry key="S5" value="1.1194600387518259" />
+      <entry key="S10" value="1.3456306807681098" />
+      <entry key="S30" value="1.7202236585993524" />
+      <entry key="S60" value="2.074988612611932" />
+      <entry key="M2" value="2.8128878455585564" />
+      <entry key="M5" value="4.390006877778324" />
+      <entry key="M10" value="6.854129811226309" />
+      <entry key="M15" value="9.647324726685078" />
+      <entry key="M30" value="18.50270137308592" />
+      <entry key="H1" value="36.58273491042129" />
+      <entry key="H2" value="72.03631285396146" />
+      <entry key="H4" value="125.61065127532088" />
+      <entry key="D1" value="246.4030961472028" />
+      <entry key="W1" value="283.95880773405713" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="2.1073424255446988E-8" />
+      <entry key="MS500" value="0.02915728132692821" />
+      <entry key="S2" value="0.41938237941692097" />
+      <entry key="S5" value="0.8967833129439897" />
+      <entry key="S10" value="1.4860954010869292" />
+      <entry key="S30" value="2.8005292102662422" />
+      <entry key="S60" value="3.979678024624258" />
+      <entry key="M2" value="5.7474280963825555" />
+      <entry key="M5" value="9.246590617443335" />
+      <entry key="M10" value="15.506783531564087" />
+      <entry key="M15" value="23.584098293318622" />
+      <entry key="M30" value="50.743206667625905" />
+      <entry key="H1" value="104.73792821948737" />
+      <entry key="H2" value="211.00850540767703" />
+      <entry key="H4" value="390.75768360821667" />
+      <entry key="D1" value="847.0306666292009" />
+      <entry key="W1" value="995.8762060743961" />
+    </decayedShown>
+  </component>
+  <component name="PhpDebugGeneral" listening_started="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3IBfsKVPtQjkZm0fegwTs5mHPmU" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "JavaScript Debug.admin.html.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "TJGigs-version",
+    "git.auto.fetch.suggestion.counter": "2",
+    "ignore.virus.scanning.warn.message": "true",
+    "javascript.preferred.runtime.type.id": "node",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/Julius-PC/Persönliche Ordner/Dokumente/Programmierung/Bose-SoundTouch-Hybrid",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "C:/Users/Julius-PC/AppData/Roaming/JetBrains/WebStorm2026.2/node/versions/24.19.0/node",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.editor",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "C:\\Users\\Julius-PC\\AppData\\Local\\Programs\\PhpStorm\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Julius-PC\Persönliche Ordner\Dokumente\Programmierung\Bose-SoundTouch-Hybrid\public\new-css" />
+      <recent name="C:\Users\Julius-PC\Persönliche Ordner\Dokumente\Programmierung\Bose-SoundTouch-Hybrid\public" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-PS-262.10968.76" />
+        <option value="bundled-php-predefined-a98d8de5180a-9522f28f0b20-com.jetbrains.php.sharedIndexes-PS-262.10968.76" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="23c0c5ae-198c-45f1-8d72-a0e3354c83a4" name="Changes" comment="" />
+      <created>1787243088734</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1787243088734</updated>
+      <workItem from="1787243091016" duration="1422000" />
+      <workItem from="1787251669081" duration="990000" />
+      <workItem from="1787252673401" duration="1159000" />
+      <workItem from="1787301340171" duration="1050000" />
+      <workItem from="1787483960213" duration="13169000" />
+      <workItem from="1787771812055" duration="845000" />
+      <workItem from="1788020875252" duration="13545000" />
+      <workItem from="1788073087653" duration="814000" />
+      <workItem from="1788073917859" duration="14502000" />
+      <workItem from="1788203784351" duration="244000" />
+      <workItem from="1788498520684" duration="1487000" />
+      <workItem from="1789662523559" duration="10925000" />
+      <workItem from="1789708364763" duration="539000" />
+      <workItem from="1789709118671" duration="1320000" />
+      <workItem from="1792078650243" duration="2067000" />
+      <workItem from="1792080749196" duration="256000" />
+      <workItem from="1792081017846" duration="2150000" />
+      <workItem from="1792417040713" duration="5501000" />
+      <workItem from="1792431824399" duration="70000" />
+    </task>
+    <task id="LOCAL-00001" summary="Improving UI">
+      <option name="closed" value="true" />
+      <created>1787253637103</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1787253637103</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Improving UI">
+      <option name="closed" value="true" />
+      <created>1787488186100</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1787488186100</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Improving UI and Cleaning CSS">
+      <option name="closed" value="true" />
+      <created>1787491606682</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1787491606682</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Improving more UI and Cleaning more CSS">
+      <option name="closed" value="true" />
+      <created>1787504535556</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1787504535556</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Improving NowPlayingBar (WIP)&#10;Started to replace Emoijs and other text symbols with svg oder png icons.">
+      <option name="closed" value="true" />
+      <created>1788073167451</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1788073167451</updated>
+    </task>
+    <task id="LOCAL-00006" summary="The new Icons as SVG Files">
+      <option name="closed" value="true" />
+      <created>1788073231364</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1788073231364</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added Own text to README.md">
+      <option name="closed" value="true" />
+      <created>1788077324182</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1788077324182</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Adjusted some .giigonre rules for Security reasons">
+      <option name="closed" value="true" />
+      <created>1788078767252</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1788078767253</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Adjusted some .giigonre rules for Security reasons">
+      <option name="closed" value="true" />
+      <created>1788078780051</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1788078780051</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Worked on the NowPlayingBar">
+      <option name="closed" value="true" />
+      <created>1788204005163</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1788204005163</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Updated things">
+      <option name="closed" value="true" />
+      <created>1792080087358</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1792080087358</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Updated gitignore">
+      <option name="closed" value="true" />
+      <created>1792080891873</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1792080891873</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Updated gitignore">
+      <option name="closed" value="true" />
+      <created>1792081323923</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1792081323923</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="HEAD" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="TJGigs-version" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <MESSAGE value="Improving UI" />
+    <MESSAGE value="Improving UI and Cleaning CSS" />
+    <MESSAGE value="Improving more UI and Cleaning more CSS" />
+    <MESSAGE value="Improving NowPlayingBar (WIP)&#10;Started to replace Emoijs and other text symbols with svg oder png icons." />
+    <MESSAGE value="The new Icons as SVG Files" />
+    <MESSAGE value="Added Own text to README.md" />
+    <MESSAGE value="Adjusted some .giigonre rules for Security reasons" />
+    <MESSAGE value="Worked on the NowPlayingBar" />
+    <MESSAGE value="Updated things" />
+    <MESSAGE value="Updated gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated gitignore" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
