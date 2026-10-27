@@ -1098,8 +1098,8 @@ function dismissHealthModal() {
 // Inject the banner HTML into the DOM as soon as the page loads
 document.addEventListener("DOMContentLoaded", () => {
   // BUG FIX: Changed from boseMassBannerHTML to the correct maHealthBannerHTML
-  document.body.insertAdjacentHTML("afterbegin", maHealthBannerHTML);
-  document.body.insertAdjacentHTML("afterbegin", updateBannerHTML);
+  document.querySelector(".app-header").insertAdjacentHTML("afterbegin", maHealthBannerHTML);
+  document.querySelector(".app-header").insertAdjacentHTML("afterbegin", updateBannerHTML);
   document.querySelector(".app-container").insertAdjacentHTML("beforeend", nowPlayingFooter);
   startNpPolling();
   makeBannerDraggable();
